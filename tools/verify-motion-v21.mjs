@@ -54,7 +54,7 @@ export async function checkMotionV21(browser, sites, out, report = {}) {
    await page.reload({waitUntil:'domcontentloaded'});
    assert.equal(await page.evaluate(()=>window.introEvidence.some(x=>x.active)),false,'session reload must not replay');
    if(width===1440) {
-    await page.locator('.site-header').hover();
+    await page.mouse.move(600,500);await page.locator('.site-header').hover({position:{x:30,y:100}});
     await page.waitForFunction(()=>document.querySelector('.site-header').classList.contains('rail-open'));
     await page.screenshot({path:path.join(dir,'navigation-open.png')});
     await page.mouse.move(900,800);
