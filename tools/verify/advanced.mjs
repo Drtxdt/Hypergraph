@@ -16,12 +16,12 @@ export async function checkAdvanced(browser, sites, report) {
   await page.getByText("Independent extension v2", { exact: true }).waitFor();
   assert.equal(await page.locator("[data-reading-note]").count(), 1);
   const before = await page.locator(".prose").textContent();
-  await page.locator(".translate-toggle").click();
+  await page.locator(".translate-toggle").click({position:{x:32,y:22}});
   await page.waitForFunction(
     (before) => document.querySelector(".prose").textContent !== before,
     before,
   );
-  await page.locator(".translate-toggle").click();
+  await page.locator(".translate-toggle").click({position:{x:32,y:22}});
   await page.waitForFunction(
     (before) => document.querySelector(".prose").textContent === before,
     before,

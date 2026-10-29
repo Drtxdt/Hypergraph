@@ -1,9 +1,26 @@
 "use strict";
 const { escape } = require("../lib/utils.cjs");
 const paths = {
+  telegram: "M2 10 22 2l-5 20-6-7-4 3v-6ZM7 12 22 2M11 15 22 2",
+  facebook: "M14 22V12h4l1-4h-5V6c0-2 1-3 4-3V0c-6-1-8 1-8 6v2H7v4h3v10",
+  reddit: "M8 13h.1M16 13h.1M8 17q4 3 8 0M12 8l2-6 5 1M3 10a2 2 0 1 0-2 4m20-4a2 2 0 1 1 2 4M12 8a10 7 0 1 0 0 14 10 7 0 1 0 0-14",
+  linkedin: "M4 9v12M4 3v2M10 21V9m0 5c0-7 10-7 10 0v7",
+
+  reading: "M3 4h7l2 2 2-2h7v16h-7l-2 2-2-2H3ZM12 6v16",
+  share: "M12 16V3m-5 5 5-5 5 5M5 12H3v9h18v-9h-2",
+  close: "m5 5 14 14M19 5 5 19",
+  x: "M4 3h4l12 18h-4ZM20 3 4 21",
+  instagram: "M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4Zm5 5a4 4 0 1 0 0 8 4 4 0 0 0 0-8M17 6h1",
+  bilibili: "m7 2 3 4m7-4-3 4M5 6h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Zm3 5v4m8-4v4m-6 2 2 1 2-1",
+  email: "M3 5h18v14H3ZM3 5l9 8 9-8",
+
+  menu: "M4 6h16M4 12h16M4 18h16",
+  mode: "M12 3a9 9 0 1 0 0 18V3Zm0 0a9 9 0 0 1 0 18M16 5v14M20 9v6",
+  arrow: "M5 19 19 5M5 5h14v14",
   grid: "M3 3h7v7H3ZM14 3h7v7h-7ZM3 14h7v7H3ZM14 14h7v7h-7Z",
   user: "M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8M4 21v-3a8 8 0 0 1 16 0v3",
-  users: "M9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8M2 21v-3a7 7 0 0 1 14 0v3M17 4a4 4 0 0 1 0 8M18 14a6 6 0 0 1 4 6",
+  users:
+    "M9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8M2 21v-3a7 7 0 0 1 14 0v3M17 4a4 4 0 0 1 0 8M18 14a6 6 0 0 1 4 6",
   search: "M10 3a7 7 0 1 0 0 14 7 7 0 0 0 0-14m5 12 6 6",
   home: "M3 10 12 3l9 7v11h-6v-7H9v7H3Z",
   archive: "M3 4h18v5H3Zm2 5v12h14V9M9 13h6",

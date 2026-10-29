@@ -88,6 +88,7 @@ pwa:
   enable: false
   icons: []
 post:
+  cover_mode: compact # compact / feature / none
   share: true
   copyright: true
   license: All rights reserved
@@ -101,7 +102,7 @@ post:
     - reading
   related: true
   related_limit: 3
-  share_sites: []
+  share_sites: [x, bilibili, instagram, telegram, reddit, linkedin, facebook, email] # Bilibili/Instagram copy the link for manual sharing
 sidebar:
   enable: false
   order:
@@ -114,7 +115,7 @@ sidebar:
   announcement: ''
 fonts:
   body: system-ui, "Microsoft YaHei", sans-serif
-  display: Archivo, system-ui, sans-serif
+  display: system-ui, sans-serif
   code: ui-monospace, Consolas, monospace
   body_size: 17
   code_size: 14
@@ -170,6 +171,8 @@ chat:
   hide_on_scroll: false
 ads: []
 appearance:
+  intro_scope: home # home / all
+  intro: session # session / always / off
   favicon: /hypergraph.svg
   avatar: ''
   author_status: ''

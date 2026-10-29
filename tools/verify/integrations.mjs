@@ -46,7 +46,7 @@ export async function checkIntegrations(browser, site, report) {
     window.copiedCode?.includes("const journal"),
   );
   await page.locator("[data-menu-toggle]").click();
-  await page.locator("[data-search]").click();
+  await page.locator("[data-search]").click({position:{x:32,y:22}});
   for (let i = 0; i < 8; i++) {
     await page.keyboard.press("Tab");
     assert.ok(
@@ -147,7 +147,7 @@ export async function checkIntegrations(browser, site, report) {
   );
   await page.goto(site.url + "external-test/");
   await page.locator("[data-menu-toggle]").click();
-  await page.locator("[data-search]").click();
+  await page.locator("[data-search]").click({position:{x:32,y:22}});
   await page.locator("#search-input").fill("External");
   await page.getByRole("link", { name: "Verified external result" }).waitFor();
   await page.keyboard.press("Escape");
@@ -188,7 +188,8 @@ export async function checkIntegrations(browser, site, report) {
     );
     const p = await context.newPage();
     await p.goto(site.url);
-    await p.waitForTimeout(1000);
+    await p.waitForFunction(()=>!document.documentElement.classList.contains("intro-active"));
+    if (!reduce) await p.waitForFunction(()=>window.motionCalls.length>0);
     const calls = await p.evaluate(() => window.motionCalls);
     if (reduce) assert.equal(calls.length, 0);
     else {

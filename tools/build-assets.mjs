@@ -4,6 +4,10 @@ await fs.copyFile(
   "node_modules/@fontsource/archivo/files/archivo-latin-600-normal.woff2",
   "src/fonts/archivo-latin-600-normal.woff2",
 );
+await fs.copyFile(
+  "node_modules/@fontsource/archivo/files/archivo-latin-800-normal.woff2",
+  "src/fonts/archivo-latin-800-normal.woff2",
+);
 const { build } = await import("vite");
 await build();
 await fs.mkdir("source/assets/katex", { recursive: true });

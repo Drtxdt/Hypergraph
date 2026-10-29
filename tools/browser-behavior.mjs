@@ -53,12 +53,12 @@ await page.locator("[data-close]").click();
 await page.goto("http://127.0.0.1:4174/2026/10/24/encrypted-code/");
 await page.waitForFunction(() => window.__hypergraph?.swup);
 await page.locator("[data-unlock] input").fill("incorrect");
-await page.locator("[data-unlock] button").click();
+await page.locator("[data-unlock] button[type=submit]").click();
 await page
   .getByText("密码错误或内容损坏 / Incorrect password or damaged content")
   .waitFor();
 await page.locator("[data-unlock] input").fill("fixture-password-7329");
-await page.locator("[data-unlock] button").click();
+await page.locator("[data-unlock] button[type=submit]").click();
 await page.waitForSelector("[data-plaintext] pre");
 assert.match(
   await page.locator("[data-plaintext]").innerText(),

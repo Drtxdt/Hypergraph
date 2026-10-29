@@ -28,10 +28,35 @@ test('cover tint alone loads appearance, all disabled loads nothing', async () =
   const javascript = ts.transpile(source.slice(start, end), { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS });
   for (const cover_tint of [true, false]) {
     let loads = 0, mounts = 0;
-    const context = { appearance: { fallback_image: '', captions: false, motion: 'off', cover_tint }, require: () => { loads++; return { mount: () => mounts++ }; } };
+    const context = { document: { documentElement: { classList: { contains: () => false } } }, appearance: { fallback_image: '', captions: false, motion: 'off', cover_tint }, require: () => { loads++; return { mount: () => mounts++ }; } };
     vm.runInNewContext(javascript, context);
     await context.mountAppearance({}, { aborted: false });
     assert.equal(loads, Number(cover_tint));
     assert.equal(mounts, Number(cover_tint));
   }
+});
+
+test('appearance can prepare during intro but never mounts an aborted page', async () => {
+  const source = fs.readFileSync('src/main.ts', 'utf8');
+  const start = source.indexOf('async function mountAppearance');
+  const end = source.indexOf('let pageController', start);
+  const javascript = ts.transpile(source.slice(start, end), { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS });
+  for (const abort of [false, true]) {
+    let loads = 0;
+    const document = new EventTarget();
+    document.documentElement = { classList: { contains: () => true } };
+    const controller = new AbortController();
+    const context = { document, appearance: { fallback_image: '', captions: false, motion: 'cinematic', cover_tint: false }, require: () => { loads++; return { mount() {} }; } };
+    vm.runInNewContext(javascript, context);
+    if (abort) controller.abort();
+    await context.mountAppearance({}, controller.signal);
+    assert.equal(loads, abort ? 0 : 1);
+  }
+});
+
+test('invalid article cover modes identify the source', () => {
+ let validate;
+ vm.runInNewContext(fs.readFileSync('scripts/frontmatter.js','utf8'), {hexo:{extend:{filter:{register:(_,fn)=>validate=fn}}}});
+ assert.throws(()=>validate({source:'_posts/example.md',cover_mode:'wide'}), /example.md: cover_mode/);
+ for(const cover_mode of ['compact','feature','none',undefined]) assert.equal(validate({cover_mode}).cover_mode,cover_mode);
 });

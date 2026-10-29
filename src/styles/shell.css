@@ -59,7 +59,7 @@ summary,
 }
 .archive-month > h2 {
   font:
-    600 20px Archivo,
+    600 20px system-ui,
     system-ui,
     sans-serif;
   border-bottom: 1px solid var(--ink);
@@ -122,7 +122,7 @@ summary,
 .empty-state {
   grid-column: 1/-1;
 }
-@media (max-width: 1023px) {
+@media (max-width: 1023px), (hover: none) {
   .site-header {
     overflow: visible;
     gap: 14px;

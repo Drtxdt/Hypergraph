@@ -1,4 +1,6 @@
 import fs from "node:fs/promises";
+import {checkBeta2} from "./verify-beta2.mjs";
+import {checkMotionV21} from "./verify-motion-v21.mjs";
 import path from "node:path";
 import { spawn, execFileSync } from "node:child_process";
 import os from "node:os";
@@ -93,7 +95,7 @@ try {
         search: false,
         lightbox: false,
         music: { enable: false },
-        appearance: { motion: "off" },
+        appearance: { motion: "off", intro: "off" },
         tools: { back_to_top: false, progress: false, keyboard: false },
       },
     },
@@ -130,7 +132,7 @@ try {
     platform: process.platform,
     arch: process.arch,
     os: os.release(),
-    font: "Archivo 600 self-hosted; system sans-serif Chinese",
+    font: "System sans-serif; system monospace for code",
     gitCommit: execFileSync("git", ["rev-parse", "HEAD"], {
       encoding: "utf8",
     }).trim(),
@@ -139,8 +141,11 @@ try {
         encoding: "utf8",
       }).trim().length > 0,
   };
+  await run(["tools/verify-navigation-v21.mjs"]);
   await checkBrowser(browser, sites, report, out);
   console.log("Browser functional and visual checks passed");
+  await checkBeta2(browser, sites, out, report);
+  console.log("Beta.2 controls and navigation race checks passed");
   await checkIntegrations(browser, sites.main, report);
   await checkAdvanced(browser, sites, report);
   waline = await startWaline(
@@ -159,7 +164,6 @@ try {
   for (const file of [
     "source/assets/main.js",
     "source/assets/main.css",
-    "source/assets/archivo-latin-600-normal.woff2",
   ])
     report.assets[file] = crypto
       .createHash("sha256")
@@ -172,6 +176,8 @@ try {
         .createHash("sha256")
         .update(await fs.readFile(file))
         .digest("hex");
+
+  await checkMotionV21(browser, sites, out, report);
   report.passed = true;
 } catch (error) {
   report.error = error.stack;

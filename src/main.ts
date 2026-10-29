@@ -60,7 +60,8 @@ if (extras.music.enable)
 const appearance: import("./modules/appearance").Appearance = JSON.parse(
   document.querySelector("#hg-config")!.textContent!,
 ).appearance;
-async function mountAppearance(root: HTMLElement, signal: AbortSignal) {
+async function mountAppearance(root: HTMLElement, signal: AbortSignal, transition = false) {
+  if (signal.aborted) return;
   if (
     appearance.fallback_image ||
     appearance.captions ||
@@ -68,10 +69,13 @@ async function mountAppearance(root: HTMLElement, signal: AbortSignal) {
     appearance.cover_tint
   ) {
     const module = await import("./modules/appearance");
-    if (!signal.aborted) module.mount(root, appearance, signal);
+    if (!signal.aborted) module.mount(root, transition ? { ...appearance, motion: "off" } : appearance, signal);
   }
 }
 let pageController = new AbortController();
+if (document.documentElement.classList.contains("intro-active"))
+  void import("./modules/intro").then(m => m.mount(globalController.signal)).catch(() => {});
+
 let epoch = 0;
 async function mountUnlocked(root: HTMLElement, signal: AbortSignal) {
   void mountAppearance(root, signal);
@@ -131,7 +135,7 @@ async function mountPage(focus = false) {
   const { signal } = pageController;
   const version = ++epoch;
   const root = document.querySelector<HTMLElement>("#content")!;
-  void mountAppearance(root, signal);
+  void mountAppearance(root, signal, focus);
   if (
     extras.adsense.enable ||
     extras.counters.enable ||
@@ -251,8 +255,8 @@ if (config.search)
     m.mount(config.root, globalController.signal, config.external_search),
   );
 if (config.navigation) {
-  void Promise.all([import("swup"), import("@swup/head-plugin")]).then(
-    ([{ default: Swup }, { default: HeadPlugin }]) => {
+  void Promise.all([import("swup"), import("@swup/head-plugin"), import("./modules/transitions")]).then(
+    ([{ default: Swup }, { default: HeadPlugin }, transitions]) => {
       const swup = new Swup({
         containers: ["#content"],
         animationSelector: false,
@@ -265,6 +269,7 @@ if (config.navigation) {
           ),
         plugins: [new HeadPlugin({ persistAssets: true, awaitAssets: true })],
       });
+      transitions.mount(swup, appearance.motion, globalController.signal);
       swup.hooks.replace("fetch:request", async (_visit, { url, options }) => {
         const response = await fetch(url, options);
         if (!response.ok) throw Error("Navigation HTTP " + response.status);
@@ -277,7 +282,10 @@ if (config.navigation) {
       swup.hooks.on("page:view", () => mountPage(true));
       const error = document.querySelector<HTMLElement>("#navigation-error")!;
       let failedUrl = "";
-      const fail = (visit: { to: { url: string }; from: { url: string } }) => {
+      let latestVisit: number | undefined;
+      swup.hooks.on("visit:start", visit => { latestVisit = visit.id; });
+      const fail = (visit: { id?: number; to: { url: string }; from: { url: string } }) => {
+        if (visit.id !== latestVisit) return;
         failedUrl = visit.to.url;
         error.hidden = false;
         swup.classes.clear();
