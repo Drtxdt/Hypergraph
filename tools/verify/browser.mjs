@@ -335,8 +335,9 @@ export async function checkBrowser(browser, sites, report, out) {
   };
   await context.close();
 }
-export async function performance(browser, sites, report) {
+export async function performance(browser, sites, report, visits = ["first", "subsequent"]) {
   report.performance = [];
+  for (const visit of visits)
   for (let run = 0; run < 3; run++)
     for (const [name, url, site] of [
       ["home", sites.main.url, sites.main],
@@ -360,8 +361,22 @@ export async function performance(browser, sites, report) {
         downloadThroughput: 200000,
         uploadThroughput: 93750,
       });
+      if (visit === "subsequent") {
+        assert.equal((await page.goto(url)).status(), 200);
+        await page.waitForFunction(() => !document.documentElement.classList.contains("intro-active"));
+        resources.clear();
+      }
       await page.addInitScript(() => {
-        window.metrics = { lcp: null, cls: 0, events: [], eventCounts: 0 };
+        window.metrics = { lcp: null, cls: 0, events: [], eventCounts: 0, readable: null };
+        const readable = () => {
+          if (window.metrics.readable === null && document.readyState !== "loading" && document.querySelector("#content") && !document.documentElement.classList.contains("intro-active")) {
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+              if (window.metrics.readable === null && !document.documentElement.classList.contains("intro-active")) window.metrics.readable = performance.now();
+            }));
+          }
+        };
+        new MutationObserver(readable).observe(document, {subtree:true, childList:true, attributes:true, attributeFilter:["class","hidden"]});
+        document.addEventListener("DOMContentLoaded", readable);
         new PerformanceObserver((l) =>
           l.getEntries().forEach((e) => (window.metrics.lcp = e.startTime)),
         ).observe({ type: "largest-contentful-paint", buffered: true });
@@ -377,6 +392,10 @@ export async function performance(browser, sites, report) {
         ).observe({ type: "event", buffered: true, durationThreshold: 16 });
       });
       assert.equal((await page.goto(url)).status(), 200);
+      await page.waitForFunction(() => !document.documentElement.classList.contains("intro-active"));
+      await page.waitForFunction(() => window.metrics.readable !== null);
+      const readable = await page.evaluate(() => window.metrics.readable);
+      assert.ok(readable <= 2500, `${name} first readable ${readable}`);
       await page.locator("[data-menu-toggle]").click();
       await page.locator("[data-mode-toggle]").click();
       await page.locator("[data-search]").click();
@@ -417,9 +436,11 @@ export async function performance(browser, sites, report) {
       }
       report.performance.push({
         name,
+        visit,
         run: run + 1,
         ...metrics,
         interactionBound,
+        readable,
         jsGzip: js,
         cssGzip: css,
         fontBytes: font,

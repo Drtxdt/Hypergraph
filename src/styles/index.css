@@ -3,3 +3,6 @@
 @import "./components.css";
 @import "./pages.css";
 @import "./shell.css";
+
+@import "./intro.css";
+@import "./navigation.css";

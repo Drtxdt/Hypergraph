@@ -18,7 +18,7 @@ export function mount(options: Options, signal: AbortSignal) {
   )
     return;
   const feedback = (x: number, y: number) => {
-    if (document.hidden || reduced.matches) return;
+    if (document.hidden || reduced.matches || document.documentElement.dataset.transition || document.documentElement.classList.contains("intro-active")) return;
     const count = options.click === "fireworks" ? 8 : 1;
     for (let i = 0; i < count; i++) {
       const span = document.createElement("span");
@@ -154,10 +154,13 @@ export function mount(options: Options, signal: AbortSignal) {
     );
   }
   if (options.typewriter) {
+    let titleAnimation: Animation | undefined;
+    signal.addEventListener("abort", () => titleAnimation?.cancel(), { once: true });
     const reveal = () => {
-      if (document.hidden || reduced.matches) return;
-      document
-        .querySelector(".intro h1")
+      if (document.hidden || reduced.matches || document.documentElement.dataset.transition || document.documentElement.classList.contains("intro-active")) return;
+      titleAnimation?.cancel();
+      titleAnimation = document
+        .querySelector(".home-introduction h1, .lead h1")
         ?.animate(
           [{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0 0 0)" }],
           { duration: 600, easing: "steps(12,end)" },
@@ -165,5 +168,6 @@ export function mount(options: Options, signal: AbortSignal) {
     };
     reveal();
     document.addEventListener("hypergraph:mount", reveal, { signal });
+    document.addEventListener("hypergraph:intro-end", reveal, { signal });
   }
 }

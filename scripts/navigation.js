@@ -1,9 +1,13 @@
 "use strict";
 const { escape } = require("../lib/utils.cjs");
 const paths = {
+  menu: "M4 6h16M4 12h16M4 18h16",
+  mode: "M12 3a9 9 0 1 0 0 18V3Zm0 0a9 9 0 0 1 0 18M16 5v14M20 9v6",
+  arrow: "M5 19 19 5M5 5h14v14",
   grid: "M3 3h7v7H3ZM14 3h7v7h-7ZM3 14h7v7H3ZM14 14h7v7h-7Z",
   user: "M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8M4 21v-3a8 8 0 0 1 16 0v3",
-  users: "M9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8M2 21v-3a7 7 0 0 1 14 0v3M17 4a4 4 0 0 1 0 8M18 14a6 6 0 0 1 4 6",
+  users:
+    "M9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8M2 21v-3a7 7 0 0 1 14 0v3M17 4a4 4 0 0 1 0 8M18 14a6 6 0 0 1 4 6",
   search: "M10 3a7 7 0 1 0 0 14 7 7 0 0 0 0-14m5 12 6 6",
   home: "M3 10 12 3l9 7v11h-6v-7H9v7H3Z",
   archive: "M3 4h18v5H3Zm2 5v12h14V9M9 13h6",

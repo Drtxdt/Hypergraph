@@ -24,3 +24,8 @@ Extensions are installed as npm packages. Export `apiVersion: 1`, an ID, JSON Sc
 Development: `npm ci`, `npm run typecheck`, `npm test`, `npm run build`. Theme source is MIT licensed; bundled dependencies retain their licenses in `source/licenses`.
 
 Run `npm run verify` for isolated public fixtures, browser tests, SQLite comments, and mobile performance. Install Chromium with `npx playwright install --with-deps chromium` outside Windows; Windows uses Edge by default. Set `HG_BROWSER=chromium` to select Chromium. `npm run verify:compat` checks Hexo 7.3/8 and root/subdirectory builds. Reports are in `.local/verification`; temporary sites are removed. No private blog is required.
+
+
+## 2.1 entrance motion
+
+`appearance.intro: session | always | off` defaults to `session`. The intro runs only with `appearance.motion: cinematic`; reduced motion, data saving, history restoration and deep anchors bypass it. `interaction.loading_bar` remains the separate navigation waiting indicator. Desktop navigation expands on hover or keyboard focus; clicking its toggle pins it open.

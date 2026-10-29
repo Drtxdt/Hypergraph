@@ -1,4 +1,5 @@
 export type Appearance = {
+  intro: "session" | "always" | "off";
   fallback_image: string;
   captions: boolean;
   motion: "cinematic" | "subtle" | "off";
@@ -84,12 +85,11 @@ function mountMotion(
   const animations = new Set<Animation>();
   const animate = (element: Element, delay = 0) => {
     const animation = element.animate(
-      [
-        { opacity: 0.85, transform: "translateY(12px)" },
-        { opacity: 1, transform: "translateY(0)" },
-      ],
+      cinematic && element.matches(".lead-title,.lead-media")
+        ? [{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0)" }]
+        : [{ opacity: .85, transform: "translateY(6px)" }, { opacity: 1, transform: "translateY(0)" }],
       {
-        duration: cinematic ? (mobile ? 400 : 640) : 180,
+        duration: cinematic ? (element.matches(".lead-media") ? 420 : 320) : 180,
         delay,
         easing: "cubic-bezier(.2,.7,.2,1)",
       },
@@ -99,9 +99,13 @@ function mountMotion(
   };
   root
     .querySelectorAll(
-      ".lead .section-kicker,.lead-title,.lead-link,.article-head",
+      ".lead-media,.lead .section-kicker,.lead-title,.lead-link,.article-head",
     )
-    .forEach((el, i) => animate(el, cinematic ? i * 60 : 0));
+    .forEach((el, i) => {
+      const options = JSON.parse(document.querySelector("#hg-config")!.textContent!);
+      if (options.effects?.typewriter && el.matches(".lead-title")) return;
+      animate(el, cinematic ? i * 60 : 0);
+    });
   const observer = new IntersectionObserver(
     (entries) =>
       entries.forEach((entry) => {
@@ -122,10 +126,10 @@ function mountMotion(
         if (document.hidden || !image) return;
         const rect = media.getBoundingClientRect();
         image.style.transform =
-          "scale(1.04) translate(" +
-          ((e.clientX - rect.left) / rect.width - 0.5) * 16 +
+          "scale(1.025) translate(" +
+          ((e.clientX - rect.left) / rect.width - 0.5) * 6 +
           "px," +
-          ((e.clientY - rect.top) / rect.height - 0.5) * 16 +
+          ((e.clientY - rect.top) / rect.height - 0.5) * 6 +
           "px)";
       },
       { signal },

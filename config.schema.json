@@ -1462,6 +1462,15 @@
             "off"
           ],
           "default": "cinematic"
+        },
+        "intro": {
+          "type": "string",
+          "enum": [
+            "session",
+            "always",
+            "off"
+          ],
+          "default": "session"
         }
       }
     },

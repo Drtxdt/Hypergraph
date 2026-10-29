@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import {checkMotionV21} from "./verify-motion-v21.mjs";
 import path from "node:path";
 import { spawn, execFileSync } from "node:child_process";
 import os from "node:os";
@@ -93,7 +94,7 @@ try {
         search: false,
         lightbox: false,
         music: { enable: false },
-        appearance: { motion: "off" },
+        appearance: { motion: "off", intro: "off" },
         tools: { back_to_top: false, progress: false, keyboard: false },
       },
     },
@@ -130,7 +131,7 @@ try {
     platform: process.platform,
     arch: process.arch,
     os: os.release(),
-    font: "Archivo 600 self-hosted; system sans-serif Chinese",
+    font: "Archivo 600/800 self-hosted; system sans-serif Chinese",
     gitCommit: execFileSync("git", ["rev-parse", "HEAD"], {
       encoding: "utf8",
     }).trim(),
@@ -172,6 +173,8 @@ try {
         .createHash("sha256")
         .update(await fs.readFile(file))
         .digest("hex");
+  await run(["tools/verify-navigation-v21.mjs"]);
+  await checkMotionV21(browser, sites, out, report);
   report.passed = true;
 } catch (error) {
   report.error = error.stack;

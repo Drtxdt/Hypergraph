@@ -6,7 +6,11 @@ export function dismissPanels(restore = false) {
   previous?.close();
   if (restore) {
     const target = previous?.trigger;
-    if (target?.isConnected && target.getClientRects().length) target.focus();
+    // CSS visibility remains visible until the exit transition ends. A closed
+    // mobile navigation is already semantically unavailable during that interval.
+    const parentNav = target?.closest<HTMLElement>("#site-nav");
+    const closedMobileNav = parentNav && matchMedia("(max-width:1023px)").matches && !parentNav.classList.contains("is-open");
+    if (target?.isConnected && !closedMobileNav && target.getClientRects().length && getComputedStyle(target).visibility !== "hidden") target.focus();
     else {
       const menu = document.querySelector<HTMLElement>("[data-menu-toggle]");
       (menu?.getClientRects().length
@@ -46,7 +50,16 @@ export function mountShell(signal: AbortSignal) {
   const menu = document.querySelector<HTMLButtonElement>("[data-menu-toggle]")!;
   const rail = document.querySelector<HTMLButtonElement>("[data-rail-expand]")!;
   const mq = matchMedia("(max-width:1023px)");
+  const finePointer = matchMedia("(hover:hover) and (pointer:fine)");
+  let pinned = false;
+  let hovering = false;
+  let suppressAuto = false;
+  let leaveTimer: ReturnType<typeof setTimeout> | undefined;
+  const clearLeave = () => { clearTimeout(leaveTimer); leaveTimer = undefined; };
   const close = () => {
+    clearLeave();
+    pinned = false;
+    suppressAuto = true;
     nav.classList.remove("is-open");
     header.classList.remove("rail-open");
     menu.setAttribute("aria-expanded", "false");
@@ -59,29 +72,56 @@ export function mountShell(signal: AbortSignal) {
       });
     document.body.classList.remove("panel-lock");
   };
-  const open = (trigger: HTMLButtonElement) => {
-    if (trigger.getAttribute("aria-expanded") === "true") {
-      releasePanel(nav);
-      return;
-    }
-    activatePanel(nav, close, trigger);
+  const open = (trigger: HTMLButtonElement, automatic = false) => {
+    if (automatic && (mq.matches || suppressAuto || (active && active.element !== nav))) return;
+    clearLeave();
+    if (active?.element !== nav) activatePanel(nav, close, trigger);
+    suppressAuto = false;
     trigger.setAttribute("aria-expanded", "true");
     if (mq.matches) {
       nav.classList.add("is-open");
       document.body.classList.add("panel-lock");
-      document
-        .querySelectorAll<HTMLElement>("#content,.site-footer")
-        .forEach((el) => {
-          if (!el.inert) {
-            el.inert = true;
-            el.dataset.shellInert = "";
-          }
-        });
+      document.querySelectorAll<HTMLElement>("#content,.site-footer").forEach((el) => {
+        if (!el.inert) { el.inert = true; el.dataset.shellInert = ""; }
+      });
+      nav.querySelector<HTMLElement>("a,summary")?.focus();
     } else header.classList.add("rail-open");
-    nav.querySelector<HTMLElement>("a,summary")?.focus();
   };
-  menu.addEventListener("click", () => open(menu), { signal });
-  rail.addEventListener("click", () => open(rail), { signal });
+  const maybeClose = () => {
+    clearLeave();
+    leaveTimer = setTimeout(() => {
+      if (!pinned && !hovering && !header.contains(document.activeElement) && active?.element === nav) dismissPanels();
+    }, 160);
+  };
+  menu.addEventListener("click", () => {
+    if (active?.element === nav) releasePanel(nav);
+    else open(menu);
+  }, { signal });
+  rail.addEventListener("click", () => {
+    if (pinned) releasePanel(nav);
+    else { open(rail); pinned = true; }
+  }, { signal });
+  header.addEventListener("pointerenter", (event) => {
+    if (mq.matches || !finePointer.matches || event.pointerType === "touch") return;
+    hovering = true;
+    open(rail, true);
+  }, { signal });
+  header.addEventListener("pointerleave", () => {
+    hovering = false;
+    suppressAuto = false;
+    maybeClose();
+  }, { signal });
+  header.addEventListener("focusin", () => open(rail, true), { signal });
+  header.addEventListener("focusout", (event) => {
+    if (!header.contains(event.relatedTarget as Node | null)) {
+      suppressAuto = false;
+      maybeClose();
+    }
+  }, { signal });
+  document.addEventListener("pointerdown", (event) => {
+    if (!mq.matches && active?.element === nav && !header.contains(event.target as Node)) dismissPanels();
+  }, { signal });
+  finePointer.addEventListener("change", () => { hovering = false; dismissPanels(); }, { signal });
   nav.addEventListener(
     "click",
     (e) => {
@@ -143,5 +183,5 @@ export function mountShell(signal: AbortSignal) {
   };
   update();
   document.addEventListener("hypergraph:mount", update, { signal });
-  signal.addEventListener("abort", () => dismissPanels(), { once: true });
+  signal.addEventListener("abort", () => { clearLeave(); dismissPanels(); }, { once: true });
 }

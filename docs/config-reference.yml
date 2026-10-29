@@ -170,6 +170,7 @@ chat:
   hide_on_scroll: false
 ads: []
 appearance:
+  intro: session # session / always / off
   favicon: /hypergraph.svg
   avatar: ''
   author_status: ''
