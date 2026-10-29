@@ -48,18 +48,15 @@ export function mountShell(signal: AbortSignal) {
   const nav = document.querySelector<HTMLElement>("#site-nav")!;
   const header = document.querySelector<HTMLElement>(".site-header")!;
   const menu = document.querySelector<HTMLButtonElement>("[data-menu-toggle]")!;
-  const rail = document.querySelector<HTMLButtonElement>("[data-rail-expand]")!;
+  const rail = document.querySelector<HTMLAnchorElement>(".brand")!;
   const mq = matchMedia("(max-width:1023px)");
   const finePointer = matchMedia("(hover:hover) and (pointer:fine)");
-  let pinned = false;
   let hovering = false;
   let suppressAuto = false;
   let leaveTimer: ReturnType<typeof setTimeout> | undefined;
   const clearLeave = () => { clearTimeout(leaveTimer); leaveTimer = undefined; };
   const close = () => {
     clearLeave();
-    pinned = false;
-    suppressAuto = true;
     nav.classList.remove("is-open");
     header.classList.remove("rail-open");
     menu.setAttribute("aria-expanded", "false");
@@ -72,7 +69,7 @@ export function mountShell(signal: AbortSignal) {
       });
     document.body.classList.remove("panel-lock");
   };
-  const open = (trigger: HTMLButtonElement, automatic = false) => {
+  const open = (trigger: HTMLElement, automatic = false) => {
     if (automatic && (mq.matches || suppressAuto || (active && active.element !== nav))) return;
     clearLeave();
     if (active?.element !== nav) activatePanel(nav, close, trigger);
@@ -90,16 +87,12 @@ export function mountShell(signal: AbortSignal) {
   const maybeClose = () => {
     clearLeave();
     leaveTimer = setTimeout(() => {
-      if (!pinned && !hovering && !header.contains(document.activeElement) && active?.element === nav) dismissPanels();
+      if (!hovering && !header.contains(document.activeElement) && active?.element === nav) dismissPanels();
     }, 160);
   };
   menu.addEventListener("click", () => {
     if (active?.element === nav) releasePanel(nav);
     else open(menu);
-  }, { signal });
-  rail.addEventListener("click", () => {
-    if (pinned) releasePanel(nav);
-    else { open(rail); pinned = true; }
   }, { signal });
   header.addEventListener("pointerenter", (event) => {
     if (mq.matches || !finePointer.matches || event.pointerType === "touch") return;
@@ -125,7 +118,7 @@ export function mountShell(signal: AbortSignal) {
   nav.addEventListener(
     "click",
     (e) => {
-      if ((e.target as Element).closest("a")) dismissPanels();
+      if (mq.matches && (e.target as Element).closest("a")) dismissPanels();
     },
     { signal },
   );
@@ -135,6 +128,7 @@ export function mountShell(signal: AbortSignal) {
     (e) => {
       if (e.key === "Escape" && active) {
         e.preventDefault();
+        suppressAuto = true;
         dismissPanels(true);
         return;
       }
@@ -181,6 +175,14 @@ export function mountShell(signal: AbortSignal) {
       document.querySelector<HTMLDetailsElement>(".toc-panel details");
     if (toc) toc.open = !mq.matches;
   };
+  const reconcile = () => {
+    hovering = header.matches(":hover") && finePointer.matches;
+    if (!mq.matches && (hovering || header.contains(document.activeElement))) open(rail, true);
+  };
+  header.addEventListener("pointermove", reconcile, { signal });
+  document.addEventListener("hypergraph:intro-end", reconcile, { signal });
+  document.addEventListener("hypergraph:mount", reconcile, { signal });
+  reconcile();
   update();
   document.addEventListener("hypergraph:mount", update, { signal });
   signal.addEventListener("abort", () => { clearLeave(); dismissPanels(); }, { once: true });

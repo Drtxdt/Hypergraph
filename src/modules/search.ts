@@ -21,11 +21,18 @@ export function mount(
     requestId = 0;
   const previous = document.createElement("button"),
     next = document.createElement("button");
-  previous.textContent = t("← Previous");
-  next.textContent = t("Next →");
+  previous.textContent = "←";
+  previous.setAttribute("aria-label", t("← Previous"));
+  previous.title = t("← Previous");
+  next.textContent = "→";
+  next.setAttribute("aria-label", t("Next →"));
+  next.title = t("Next →");
   previous.dataset.searchPagination = next.dataset.searchPagination = "";
   previous.hidden = next.hidden = true;
-  results.after(previous, next);
+  const pagination = document.createElement("div");
+  pagination.className = "search-pagination";
+  pagination.append(previous, next);
+  results.after(pagination);
   previous.addEventListener(
     "click",
     () => {
@@ -126,7 +133,7 @@ export function mount(
         a.href = url.href;
         a.textContent = entry.title;
         const pos = entry.text.toLocaleLowerCase().indexOf(term);
-        p.textContent = entry.text.slice(
+        p.textContent = entry.text.replace(/&(quot|amp|lt|gt|nbsp|#39);/g, (_, entity: string) => ({quot:'"',amp:'&',lt:'<',gt:'>',nbsp:' ', '#39':"'"}[entity] || '')).slice(
           Math.max(0, pos - 35),
           Math.max(0, pos - 35) + 130,
         );
@@ -145,6 +152,7 @@ export function mount(
     () => {
       openModal(dialog);
       input.focus();
+      if (!input.value.trim()) status.textContent = t("输入关键词 / Type to search");
     },
     { signal },
   );

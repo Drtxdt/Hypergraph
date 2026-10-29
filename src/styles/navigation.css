@@ -52,3 +52,15 @@
   .site-header nav { visibility: visible; opacity: 1; transform: none; pointer-events: auto; }
   .site-header nav > *, .site-header nav > a > span, .nav-group > summary > span { opacity: 1 !important; transform: none !important; }
 }
+
+@media(min-width:1024px){
+.site-header,.site-header.rail-open{width:240px;padding:20px 0;align-items:stretch;clip-path:inset(0 168px 0 0);transition:clip-path 200ms cubic-bezier(.2,.7,.2,1)}
+.site-header.rail-open{clip-path:inset(0);transition-duration:240ms}
+.site-header .brand{margin-left:16px;align-self:flex-start}
+.site-header nav>a,.site-header .nav-group>summary,.site-header .rail-tools>button,.site-header.rail-open nav>a,.site-header.rail-open .nav-group>summary,.site-header.rail-open .rail-tools>button{width:240px;padding-left:24px;gap:24px;flex-direction:row;justify-content:flex-start;font-size:12px}
+.site-header .nav-group>div,.site-header.rail-open .nav-group>div{position:static;width:240px}
+.site-header:not(.rail-open) .rail-tools button>span{opacity:0}
+.site-header .rail-tools button>span{transition:opacity 160ms}
+}
+
+.site-header{overflow-x:hidden;scrollbar-width:none}.site-header::-webkit-scrollbar{display:none}

@@ -60,7 +60,7 @@ summary:focus-visible {
   min-width: 40px;
   height: 42px;
   font:
-    600 30px/1 Archivo,
+    600 30px/1 system-ui,
     sans-serif;
   position: relative;
   background: var(--signal);
@@ -128,7 +128,7 @@ main {
   padding: 25px 0;
   border-bottom: 1px solid var(--line);
   font:
-    600 11px/1.5 Archivo,
+    600 11px/1.5 system-ui,
     system-ui,
     sans-serif;
   letter-spacing: 0.05em;
@@ -160,7 +160,7 @@ main {
   align-items: center;
   gap: 20px;
   font:
-    600 12px Archivo,
+    600 12px system-ui,
     system-ui,
     sans-serif;
 }
@@ -174,7 +174,7 @@ main {
 }
 .lead h1 {
   margin: 12px 0 28px;
-  font-family: Archivo, system-ui, sans-serif;
+  font-family: system-ui, system-ui, sans-serif;
   font-weight: 800;
   font-size: clamp(36px, 4.2vw, 66px);
   line-height: 1.22;
@@ -237,7 +237,7 @@ main {
   background: #171819;
   padding: 5px 10px;
   font:
-    600 10px Archivo,
+    600 10px system-ui,
     sans-serif;
   letter-spacing: 0.1em;
 }
@@ -274,7 +274,7 @@ main {
 }
 .section-heading > span {
   font:
-    600 11px Archivo,
+    600 11px system-ui,
     sans-serif;
   color: var(--muted);
 }
@@ -285,7 +285,7 @@ main {
 }
 .entry-index {
   font:
-    600 34px Archivo,
+    600 34px system-ui,
     sans-serif;
   color: var(--muted);
 }
@@ -298,7 +298,7 @@ main {
 }
 .entry-bottom {
   font:
-    600 11px Archivo,
+    600 11px system-ui,
     system-ui,
     sans-serif;
   color: var(--muted);
@@ -380,7 +380,7 @@ main {
 .entry time,
 .entry-bottom,
 .media-coordinate {
-  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-family: system-ui, sans-serif;
   font-variant-numeric: tabular-nums;
 }
 @media (hover: hover) and (pointer: fine) {
@@ -439,7 +439,7 @@ html[data-motion="off"] .home-entry .entry-media img {
 }
 .eyebrow {
   font:
-    600 12px/1.8 Archivo,
+    600 12px/1.8 system-ui,
     system-ui,
     sans-serif;
   color: var(--muted);
@@ -487,7 +487,7 @@ html[data-motion="off"] .home-entry .entry-media img {
 }
 .footer-signature {
   font:
-    600 24px Archivo,
+    600 24px system-ui,
     sans-serif;
 }
 .player {
@@ -547,7 +547,7 @@ html[data-motion="off"] .home-entry .entry-media img {
   .mobile-title {
     display: block;
     font:
-      600 16px Archivo,
+      600 16px system-ui,
       system-ui,
       sans-serif;
   }

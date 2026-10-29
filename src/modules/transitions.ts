@@ -47,7 +47,7 @@ export function mount(swup: Swup, mode: "cinematic" | "subtle" | "off", signal: 
   });
   swup.hooks.replace("animation:in:await", async visit => {
     if (owner !== visit.id || controller.signal.aborted) return;
-    mask?.remove(); mask = undefined;
+    if (mask) { const exitingMask = mask; await animate(exitingMask, [{ clipPath: "inset(0)" }, { clipPath: "inset(0 0 0 100%)" }], 180, controller.signal); exitingMask.remove(); if (mask === exitingMask) mask = undefined; }
     document.documentElement.dataset.transition = "entering";
     const title = document.querySelector(".lead-title, .article-head, .archive-head, #content h1");
     if (title) await animate(title, [{ opacity: .65, clipPath: "inset(0 0 100% 0)" }, { opacity: 1, clipPath: "inset(0)" }], mode === "subtle" ? 120 : 280, controller.signal);

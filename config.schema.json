@@ -835,16 +835,38 @@
         },
         "share_sites": {
           "type": "array",
-          "default": [],
+          "default": [
+            "x",
+            "bilibili",
+            "instagram",
+            "telegram",
+            "reddit",
+            "linkedin",
+            "facebook",
+            "email"
+          ],
           "items": {
             "enum": [
               "weibo",
               "qq",
               "x",
               "facebook",
-              "email"
+              "email",
+              "bilibili",
+              "instagram",
+              "telegram",
+              "reddit",
+              "linkedin"
             ]
           }
+        },
+        "cover_mode": {
+          "enum": [
+            "compact",
+            "feature",
+            "none"
+          ],
+          "default": "compact"
         }
       }
     },
@@ -898,7 +920,7 @@
         },
         "display": {
           "type": "string",
-          "default": "Archivo, system-ui, sans-serif"
+          "default": "system-ui, sans-serif"
         },
         "code": {
           "type": "string",
@@ -1471,6 +1493,13 @@
             "off"
           ],
           "default": "session"
+        },
+        "intro_scope": {
+          "enum": [
+            "home",
+            "all"
+          ],
+          "default": "home"
         }
       }
     },

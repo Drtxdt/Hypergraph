@@ -203,14 +203,14 @@ export async function checkBrowser(browser, sites, report, out) {
   for (const type of ["plain", "code", "math"]) {
     await page.goto(main + "2026/10/19/private-" + type + "/");
     await page.locator("[data-unlock] input").fill("wrong");
-    await page.locator("[data-unlock] button").click();
+    await page.locator("[data-unlock] button[type=submit]").click();
     await page.waitForFunction(() =>
       document
         .querySelector("[data-unlock] [role=status]")
         ?.textContent.includes("密码错误"),
     );
     await page.locator("[data-unlock] input").fill("fixture-password-7329");
-    await page.locator("[data-unlock] button").click();
+    await page.locator("[data-unlock] button[type=submit]").click();
     await page.waitForFunction(() =>
       document
         .querySelector("[data-plaintext]")
