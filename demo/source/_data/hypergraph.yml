@@ -1,0 +1,36 @@
+about:
+  - title: 关于 Hypergraph
+    description: 为持续记录而设计。纸白、炭灰与信号黄组成一个安静的阅读空间。
+  - title: 开放的结构
+    description: 调整布局与模块顺序，或通过独立扩展定义新的页面构图。
+friends:
+  - title: Hexo
+    url: https://hexo.io
+    description: 快速、简洁且高效的博客框架。
+gallery:
+  - title: 记录
+    image: /images/record.svg
+    description: 从一个值得保留的想法开始。
+  - title: 连接
+    image: /images/connect.svg
+    description: 让不同的记录彼此关联。
+essay:
+  - title: 从今天开始
+    date: '2026-10-29'
+    description: 不用等待所有事情都想明白，先记下一小段。
+equipment:
+  - title: 纸与笔
+    description: 用于草图、临时记号和离线思考。
+    status: 日常使用
+music:
+  - title: 示例提示音
+    audio: /audio/sample.wav
+    description: 由演示构建脚本生成，点击试听。
+room:
+  - title: 工作台
+    image: /images/record.svg
+    description: 放下设备，也放下一些未完成的想法。
+fcircle:
+  - title: Hexo 文档
+    url: https://hexo.io/docs/
+    description: 来自社区的知识与经验。

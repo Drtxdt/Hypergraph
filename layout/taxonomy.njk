@@ -1,0 +1,1 @@
+<section class="article-head"><p class="eyebrow">INDEX</p><h1>{{ page.title }}</h1></section><div class="taxonomy">{% for item in site[page.taxonomy].toArray() %}<a href="{{ url_for(item.path) }}">{{ item.name }} <small>{{ item.length }}</small></a>{% endfor %}</div>

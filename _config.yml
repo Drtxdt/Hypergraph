@@ -1,0 +1,12 @@
+preset: endfield
+color_mode: auto
+menu:
+  - label: home
+    url: /
+    icon: home
+  - label: archives
+    url: /archives/
+    icon: archive
+music:
+  enable: false
+  src: /audio/bgm.mp3

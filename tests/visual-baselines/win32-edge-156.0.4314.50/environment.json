@@ -1,0 +1,26 @@
+{
+  "browser": "156.0.4314.50",
+  "environment": {
+    "node": "v24.18.0",
+    "platform": "win32",
+    "arch": "x64",
+    "os": "10.0.26200",
+    "font": "Archivo 600 self-hosted; system sans-serif Chinese",
+    "gitCommit": "02913f78f850897636b389cd399a3ecaa70aea57",
+    "dirty": true
+  },
+  "fonts": [
+    {
+      "familyName": "Microsoft YaHei UI",
+      "postScriptName": "MicrosoftYaHeiUI-Bold",
+      "isCustomFont": false,
+      "glyphCount": 16
+    }
+  ],
+  "assets": {
+    "source/assets/main.js": "34131c714b940d2cdea70ed8fc76df2f7e26a7e0cdfc92d13fb0c518281a4cd1",
+    "source/assets/main.css": "7bd70ee4fdda0cbd86631d629f0a57e63c1d2c10346186ea8b3c021df8269ad0",
+    "source/assets/archivo-latin-600-normal.woff2": "d9e8c29fdd348edde2a4f9aae438e569dd165bbbdebda78495824a2d9aaa67e8"
+  },
+  "review": "Initial baseline: design direction approved by user; resulting representative screenshots inspected by assistant. Not an automatic update."
+}

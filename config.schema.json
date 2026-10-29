@@ -1,0 +1,1626 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "color_mode": {
+      "enum": [
+        "auto",
+        "light",
+        "dark"
+      ],
+      "default": "auto"
+    },
+    "menu": {
+      "type": "array",
+      "default": [
+        {
+          "label": "home",
+          "url": "/",
+          "icon": "home"
+        },
+        {
+          "label": "archives",
+          "url": "/archives/",
+          "icon": "archive"
+        }
+      ],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label"
+        ],
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string",
+            "enum": [
+              "home",
+              "archive",
+              "about",
+              "image",
+              "music",
+              "link",
+              "grid",
+              "user",
+              "users"
+            ]
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "url"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              }
+            },
+            "minItems": 1
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "url"
+            ],
+            "not": {
+              "required": [
+                "children"
+              ]
+            }
+          },
+          {
+            "required": [
+              "children"
+            ],
+            "not": {
+              "required": [
+                "url"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "home": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "title": {
+          "type": "string",
+          "default": ""
+        },
+        "description": {
+          "type": "string",
+          "default": ""
+        },
+        "featured": {
+          "type": "boolean",
+          "default": true
+        },
+        "sections": {
+          "type": "array",
+          "uniqueItems": true,
+          "default": [
+            "featured",
+            "posts"
+          ],
+          "items": {
+            "enum": [
+              "intro",
+              "featured",
+              "posts"
+            ]
+          }
+        },
+        "excerpt_length": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000,
+          "default": 160
+        },
+        "excerpt": {
+          "enum": [
+            "auto",
+            "description",
+            "off"
+          ],
+          "default": "auto"
+        }
+      }
+    },
+    "navigation": {
+      "type": "boolean",
+      "default": true
+    },
+    "search": {
+      "type": "boolean",
+      "default": true
+    },
+    "toc": {
+      "type": "boolean",
+      "default": true
+    },
+    "reading_mode": {
+      "type": "boolean",
+      "default": true
+    },
+    "math": {
+      "enum": [
+        "katex",
+        "mathjax",
+        "off"
+      ],
+      "default": "katex"
+    },
+    "music": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "enable": {
+          "type": "boolean",
+          "default": false
+        },
+        "src": {
+          "type": "string",
+          "default": ""
+        },
+        "title": {
+          "type": "string",
+          "default": "Background music"
+        },
+        "playlist": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "default": {},
+            "properties": {
+              "title": {
+                "type": "string",
+                "default": ""
+              },
+              "src": {
+                "type": "string",
+                "default": ""
+              }
+            }
+          }
+        },
+        "volume": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.7
+        },
+        "endpoint": {
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+    "comments": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "enable": {
+          "type": "boolean",
+          "default": false
+        },
+        "provider": {
+          "enum": [
+            "waline",
+            "artalk",
+            "twikoo",
+            "giscus",
+            "disqus",
+            "disqusjs",
+            "livere",
+            "valine",
+            "utterances",
+            "facebook",
+            "remark42",
+            "gitalk"
+          ],
+          "default": "waline"
+        },
+        "server": {
+          "type": "string",
+          "default": ""
+        },
+        "site": {
+          "type": "string",
+          "default": ""
+        },
+        "env_id": {
+          "type": "string",
+          "default": ""
+        },
+        "repo": {
+          "type": "string",
+          "default": ""
+        },
+        "repo_id": {
+          "type": "string",
+          "default": ""
+        },
+        "category_id": {
+          "type": "string",
+          "default": ""
+        },
+        "count": {
+          "type": "boolean",
+          "default": false
+        },
+        "recent": {
+          "type": "boolean",
+          "default": false
+        },
+        "barrage": {
+          "type": "boolean",
+          "default": false
+        },
+        "shortname": {
+          "type": "string",
+          "default": ""
+        },
+        "api_key": {
+          "type": "string",
+          "default": ""
+        },
+        "uid": {
+          "type": "string",
+          "default": ""
+        },
+        "app_id": {
+          "type": "string",
+          "default": ""
+        },
+        "app_key": {
+          "type": "string",
+          "default": ""
+        },
+        "client_id": {
+          "type": "string",
+          "default": ""
+        },
+        "client_secret": {
+          "type": "string",
+          "default": ""
+        },
+        "owner": {
+          "type": "string",
+          "default": ""
+        },
+        "proxy": {
+          "type": "string",
+          "default": ""
+        },
+        "admin": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          }
+        },
+        "lazy": {
+          "type": "boolean",
+          "default": false
+        },
+        "options": {
+          "type": "object",
+          "default": {}
+        },
+        "secondary": {
+          "type": "object",
+          "additionalProperties": false,
+          "default": {},
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "default": false
+            },
+            "provider": {
+              "enum": [
+                "waline",
+                "artalk",
+                "twikoo",
+                "giscus",
+                "disqus",
+                "disqusjs",
+                "livere",
+                "valine",
+                "utterances",
+                "facebook",
+                "remark42",
+                "gitalk"
+              ],
+              "default": "waline"
+            },
+            "server": {
+              "type": "string",
+              "default": ""
+            },
+            "site": {
+              "type": "string",
+              "default": ""
+            },
+            "env_id": {
+              "type": "string",
+              "default": ""
+            },
+            "repo": {
+              "type": "string",
+              "default": ""
+            },
+            "repo_id": {
+              "type": "string",
+              "default": ""
+            },
+            "category_id": {
+              "type": "string",
+              "default": ""
+            },
+            "shortname": {
+              "type": "string",
+              "default": ""
+            },
+            "api_key": {
+              "type": "string",
+              "default": ""
+            },
+            "uid": {
+              "type": "string",
+              "default": ""
+            },
+            "app_id": {
+              "type": "string",
+              "default": ""
+            },
+            "app_key": {
+              "type": "string",
+              "default": ""
+            },
+            "client_id": {
+              "type": "string",
+              "default": ""
+            },
+            "client_secret": {
+              "type": "string",
+              "default": ""
+            },
+            "owner": {
+              "type": "string",
+              "default": ""
+            },
+            "proxy": {
+              "type": "string",
+              "default": ""
+            },
+            "admin": {
+              "type": "array",
+              "default": [],
+              "items": {
+                "type": "string"
+              }
+            },
+            "lazy": {
+              "type": "boolean",
+              "default": false
+            },
+            "options": {
+              "type": "object",
+              "default": {}
+            }
+          }
+        }
+      }
+    },
+    "colors": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "accent": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$",
+          "default": "#FFFA00"
+        },
+        "light": {
+          "type": "object",
+          "additionalProperties": false,
+          "default": {},
+          "properties": {
+            "paper": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}$"
+            },
+            "surface": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}$"
+            },
+            "ink": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}$"
+            },
+            "muted": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}$"
+            },
+            "line": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}$"
+            }
+          }
+        },
+        "dark": {
+          "type": "object",
+          "additionalProperties": false,
+          "default": {},
+          "properties": {
+            "paper": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}$"
+            },
+            "surface": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}$"
+            },
+            "ink": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}$"
+            },
+            "muted": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}$"
+            },
+            "line": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}$"
+            }
+          }
+        }
+      }
+    },
+    "extensions": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "package"
+        ],
+        "properties": {
+          "package": {
+            "type": "string"
+          },
+          "enable": {
+            "type": "boolean",
+            "default": true
+          },
+          "config": {
+            "type": "object",
+            "default": {}
+          }
+        }
+      }
+    },
+    "pages": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "about": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "default": false
+            },
+            "path": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "endpoint": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        },
+        "friends": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "default": false
+            },
+            "path": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "endpoint": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        },
+        "gallery": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "default": false
+            },
+            "path": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "endpoint": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        },
+        "essay": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "default": false
+            },
+            "path": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "endpoint": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        },
+        "equipment": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "default": false
+            },
+            "path": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "endpoint": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        },
+        "music": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "default": false
+            },
+            "path": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "endpoint": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        },
+        "room": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "default": false
+            },
+            "path": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "endpoint": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        },
+        "fcircle": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "default": false
+            },
+            "path": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "endpoint": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        }
+      }
+    },
+    "feeds": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "rss": {
+          "type": "boolean",
+          "default": true
+        },
+        "sitemap": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "lightbox": {
+      "type": "boolean",
+      "default": true
+    },
+    "pwa": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "enable": {
+          "type": "boolean",
+          "default": false
+        },
+        "icons": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "post": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "share": {
+          "type": "boolean",
+          "default": true
+        },
+        "copyright": {
+          "type": "boolean",
+          "default": true
+        },
+        "license": {
+          "type": "string",
+          "default": "All rights reserved"
+        },
+        "pagination": {
+          "type": "boolean",
+          "default": true
+        },
+        "summary": {
+          "type": "boolean",
+          "default": true
+        },
+        "outdated_days": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "edit_url": {
+          "type": "string",
+          "default": ""
+        },
+        "reward": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "image"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "image": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "meta": {
+          "type": "array",
+          "uniqueItems": true,
+          "default": [
+            "date",
+            "reading"
+          ],
+          "items": {
+            "enum": [
+              "date",
+              "updated",
+              "reading",
+              "words"
+            ]
+          }
+        },
+        "related": {
+          "type": "boolean",
+          "default": true
+        },
+        "related_limit": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 30,
+          "default": 3
+        },
+        "share_sites": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "enum": [
+              "weibo",
+              "qq",
+              "x",
+              "facebook",
+              "email"
+            ]
+          }
+        }
+      }
+    },
+    "sidebar": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "enable": {
+          "type": "boolean",
+          "default": false
+        },
+        "order": {
+          "type": "array",
+          "default": [
+            "profile",
+            "announcement",
+            "latest",
+            "categories",
+            "tags",
+            "stats"
+          ],
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "profile",
+              "announcement",
+              "latest",
+              "categories",
+              "tags",
+              "stats",
+              "comments",
+              "archives"
+            ]
+          }
+        },
+        "announcement": {
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+    "fonts": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "body": {
+          "type": "string",
+          "default": "system-ui, \"Microsoft YaHei\", sans-serif"
+        },
+        "display": {
+          "type": "string",
+          "default": "Archivo, system-ui, sans-serif"
+        },
+        "code": {
+          "type": "string",
+          "default": "ui-monospace, Consolas, monospace"
+        },
+        "body_size": {
+          "type": "number",
+          "default": 17,
+          "minimum": 12,
+          "maximum": 24
+        },
+        "code_size": {
+          "type": "number",
+          "default": 14,
+          "minimum": 10,
+          "maximum": 22
+        },
+        "line_height": {
+          "type": "number",
+          "default": 1.95,
+          "minimum": 1.3,
+          "maximum": 2.5
+        }
+      }
+    },
+    "code": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "copy": {
+          "type": "boolean",
+          "default": true
+        },
+        "wrap": {
+          "type": "boolean",
+          "default": false
+        },
+        "fold": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_height": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "language": {
+          "type": "boolean",
+          "default": true
+        },
+        "theme": {
+          "enum": [
+            "auto",
+            "light",
+            "dark"
+          ],
+          "default": "auto"
+        }
+      }
+    },
+    "social": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "url"
+        ],
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "footer": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "text": {
+          "type": "string",
+          "default": ""
+        },
+        "since": {
+          "type": "integer",
+          "minimum": 1970,
+          "maximum": 2200,
+          "default": 2026
+        },
+        "start_date": {
+          "type": "string",
+          "default": ""
+        },
+        "links": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "default": {},
+            "properties": {
+              "title": {
+                "type": "string",
+                "default": ""
+              },
+              "url": {
+                "type": "string",
+                "default": ""
+              },
+              "image": {
+                "type": "string",
+                "default": ""
+              }
+            }
+          }
+        }
+      }
+    },
+    "inject": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "head": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          }
+        },
+        "body": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "background": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "image": {
+          "type": "string",
+          "default": ""
+        },
+        "opacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.12
+        }
+      }
+    },
+    "verification": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "content"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "tools": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "back_to_top": {
+          "type": "boolean",
+          "default": true
+        },
+        "progress": {
+          "type": "boolean",
+          "default": false
+        },
+        "keyboard": {
+          "type": "boolean",
+          "default": true
+        },
+        "copy_copyright": {
+          "type": "boolean",
+          "default": false
+        },
+        "title_away": {
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+    "effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "click": {
+          "type": "string",
+          "default": "",
+          "enum": [
+            "",
+            "heart",
+            "text",
+            "fireworks"
+          ]
+        },
+        "typewriter": {
+          "type": "boolean",
+          "default": false
+        },
+        "background": {
+          "enum": [
+            "",
+            "ribbon",
+            "network",
+            "stars",
+            "bubbles"
+          ],
+          "default": ""
+        },
+        "typing": {
+          "type": "boolean",
+          "default": false
+        },
+        "words": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          }
+        },
+        "mobile": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "ai_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "enable": {
+          "type": "boolean",
+          "default": false
+        },
+        "endpoint": {
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+    "external_search": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "enable": {
+          "type": "boolean",
+          "default": false
+        },
+        "app_id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9]*$",
+          "default": ""
+        },
+        "search_key": {
+          "type": "string",
+          "default": ""
+        },
+        "index": {
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+    "analytics": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "provider",
+          "id"
+        ],
+        "properties": {
+          "provider": {
+            "enum": [
+              "google",
+              "baidu",
+              "clarity",
+              "umami",
+              "cloudflare",
+              "gtm",
+              "cnzz",
+              "51la",
+              "custom"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "url": {
+            "type": "string",
+            "default": ""
+          },
+          "options": {
+            "type": "object",
+            "default": {}
+          }
+        }
+      }
+    },
+    "chat": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "enable": {
+          "type": "boolean",
+          "default": false
+        },
+        "provider": {
+          "enum": [
+            "crisp",
+            "tidio",
+            "chatra",
+            "knocket",
+            "daovoice",
+            "custom"
+          ],
+          "default": "crisp"
+        },
+        "id": {
+          "type": "string",
+          "default": ""
+        },
+        "url": {
+          "type": "string",
+          "default": ""
+        },
+        "button": {
+          "type": "boolean",
+          "default": false
+        },
+        "hide_on_scroll": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "ads": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "slot",
+          "html"
+        ],
+        "properties": {
+          "slot": {
+            "enum": [
+              "home",
+              "post",
+              "footer",
+              "sidebar"
+            ]
+          },
+          "html": {
+            "type": "string"
+          },
+          "enable": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      }
+    },
+    "preset": {
+      "type": "string",
+      "default": "endfield",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "appearance": {
+      "type": "object",
+      "default": {},
+      "additionalProperties": false,
+      "properties": {
+        "favicon": {
+          "type": "string",
+          "default": "/hypergraph.svg"
+        },
+        "avatar": {
+          "type": "string",
+          "default": ""
+        },
+        "author_status": {
+          "type": "string",
+          "default": ""
+        },
+        "hero": {
+          "type": "object",
+          "default": {},
+          "additionalProperties": false,
+          "properties": {
+            "home": {
+              "type": "string",
+              "default": ""
+            },
+            "archive": {
+              "type": "string",
+              "default": ""
+            },
+            "category": {
+              "type": "string",
+              "default": ""
+            },
+            "tag": {
+              "type": "string",
+              "default": ""
+            },
+            "page": {
+              "type": "string",
+              "default": ""
+            },
+            "height": {
+              "type": "number",
+              "default": 260,
+              "minimum": 80,
+              "maximum": 700
+            }
+          }
+        },
+        "fallback_image": {
+          "type": "string",
+          "default": ""
+        },
+        "radius": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 32
+        },
+        "justify": {
+          "type": "boolean",
+          "default": false
+        },
+        "table_stripes": {
+          "type": "boolean",
+          "default": true
+        },
+        "heading_divider": {
+          "type": "boolean",
+          "default": true
+        },
+        "captions": {
+          "type": "boolean",
+          "default": false
+        },
+        "grayscale": {
+          "type": "boolean",
+          "default": false
+        },
+        "mourn_days": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string",
+            "pattern": "^\\d{2}-\\d{2}$"
+          }
+        },
+        "cover_tint": {
+          "type": "boolean",
+          "default": false
+        },
+        "image_suffix": {
+          "type": "string",
+          "default": ""
+        },
+        "footer_image": {
+          "type": "string",
+          "default": ""
+        },
+        "divider_icon": {
+          "type": "string",
+          "default": ""
+        },
+        "category_layout": {
+          "enum": [
+            "archive",
+            "cards"
+          ],
+          "default": "archive"
+        },
+        "tag_layout": {
+          "enum": [
+            "archive",
+            "cards"
+          ],
+          "default": "archive"
+        },
+        "note_style": {
+          "enum": [
+            "flat",
+            "simple",
+            "off"
+          ],
+          "default": "flat"
+        },
+        "error_title": {
+          "type": "string",
+          "default": "404"
+        },
+        "error_message": {
+          "type": "string",
+          "default": ""
+        },
+        "error_image": {
+          "type": "string",
+          "default": ""
+        },
+        "show_cover": {
+          "type": "boolean",
+          "default": true
+        },
+        "taxonomy_banners": {
+          "type": "object",
+          "default": {},
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "motion": {
+          "type": "string",
+          "enum": [
+            "cinematic",
+            "subtle",
+            "off"
+          ],
+          "default": "cinematic"
+        }
+      }
+    },
+    "interaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "translate": {
+          "type": "boolean",
+          "default": false
+        },
+        "spacing": {
+          "type": "boolean",
+          "default": false
+        },
+        "context_menu": {
+          "type": "boolean",
+          "default": false
+        },
+        "console": {
+          "type": "boolean",
+          "default": false
+        },
+        "shortcuts_help": {
+          "type": "boolean",
+          "default": false
+        },
+        "greeting": {
+          "type": "string",
+          "default": ""
+        },
+        "privacy_url": {
+          "type": "string",
+          "default": ""
+        },
+        "privacy_version": {
+          "type": "string",
+          "default": "1"
+        },
+        "prefetch": {
+          "type": "boolean",
+          "default": false
+        },
+        "anchor_update": {
+          "type": "boolean",
+          "default": false
+        },
+        "loading_bar": {
+          "type": "boolean",
+          "default": false
+        },
+        "random_post": {
+          "type": "boolean",
+          "default": false
+        },
+        "toolbar": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "enum": [
+              "mode",
+              "reading",
+              "toc",
+              "comments",
+              "sidebar",
+              "top",
+              "search"
+            ]
+          }
+        },
+        "console_message": {
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "asset_base": {
+          "type": "string",
+          "default": ""
+        },
+        "lazy_images": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "adsense": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "enable": {
+          "type": "boolean",
+          "default": false
+        },
+        "client": {
+          "type": "string",
+          "default": ""
+        },
+        "slot": {
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+    "counters": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "enable": {
+          "type": "boolean",
+          "default": false
+        },
+        "endpoint": {
+          "type": "string",
+          "default": ""
+        },
+        "busuanzi": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "seo": {
+      "type": "object",
+      "default": {},
+      "additionalProperties": false,
+      "properties": {
+        "open_graph": {
+          "type": "boolean",
+          "default": true
+        },
+        "structured_data": {
+          "type": "boolean",
+          "default": true
+        },
+        "twitter": {
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+    "navigation_exclude": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "string"
+      }
+    },
+    "site_logo": {
+      "type": "string",
+      "default": ""
+    }
+  }
+}

@@ -1,0 +1,231 @@
+import fs from "node:fs/promises";
+const matrix = JSON.parse(
+  await fs.readFile("docs/feature-matrix.json", "utf8"),
+);
+const mapping = {
+  menu: [
+    "menu",
+    "主导航与移动折叠菜单",
+    "全站 HTML；切换逻辑在基础模块",
+    "tools/browser-smoke.mjs",
+    "verified",
+  ],
+  readmode: [
+    "reading_mode",
+    "文章简化阅读模式",
+    "仅正文页面加载 reading 模块",
+    "待补专用交互断言",
+    "implemented",
+  ],
+  local_search: [
+    "search",
+    "正文、标题和标签本地搜索",
+    "启用时加载轻量搜索模块，输入后请求索引",
+    "tools/browser-behavior.mjs",
+    "verified",
+  ],
+  darkmode: [
+    "color_mode",
+    "系统自动和访客手动明暗模式",
+    "首屏内联偏好脚本与同源基础样式",
+    "tools/browser-smoke.mjs",
+    "verified",
+  ],
+  display_mode: [
+    "color_mode",
+    "系统自动和访客手动明暗模式",
+    "同上",
+    "tools/browser-smoke.mjs",
+    "verified",
+  ],
+  pjax: [
+    "navigation",
+    "Swup 导航、失败保留、清理与连续播放",
+    "仅 navigation=true 导入 Swup",
+    "tools/browser-behavior.mjs",
+    "verified",
+  ],
+  katex: [
+    "math: katex",
+    "构建期公式，单篇可覆盖引擎",
+    "仅含 KaTeX 的页面加载本地样式",
+    "tests/math.test.cjs",
+    "verified",
+  ],
+  mathjax: [
+    "math: mathjax",
+    "构建期 SVG 公式，无客户端 MathJax 请求",
+    "构建期按需导入",
+    "tests/math.test.cjs",
+    "verified",
+  ],
+  nav_music: [
+    "music",
+    "全局手动启动音乐，站内导航不中断",
+    "启用时音频节点在替换容器外",
+    "tools/browser-behavior.mjs",
+    "verified",
+  ],
+  pwa: [
+    "pwa",
+    "安装清单与离线提示；离线文章缓存仍待扩展",
+    "只在启用时注册 Service Worker",
+    "待离线浏览器测试",
+    "partial",
+  ],
+  waline: [
+    "comments.provider: waline",
+    "匿名评论与回复组件",
+    "仅未加密且启用评论的页面加载",
+    "tools/waline-test.mjs",
+    "verified",
+  ],
+  giscus: [
+    "comments.provider: giscus",
+    "GitHub Discussions 评论",
+    "启用对应服务后加载官方脚本",
+    "待配置真实测试仓库",
+    "implemented",
+  ],
+  twikoo: [
+    "comments.provider: twikoo",
+    "独立 iframe 生命周期，加载本地打包客户端",
+    "仅 Twikoo 页面加载",
+    "待适配器回归",
+    "implemented",
+  ],
+  artalk: [
+    "comments.provider: artalk",
+    "Artalk 评论与实例销毁",
+    "仅 Artalk 页面加载",
+    "待适配器回归",
+    "implemented",
+  ],
+  mermaid: [
+    "mermaid 标签",
+    "流程图等 Mermaid 图形",
+    "页面包含标签时动态导入",
+    "待图形浏览器断言",
+    "implemented",
+  ],
+  chartjs: [
+    "chartjs 标签",
+    "JSON 配置图表",
+    "有标签时导入 Chart.js，切页销毁",
+    "待图表浏览器断言",
+    "implemented",
+  ],
+  abcjs: [
+    "score 标签",
+    "ABC 乐谱显示",
+    "有标签时导入 ABCJS",
+    "待乐谱浏览器断言",
+    "implemented",
+  ],
+  toc: [
+    "toc",
+    "构建期目录、当前章节与加密解锁后目录",
+    "仅正文页 observer，切页 disconnect",
+    "待锚点专项测试",
+    "implemented",
+  ],
+  post_copyright: [
+    "post.copyright / post.license",
+    "版权与规范链接",
+    "构建期 HTML，无独立请求",
+    "待模板回归",
+    "implemented",
+  ],
+  reward: [
+    "post.reward",
+    "可展开支持作者收款图片",
+    "展开组件 HTML，图片懒加载",
+    "待模板回归",
+    "implemented",
+  ],
+  post_edit: [
+    "post.edit_url",
+    "编辑源文章链接",
+    "构建期 HTML",
+    "待模板回归",
+    "implemented",
+  ],
+  noticeOutdate: [
+    "post.outdated_days",
+    "过期内容提示",
+    "构建期计算日期",
+    "待模板回归",
+    "implemented",
+  ],
+  related_post: [
+    "同标签相关文章",
+    "推荐三篇同标签文章",
+    "构建期 HTML，无索引请求",
+    "待排序回归",
+    "implemented",
+  ],
+  post_pagination: [
+    "post.pagination",
+    "上一篇和下一篇",
+    "构建期 HTML",
+    "待模板回归",
+    "implemented",
+  ],
+  font: [
+    "fonts",
+    "正文、展示和代码字体独立配置",
+    "系统正文；本地展示字体",
+    "待自定义覆盖测试",
+    "implemented",
+  ],
+  inject: [
+    "inject",
+    "可信站点维护者自定义头部和尾部 HTML",
+    "只输出配置的注入内容",
+    "待禁用资源断言",
+    "implemented",
+  ],
+  aside: [
+    "sidebar",
+    "可排序的作者、公告、最新文章、分类、标签、统计",
+    "构建期 HTML",
+    "待组件排序断言",
+    "partial",
+  ],
+  footer: [
+    "footer / social",
+    "站点信息、社交链接和底部扩展插槽",
+    "构建期 HTML",
+    "待模板回归",
+    "partial",
+  ],
+  medium_zoom: [
+    "lightbox",
+    "键盘可用的大图对话框",
+    "有图片且启用时导入",
+    "待灯箱回归",
+    "implemented",
+  ],
+  fancybox: [
+    "lightbox",
+    "图片放大已实现，视频分组灯箱待补",
+    "有图片且启用时导入",
+    "待图库分组测试",
+    "partial",
+  ],
+};
+for (const row of matrix) {
+  const m = mapping[row.key];
+  if (!m) continue;
+  [
+    row.configuration,
+    row.equivalence,
+    row.loading,
+    row.acceptance,
+    row.status,
+  ] = m;
+}
+await fs.writeFile("docs/feature-matrix.json", JSON.stringify(matrix, null, 2));
+const counts = {};
+for (const row of matrix) counts[row.status] = (counts[row.status] || 0) + 1;
+console.log(counts);

@@ -1,0 +1,42 @@
+# Installed dependencies and local/private workspaces
+node_modules/
+.local/
+.deploy_git/
+
+# Reproducible demo output and Hexo cache
+/demo/public/
+/demo/db.json
+/db.json
+
+# Release artifacts and machine-generated verification reports
+/dist/
+/docs/verification/
+
+# Fonts copied from npm packages by tools/build-assets.mjs
+/src/fonts/
+
+# Test/build caches and logs
+coverage/
+playwright-report/
+test-results/
+.cache/
+*.tsbuildinfo
+*.log
+
+# Local credentials and databases (keep distributable templates)
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.sqlite
+*.sqlite3
+*.sqlite-*
+*.sqlite3-*
+
+# OS metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Deliberately tracked: source/assets, source/licenses, vendor,
+# package lockfiles, public fixtures and reviewed visual baselines.

@@ -1,0 +1,29 @@
+title: Hypergraph
+subtitle: WORDS / IDEAS / CONNECTIONS
+author: Hypergraph
+description: 记录当下，连接未知。
+language: zh-CN
+timezone: Asia/Shanghai
+url: https://example.com
+root: /
+permalink: ':year/:month/:day/:title/'
+theme: hypergraph
+index_generator:
+  per_page: 10
+  order_by: '-date'
+archive_generator:
+  per_page: 20
+tag_generator:
+  per_page: 20
+category_generator:
+  per_page: 20
+highlight:
+  enable: true
+  line_number: true
+prismjs:
+  enable: false
+markdown:
+  render:
+    html: true
+    breaks: false
+    linkify: true

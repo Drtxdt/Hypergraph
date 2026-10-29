@@ -1,0 +1,17 @@
+import {chromium} from 'playwright';
+import assert from 'node:assert/strict';
+const browser=await chromium.launch({channel:'msedge',headless:true});
+const page=await browser.newPage({viewport:{width:390,height:844}});
+const errors=[];page.on('pageerror',e=>errors.push(e.message));
+await page.goto('http://127.0.0.1:4182/');
+await page.locator('.feature h2 a').first().click();
+await page.waitForSelector('.prose');
+await page.goto('http://127.0.0.1:4182/2025/03/06/2025HNU数据结构CG题库/');
+assert.ok((await page.locator('.prose').textContent()).length>90000);
+await page.locator('.copy-code').first().waitFor();
+assert.ok(await page.locator('.toc a').count()>0);
+assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+assert.deepEqual(errors,[]);
+await page.screenshot({path:'.local/screenshots/migrated-blog-mobile.png'});
+await browser.close();
+console.log('Applied blog: navigation, actual long article, code controls, TOC and mobile layout passed.');

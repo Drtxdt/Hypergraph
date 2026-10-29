@@ -1,0 +1,1 @@
+{"name":"hypergraph-waline-service","private":true,"scripts":{"start":"node index.cjs"},"dependencies":{"@waline/vercel":"1.43.4"},"engines":{"node":"24.x"}}

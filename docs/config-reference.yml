@@ -1,0 +1,235 @@
+# Generated from config.schema.json
+preset: endfield
+color_mode: auto
+menu:
+  - label: home
+    url: /
+    icon: home
+  - label: archives
+    url: /archives/
+    icon: archive
+music:
+  enable: false
+  src: /audio/bgm.mp3
+  title: Background music
+  playlist: []
+  volume: 0.7
+  endpoint: ''
+home:
+  title: ''
+  description: ''
+  featured: true
+  sections:
+    - featured
+    - posts
+  excerpt_length: 160
+  excerpt: auto
+navigation: true
+search: true
+toc: true
+reading_mode: true
+math: katex
+comments:
+  enable: false
+  provider: waline
+  server: ''
+  site: ''
+  env_id: ''
+  repo: ''
+  repo_id: ''
+  category_id: ''
+  count: false
+  recent: false
+  barrage: false
+  shortname: ''
+  api_key: ''
+  uid: ''
+  app_id: ''
+  app_key: ''
+  client_id: ''
+  client_secret: ''
+  owner: ''
+  proxy: ''
+  admin: []
+  lazy: false
+  options: {}
+  secondary:
+    enable: false
+    provider: waline
+    server: ''
+    site: ''
+    env_id: ''
+    repo: ''
+    repo_id: ''
+    category_id: ''
+    shortname: ''
+    api_key: ''
+    uid: ''
+    app_id: ''
+    app_key: ''
+    client_id: ''
+    client_secret: ''
+    owner: ''
+    proxy: ''
+    admin: []
+    lazy: false
+    options: {}
+colors:
+  accent: '#FFFA00'
+  light: {}
+  dark: {}
+extensions: []
+pages: {}
+feeds:
+  rss: true
+  sitemap: true
+lightbox: true
+pwa:
+  enable: false
+  icons: []
+post:
+  share: true
+  copyright: true
+  license: All rights reserved
+  pagination: true
+  summary: true
+  outdated_days: 0
+  edit_url: ''
+  reward: []
+  meta:
+    - date
+    - reading
+  related: true
+  related_limit: 3
+  share_sites: []
+sidebar:
+  enable: false
+  order:
+    - profile
+    - announcement
+    - latest
+    - categories
+    - tags
+    - stats
+  announcement: ''
+fonts:
+  body: system-ui, "Microsoft YaHei", sans-serif
+  display: Archivo, system-ui, sans-serif
+  code: ui-monospace, Consolas, monospace
+  body_size: 17
+  code_size: 14
+  line_height: 1.95
+code:
+  copy: true
+  wrap: false
+  fold: false
+  max_height: 0
+  language: true
+  theme: auto
+social: []
+footer:
+  text: ''
+  since: 2026
+  start_date: ''
+  links: []
+inject:
+  head: []
+  body: []
+background:
+  image: ''
+  opacity: 0.12
+verification: []
+tools:
+  back_to_top: true
+  progress: false
+  keyboard: true
+  copy_copyright: false
+  title_away: ''
+effects:
+  click: ''
+  typewriter: false
+  background: ''
+  typing: false
+  words: []
+  mobile: false
+ai_summary:
+  enable: false
+  endpoint: ''
+external_search:
+  enable: false
+  app_id: ''
+  search_key: ''
+  index: ''
+analytics: []
+chat:
+  enable: false
+  provider: crisp
+  id: ''
+  url: ''
+  button: false
+  hide_on_scroll: false
+ads: []
+appearance:
+  favicon: /hypergraph.svg
+  avatar: ''
+  author_status: ''
+  hero:
+    home: ''
+    archive: ''
+    category: ''
+    tag: ''
+    page: ''
+    height: 260
+  fallback_image: ''
+  radius: 0
+  justify: false
+  table_stripes: true
+  heading_divider: true
+  captions: false
+  grayscale: false
+  mourn_days: []
+  cover_tint: false
+  image_suffix: ''
+  footer_image: ''
+  divider_icon: ''
+  category_layout: archive
+  tag_layout: archive
+  note_style: flat
+  error_title: '404'
+  error_message: ''
+  error_image: ''
+  show_cover: true
+  taxonomy_banners: {}
+  motion: cinematic
+interaction:
+  translate: false
+  spacing: false
+  context_menu: false
+  console: false
+  shortcuts_help: false
+  greeting: ''
+  privacy_url: ''
+  privacy_version: '1'
+  prefetch: false
+  anchor_update: false
+  loading_bar: false
+  random_post: false
+  toolbar: []
+  console_message: ''
+resources:
+  asset_base: ''
+  lazy_images: true
+adsense:
+  enable: false
+  client: ''
+  slot: ''
+counters:
+  enable: false
+  endpoint: ''
+  busuanzi: false
+seo:
+  open_graph: true
+  structured_data: true
+  twitter: ''
+navigation_exclude: []
+site_logo: ''

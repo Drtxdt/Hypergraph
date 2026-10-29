@@ -1,0 +1,65 @@
+preset: endfield
+color_mode: auto
+menu:
+  - label: home
+    url: /
+    icon: home
+  - label: archives
+    url: /archives/
+    icon: archive
+  - label: 空间
+    icon: grid
+    children:
+      - label: 关于
+        url: /about/
+      - label: 影像
+        url: /gallery/
+      - label: 音乐
+        url: /music/
+      - label: 友链
+        url: /friends/
+home:
+  title: 记录当下，连接未知。
+  description: 技术、生活，以及值得留下的思考。
+pages:
+  about:
+    enable: true
+    title: 关于
+  friends:
+    enable: true
+    title: 同行者
+  gallery:
+    enable: true
+    title: 影像
+  essay:
+    enable: true
+    title: 短动态
+  equipment:
+    enable: true
+    title: 装备
+  music:
+    enable: true
+    title: 音乐
+  room:
+    enable: true
+    title: 工作空间
+  fcircle:
+    enable: true
+    title: 朋友的记录
+music:
+  enable: true
+  src: /audio/sample.wav
+  title: 原创示例提示音
+sidebar:
+  enable: false
+  order:
+    - profile
+    - latest
+    - categories
+    - tags
+    - archives
+appearance:
+  avatar: /hypergraph.svg
+  motion: cinematic
+comments:
+  enable: false

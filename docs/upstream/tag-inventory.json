@@ -1,0 +1,189 @@
+[
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/Introduction-card.js",
+    "file": "Introduction-card.js",
+    "tags": [
+      "intCard"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/bilibili.js",
+    "file": "bilibili.js",
+    "tags": [
+      "bilibili"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/btns.js",
+    "file": "btns.js",
+    "tags": [
+      "btns",
+      "cell"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/button.js",
+    "file": "button.js",
+    "tags": [
+      "btn"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/checkbox.js",
+    "file": "checkbox.js",
+    "tags": [
+      "checkbox",
+      "radio"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/dogeplayer.js",
+    "file": "dogeplayer.js",
+    "tags": [
+      "dogeplayer"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/flink.js",
+    "file": "flink.js",
+    "tags": [
+      "flink"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/folding.js",
+    "file": "folding.js",
+    "tags": [
+      "folding"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/gallery.js",
+    "file": "gallery.js",
+    "tags": [
+      "gallery",
+      "galleryGroup"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/hide.js",
+    "file": "hide.js",
+    "tags": [
+      "hideInline",
+      "hideBlock",
+      "hideToggle"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/iconfont.js",
+    "file": "iconfont.js",
+    "tags": [
+      "icon"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/image.js",
+    "file": "image.js",
+    "tags": [
+      "image",
+      "inlineimage"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/inline-labels.js",
+    "file": "inline-labels.js",
+    "tags": [
+      "u",
+      "emp",
+      "wavy",
+      "del",
+      "kbd",
+      "psw"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/inlineImg.js",
+    "file": "inlineImg.js",
+    "tags": [
+      "inlineImg"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/label.js",
+    "file": "label.js",
+    "tags": [
+      "label"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/link.js",
+    "file": "link.js",
+    "tags": [
+      "link"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/media.js",
+    "file": "media.js",
+    "tags": [
+      "audio",
+      "video",
+      "videos"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/mermaid.js",
+    "file": "mermaid.js",
+    "tags": [
+      "mermaid"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/note.js",
+    "file": "note.js",
+    "tags": [
+      "note",
+      "subnote"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/site.js",
+    "file": "site.js",
+    "tags": [
+      "site",
+      "sitegroup"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/span.js",
+    "file": "span.js",
+    "tags": [
+      "p",
+      "span"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/tabs.js",
+    "file": "tabs.js",
+    "tags": [
+      "tabs",
+      "subtabs",
+      "subsubtabs"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/timeline.js",
+    "file": "timeline.js",
+    "tags": [
+      "timeline"
+    ]
+  },
+  {
+    "source": "https://github.com/anzhiyu-c/hexo-theme-anzhiyu/blob/72439d93936b63da59a4a1195f64de9f952f6cc1/scripts/tag/tip.js",
+    "file": "tip.js",
+    "tags": [
+      "tip",
+      "tip"
+    ]
+  }
+]

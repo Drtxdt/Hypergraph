@@ -1,0 +1,1 @@
+module.exports={id:'reading-note',apiVersion:1,scope:'page',schema:{type:'object',additionalProperties:false,properties:{text:{type:'string',default:'Thanks for reading.'}}},browser:'browser.js',setup(api){api.addSlot('post:after',()=>'<div data-reading-note></div>');}};

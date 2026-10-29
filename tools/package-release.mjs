@@ -1,0 +1,16 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {spawnSync} from 'node:child_process';
+const stage=path.resolve('.local/package-stage');
+if(!stage.startsWith(path.resolve('.local')+path.sep))throw Error('Unsafe staging path');
+await fs.rm(stage,{recursive:true,force:true});
+await fs.mkdir(stage,{recursive:true});
+await fs.mkdir(path.resolve('dist'),{recursive:true});
+const pkg=JSON.parse(await fs.readFile('package.json','utf8'));
+for(const name of [...pkg.files,'package.json']) await fs.cp(name,path.join(stage,name),{recursive:true,filter:p=>!p.split(path.sep).includes('node_modules')});
+const run=spawnSync(process.execPath,[process.env.npm_execpath||path.join(path.dirname(process.execPath),'node_modules/npm/bin/npm-cli.js'),'pack','--offline','--ignore-scripts','--pack-destination',path.resolve('dist'),'--json'],{cwd:stage,encoding:'utf8'});
+if(run.status!==0)throw Error(run.stdout+run.stderr);
+await fs.writeFile('.local/package-inventory.json',run.stdout);
+const inventory=JSON.parse(run.stdout)[0];
+if(inventory.files.some(f=>/node_modules|\.local|\.env$/.test(f.path)))throw Error('Private/generated dependency data in package');
+console.log({file:inventory.filename,bytes:inventory.size,files:inventory.files.length});
