@@ -26,16 +26,29 @@ export function mount(
     };
     placeToc();
     compact.addEventListener("change", placeToc, { signal });
-    const closeToc = () => { tocPanel.open = false; };
-    tocPanel.addEventListener("toggle", () => {
-      if (!compact.matches) return;
-      if (tocPanel.open) activatePanel(tocPanel, closeToc, trigger);
-      else releasePanel(tocPanel);
-    }, { signal });
-    tocPanel.addEventListener("click", event => {
-      if (compact.matches && (event.target as Element).closest("a")) releasePanel(tocPanel);
-    }, { signal });
-    signal.addEventListener("abort", () => releasePanel(tocPanel), { once: true });
+    const closeToc = () => {
+      tocPanel.open = false;
+    };
+    tocPanel.addEventListener(
+      "toggle",
+      () => {
+        if (!compact.matches) return;
+        if (tocPanel.open) activatePanel(tocPanel, closeToc, trigger);
+        else releasePanel(tocPanel);
+      },
+      { signal },
+    );
+    tocPanel.addEventListener(
+      "click",
+      (event) => {
+        if (compact.matches && (event.target as Element).closest("a"))
+          releasePanel(tocPanel);
+      },
+      { signal },
+    );
+    signal.addEventListener("abort", () => releasePanel(tocPanel), {
+      once: true,
+    });
   }
   const reading = root.querySelector<HTMLButtonElement>("[data-reading]");
   if (reading && !reading.dataset.bound) {
@@ -53,7 +66,7 @@ export function mount(
     );
   }
   root.querySelectorAll<HTMLElement>(".prose pre").forEach((pre) => {
-    if (!code.copy) return;
+    if (!code.copy || pre.closest("[data-diagram]")) return;
     if (pre.dataset.hgMounted) return;
     pre.dataset.hgMounted = "true";
     if (pre.closest("figure.highlight")) return;
@@ -61,7 +74,8 @@ export function mount(
     button.className = "copy-code icon-button";
     button.setAttribute("aria-label", t("复制代码 / Copy code"));
     button.title = t("复制代码 / Copy code");
-    button.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 8h13v13H8ZM16 8V3H3v13h5"/></svg>';
+    button.innerHTML =
+      '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 8h13v13H8ZM16 8V3H3v13h5"/></svg>';
     button.addEventListener(
       "click",
       async () => {
@@ -79,14 +93,46 @@ export function mount(
     pre.before(button);
   });
   root.querySelectorAll<HTMLElement>("figure.highlight").forEach((figure) => {
+    if (figure.closest("[data-diagram]")) return;
     if (code.theme) figure.dataset.codeTheme = code.theme;
+    let toolbar = figure.previousElementSibling as HTMLElement | null;
+    if (
+      !toolbar?.classList.contains("code-toolbar") &&
+      (code.language || code.copy)
+    ) {
+      toolbar = document.createElement("div");
+      toolbar.className = "code-toolbar";
+      figure.before(toolbar);
+    }
     if (code.language && !figure.dataset.languageBound) {
       figure.dataset.languageBound = "true";
       const label = document.createElement("small");
       label.className = "code-language";
-      label.textContent =
+      const language =
         [...figure.classList].find((name) => name !== "highlight") || "code";
-      figure.before(label);
+      const glyphs: Record<string, string> = {
+        javascript: "JS",
+        js: "JS",
+        typescript: "TS",
+        ts: "TS",
+        python: "PY",
+        py: "PY",
+        css: "CSS",
+        html: "HTML",
+        bash: "SH",
+        shell: "SH",
+        json: "{}",
+        yaml: "YML",
+        sql: "SQL",
+      };
+      const icon = document.createElement("span");
+      icon.className = "code-emblem";
+      icon.setAttribute("aria-hidden", "true");
+      icon.textContent = glyphs[language] || "</>";
+      const name = document.createElement("span");
+      name.textContent = language;
+      label.append(icon, name);
+      toolbar!.append(label);
     }
     if (!code.copy) return;
     if (figure.dataset.hgMounted) return;
@@ -95,7 +141,8 @@ export function mount(
     button.className = "copy-code icon-button";
     button.setAttribute("aria-label", t("复制代码 / Copy code"));
     button.title = t("复制代码 / Copy code");
-    button.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 8h13v13H8ZM16 8V3H3v13h5"/></svg>';
+    button.innerHTML =
+      '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 8h13v13H8ZM16 8V3H3v13h5"/></svg>';
     button.addEventListener(
       "click",
       async () => {
@@ -114,7 +161,7 @@ export function mount(
       },
       { signal },
     );
-    figure.before(button);
+    toolbar!.append(button);
   });
   if (code.fold || code.max_height)
     root
@@ -143,17 +190,36 @@ export function mount(
         );
         block.after(button);
       });
-  root.querySelectorAll<HTMLTableElement>(".prose table").forEach(table => {
+  root.querySelectorAll<HTMLTableElement>(".prose table").forEach((table) => {
     if (table.closest("figure.highlight") || table.dataset.copyBound) return;
     table.dataset.copyBound = "true";
     const button = document.createElement("button");
     button.className = "copy-table icon-button";
-    button.title = t("复制表格 / Copy table"); button.setAttribute("aria-label", button.title);
-    button.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 3h18v18H3ZM3 9h18M9 9v12M15 9v12M3 15h18"/></svg>';
-    button.addEventListener("click", async () => {
-      try { await navigator.clipboard.writeText([...table.rows].map(row => [...row.cells].map(cell => cell.innerText).join("\t")).join("\n")); button.title = t("链接已复制 / Link copied").replace("链接", "表格").replace("Link", "Table"); button.textContent = "✓"; }
-      catch { button.title = t("Select text"); }
-    }, { signal });
+    button.title = t("复制表格 / Copy table");
+    button.setAttribute("aria-label", button.title);
+    button.innerHTML =
+      '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 3h18v18H3ZM3 9h18M9 9v12M15 9v12M3 15h18"/></svg>';
+    button.addEventListener(
+      "click",
+      async () => {
+        try {
+          await navigator.clipboard.writeText(
+            [...table.rows]
+              .map((row) =>
+                [...row.cells].map((cell) => cell.innerText).join("\t"),
+              )
+              .join("\n"),
+          );
+          button.title = t("链接已复制 / Link copied")
+            .replace("链接", "表格")
+            .replace("Link", "Table");
+          button.textContent = "✓";
+        } catch {
+          button.title = t("Select text");
+        }
+      },
+      { signal },
+    );
     const scroller = document.createElement("div");
     scroller.className = "table-scroll";
     table.before(button, scroller);
@@ -164,39 +230,107 @@ export function mount(
   const tocController = new AbortController();
   tocControllers.set(root, tocController);
   const tocSignal = AbortSignal.any([signal, tocController.signal]);
-  const runtime = JSON.parse(document.querySelector("#hg-config")!.textContent!);
-  const headings = links.map(link => {
-    try { return document.getElementById(decodeURIComponent(link.hash.slice(1))); } catch { return null; }
-  }).filter((heading): heading is HTMLElement => !!heading && root.contains(heading));
-  let frame = 0, hold = 0;
-  const select = (id: string) => links.forEach(link => {
-    const current = decodeURIComponent(link.hash.slice(1)) === id;
-    if (current) link.setAttribute("aria-current", "location"); else link.removeAttribute("aria-current");
-  });
+  const runtime = JSON.parse(
+    document.querySelector("#hg-config")!.textContent!,
+  );
+  const headings = links
+    .map((link) => {
+      try {
+        return document.getElementById(decodeURIComponent(link.hash.slice(1)));
+      } catch {
+        return null;
+      }
+    })
+    .filter(
+      (heading): heading is HTMLElement => !!heading && root.contains(heading),
+    );
+  let frame = 0,
+    hold = 0;
+  const select = (id: string) =>
+    links.forEach((link) => {
+      const current = decodeURIComponent(link.hash.slice(1)) === id;
+      if (current) link.setAttribute("aria-current", "location");
+      else link.removeAttribute("aria-current");
+    });
   const update = () => {
     frame = 0;
     if (!headings.length || performance.now() < hold) return;
-    const boundary = Math.min(160, innerHeight * .2);
+    const boundary = Math.min(160, innerHeight * 0.2);
     let current = headings[0];
-    for (const heading of headings) if (heading.getBoundingClientRect().top <= boundary) current = heading;
+    for (const heading of headings)
+      if (heading.getBoundingClientRect().top <= boundary) current = heading;
     select(current.id);
-    if (runtime.interaction.anchor_update && !document.hidden && location.hash !== "#" + encodeURIComponent(current.id)) history.replaceState(history.state, "", "#" + encodeURIComponent(current.id));
+    if (
+      runtime.interaction.anchor_update &&
+      !document.hidden &&
+      location.hash !== "#" + encodeURIComponent(current.id)
+    )
+      history.replaceState(
+        history.state,
+        "",
+        "#" + encodeURIComponent(current.id),
+      );
   };
-  const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
-  for (const link of links) link.addEventListener("click", () => {
-    hold = performance.now() + 1200;
-    select(decodeURIComponent(link.hash.slice(1)));
-  }, { signal: tocSignal });
-  const release = () => { hold = 0; schedule(); };
-  window.addEventListener("scroll", schedule, { passive: true, signal: tocSignal });
+  const schedule = () => {
+    if (!frame) frame = requestAnimationFrame(update);
+  };
+  for (const link of links)
+    link.addEventListener(
+      "click",
+      () => {
+        hold = performance.now() + 1200;
+        select(decodeURIComponent(link.hash.slice(1)));
+      },
+      { signal: tocSignal },
+    );
+  const release = () => {
+    hold = 0;
+    schedule();
+  };
+  window.addEventListener("scroll", schedule, {
+    passive: true,
+    signal: tocSignal,
+  });
   window.addEventListener("resize", release, { signal: tocSignal });
-  window.addEventListener("wheel", release, { passive: true, signal: tocSignal });
-  window.addEventListener("touchstart", release, { passive: true, signal: tocSignal });
-  window.addEventListener("keydown", event => { if (["ArrowDown","ArrowUp","PageDown","PageUp","Home","End"," "].includes(event.key)) release(); }, { signal: tocSignal });
-  window.addEventListener("hashchange", () => {
-    const id = decodeURIComponent(location.hash.slice(1));
-    if (headings.some(h => h.id === id)) { hold = performance.now() + 1200; select(id); }
-  }, { signal: tocSignal });
-  tocSignal.addEventListener("abort", () => cancelAnimationFrame(frame), { once: true });
+  window.addEventListener("wheel", release, {
+    passive: true,
+    signal: tocSignal,
+  });
+  window.addEventListener("touchstart", release, {
+    passive: true,
+    signal: tocSignal,
+  });
+  window.addEventListener(
+    "keydown",
+    (event) => {
+      if (
+        [
+          "ArrowDown",
+          "ArrowUp",
+          "PageDown",
+          "PageUp",
+          "Home",
+          "End",
+          " ",
+        ].includes(event.key)
+      )
+        release();
+    },
+    { signal: tocSignal },
+  );
+  window.addEventListener(
+    "hashchange",
+    () => {
+      const id = decodeURIComponent(location.hash.slice(1));
+      if (headings.some((h) => h.id === id)) {
+        hold = performance.now() + 1200;
+        select(id);
+      }
+    },
+    { signal: tocSignal },
+  );
+  tocSignal.addEventListener("abort", () => cancelAnimationFrame(frame), {
+    once: true,
+  });
   update();
 }

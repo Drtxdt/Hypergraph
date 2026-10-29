@@ -13,6 +13,9 @@ export async function checkMotionV21(browser, sites, out, report = {}) {
  const inspect = async (page) => {
   await page.addInitScript(() => {
    window.introEvidence=[];
+   window.introFrames=[]; window.introEndCount=0;
+   document.addEventListener('hypergraph:intro-end',()=>window.introEndCount++);
+   const sample=()=>{const h=document.querySelector('[data-intro]');if(h&&!h.hidden){window.introFrames.push({at:performance.now(),value:Number(h.querySelector('[data-intro-value]').textContent),bar:Number(h.querySelector('[data-intro-progress]').style.getPropertyValue('--progress'))});}if(!window.introEndCount)requestAnimationFrame(sample);};requestAnimationFrame(sample);
    const record=()=>{
     const host=document.querySelector('[data-intro]');
     const active=document.documentElement.classList.contains('intro-active');
@@ -43,6 +46,11 @@ export async function checkMotionV21(browser, sites, out, report = {}) {
    await page.waitForFunction(()=>document.querySelector('#content').getAnimations({subtree:true}).every(a=>a.playState==='finished'));
    await page.screenshot({path:path.join(dir,`home-${width}-light.png`)});
    const evidence=await page.evaluate(()=>window.introEvidence);
+   const frames=await page.evaluate(()=>window.introFrames);
+   for(let i=1;i<frames.length;i++) {assert.ok(frames[i].value>=frames[i-1].value);assert.ok(Math.abs(frames[i].bar*100-frames[i].value)<1.1);}
+   const held=frames.filter(f=>f.value===60);assert.ok(held.length>1 && held.at(-1).at-held[0].at>=900 && held.at(-1).at-held[0].at<=1150,'60% holds one second');
+   assert.equal(await page.evaluate(()=>window.introEndCount),1);
+   await fs.writeFile(path.join(dir,`timeline-${width}.json`),JSON.stringify(frames));
    await page.reload({waitUntil:'domcontentloaded'});
    assert.equal(await page.evaluate(()=>window.introEvidence.some(x=>x.active)),false,'session reload must not replay');
    if(width===1440) {
@@ -90,7 +98,7 @@ export async function checkMotionV21(browser, sites, out, report = {}) {
    if(name==='main-blocked') {
     const first=evidence.find(x=>x.active);
     const final=evidence.find(x=>x.at>first.at&&!x.active);
-    assert.ok(final&&final.at-first.at<=2150,'bootstrap must release within 2s plus 150ms observation tolerance');
+    assert.ok(final&&final.at-first.at<=2500,'bootstrap must release within the readability budget including observation tolerance');
     assert.equal(await page.locator('[data-intro-value]').innerText(),'0','blocked script must not fabricate completed progress');
    }
    assert.ok(await page.locator('#content').isVisible());

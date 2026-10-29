@@ -346,20 +346,6 @@ html.is-navigating:before {
     position: static;
   }
 }
-.code-language {
-  display: block;
-  color: var(--muted);
-  font-family: var(--code-font);
-  font-size: 0.75rem;
-}
-.prose figure.highlight[data-code-theme="dark"] {
-  background: #202421;
-  color: #f3f2ec;
-}
-.prose figure.highlight[data-code-theme="light"] {
-  background: #e9eae2;
-  color: #202421;
-}
 .inline-wavy {
   text-decoration: underline wavy;
 }

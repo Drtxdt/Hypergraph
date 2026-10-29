@@ -95,4 +95,6 @@ menu:
 
 ## 2.1 entrance motion
 
-`appearance.intro: session | always | off` defaults to `session`. The intro runs only with `appearance.motion: cinematic`; reduced motion, data saving, history restoration and deep anchors bypass it. `interaction.loading_bar` remains the separate navigation waiting indicator. Desktop navigation expands on hover or keyboard focus; clicking its toggle pins it open.
+`appearance.intro: session | always | off` defaults to `session`. The intro runs only with `appearance.motion: cinematic`; reduced motion, data saving, history restoration and deep anchors bypass it. `interaction.loading_bar` remains the separate navigation waiting indicator. Desktop navigation expands on hover or keyboard focus; touch devices use the menu button. There is no desktop pin control.
+
+`post.cover_mode: compact | feature | none` defaults to compact and supports per-post overrides. `appearance.intro_scope: home | all` defaults to the first homepage. See README.md / README.en.md for the half-speed entrance timeline and readability-budget cancellation.

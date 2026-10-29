@@ -122,7 +122,7 @@ summary,
 .empty-state {
   grid-column: 1/-1;
 }
-@media (max-width: 1023px) {
+@media (max-width: 1023px), (hover: none) {
   .site-header {
     overflow: visible;
     gap: 14px;

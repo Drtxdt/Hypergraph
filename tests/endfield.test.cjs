@@ -36,7 +36,7 @@ test('cover tint alone loads appearance, all disabled loads nothing', async () =
   }
 });
 
-test('appearance waits for intro completion and never mounts an aborted page', async () => {
+test('appearance can prepare during intro but never mounts an aborted page', async () => {
   const source = fs.readFileSync('src/main.ts', 'utf8');
   const start = source.indexOf('async function mountAppearance');
   const end = source.indexOf('let pageController', start);
@@ -48,12 +48,15 @@ test('appearance waits for intro completion and never mounts an aborted page', a
     const controller = new AbortController();
     const context = { document, appearance: { fallback_image: '', captions: false, motion: 'cinematic', cover_tint: false }, require: () => { loads++; return { mount() {} }; } };
     vm.runInNewContext(javascript, context);
-    const mounting = context.mountAppearance({}, controller.signal);
-    await Promise.resolve();
-    assert.equal(loads, 0, 'intro must finish before page appearance loads');
     if (abort) controller.abort();
-    else document.dispatchEvent(new Event('hypergraph:intro-end'));
-    await mounting;
+    await context.mountAppearance({}, controller.signal);
     assert.equal(loads, abort ? 0 : 1);
   }
+});
+
+test('invalid article cover modes identify the source', () => {
+ let validate;
+ vm.runInNewContext(fs.readFileSync('scripts/frontmatter.js','utf8'), {hexo:{extend:{filter:{register:(_,fn)=>validate=fn}}}});
+ assert.throws(()=>validate({source:'_posts/example.md',cover_mode:'wide'}), /example.md: cover_mode/);
+ for(const cover_mode of ['compact','feature','none',undefined]) assert.equal(validate({cover_mode}).cover_mode,cover_mode);
 });

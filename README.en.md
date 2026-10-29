@@ -28,4 +28,12 @@ Run `npm run verify` for isolated public fixtures, browser tests, SQLite comment
 
 ## 2.1 entrance motion
 
-`appearance.intro: session | always | off` defaults to `session`. The intro runs only with `appearance.motion: cinematic`; reduced motion, data saving, history restoration and deep anchors bypass it. `interaction.loading_bar` remains the separate navigation waiting indicator. Desktop navigation expands on hover or keyboard focus; clicking its toggle pins it open.
+`appearance.intro: session | always | off` defaults to `session`. The intro runs only with `appearance.motion: cinematic`; reduced motion, data saving, history restoration and deep anchors bypass it. `interaction.loading_bar` remains the separate navigation waiting indicator. Desktop navigation expands on hover or keyboard focus, without a pin button. Touch devices use the menu button.
+
+## 2.1 beta.2 reading and entrance
+
+`post.cover_mode` accepts `compact` (default), `feature`, or `none`; a post can override it in front matter. `appearance.show_cover: false` always wins. Invalid post values report their source file. Titles and prose share one axis; the right-hand TOC becomes a compact panel on phones.
+
+`appearance.intro_scope: home | all` defaults to `home` (first index page only). Percentages describe animation progress, not downloads. Motion uses 480ms to 60%, a 1000ms hold, 480ms to 100%, then a 480ms reveal overlapping the homepage entrance. Readability takes priority: a 2350ms budget measured from navigation can cancel the tail or end a slow start without pretending completion. Skip, reduced motion, data saving, hidden tabs and unavailable storage bypass or stop it. Navigation never repeats the brand intro.
+
+Code language badges and copy share one toolbar. Syntax colors support explicit light/dark code themes independently of page mode. Icon buttons retain accessible names; the key visibility control preserves input and supports reduced motion. Bilibili and Instagram shortcuts copy a link for manual sharing.

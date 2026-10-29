@@ -647,54 +647,6 @@ body {
   padding: 0 5px;
   font-size: 13px;
 }
-.highlight .comment,
-.highlight .quote {
-  color: var(--muted);
-}
-.highlight .keyword,
-.highlight .selector-tag,
-.highlight .built_in {
-  color: #845136;
-}
-.highlight .string,
-.highlight .attr {
-  color: #426b4c;
-}
-.highlight .number,
-.highlight .literal {
-  color: #6b5495;
-}
-.highlight .title,
-.highlight .function {
-  color: #315f89;
-}
-html[data-mode="dark"] .highlight .keyword {
-  color: #e4b792;
-}
-html[data-mode="dark"] .highlight .string,
-html[data-mode="dark"] .highlight .attr {
-  color: #a6cda1;
-}
-html[data-mode="dark"] .highlight .number {
-  color: #c7b6e2;
-}
-html[data-mode="dark"] .highlight .title {
-  color: #9ec5e4;
-}
-@media (prefers-color-scheme: dark) {
-  html[data-mode="auto"] .highlight .keyword {
-    color: #e4b792;
-  }
-  html[data-mode="auto"] .highlight .string {
-    color: #a6cda1;
-  }
-  html[data-mode="auto"] .highlight .number {
-    color: #c7b6e2;
-  }
-  html[data-mode="auto"] .highlight .title {
-    color: #9ec5e4;
-  }
-}
 .advertisement {
   padding: 16px;
   border: 1px solid var(--line);

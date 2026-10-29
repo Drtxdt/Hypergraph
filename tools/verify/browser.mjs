@@ -41,7 +41,8 @@ export async function checkBrowser(browser, sites, report, out) {
           document.documentElement.dataset.mode = mode;
           return document.fonts.ready;
         }, mode);
-        await page.waitForTimeout(950);
+        await page.waitForFunction(() => !document.documentElement.classList.contains("intro-active"));
+        await page.waitForTimeout(350);
         assert.ok(
           await page.evaluate(
             () => document.documentElement.scrollWidth <= innerWidth,
@@ -138,23 +139,19 @@ export async function checkBrowser(browser, sites, report, out) {
   await page.locator("#navigation-error button").click();
   await page.waitForFunction(() => !window.__hypergraph.swup.navigating);
   await page.locator(".lead").waitFor();
-  await page.locator("[data-search]").click();
+  await page.locator("[data-search]").click({position:{x:32,y:22}});
   await page.locator("#search-input").fill("Hypergraph");
   await page.locator("[data-results] li").first().waitFor();
   await page.keyboard.press("Escape");
   assert.equal(await page.locator("#search-dialog").isVisible(), false);
-  await page.locator("[data-rail-expand]").click();
-  await page.waitForFunction(
-    () =>
-      Math.round(
-        document.querySelector(".site-header").getBoundingClientRect().width,
-      ) === 240,
-  );
+  assert.equal(await page.locator('[data-rail-expand]').count(),0);
+  await page.mouse.move(600,500);await page.mouse.move(30,100);
+  await page.waitForFunction(()=>document.querySelector('.site-header').classList.contains('rail-open'));
   await page.keyboard.press("Escape");
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator("[data-menu-toggle]").click();
   assert.ok(await page.locator("#content").evaluate((el) => el.inert));
-  await page.locator("[data-search]").click();
+  await page.locator("[data-search]").click({position:{x:32,y:22}});
   assert.equal(
     await page.locator("#content").evaluate((el) => el.inert),
     false,
@@ -266,7 +263,7 @@ export async function checkBrowser(browser, sites, report, out) {
   assert.ok(page.url().includes("/blog/2026/"));
   await page.goto(sites.english.url);
   await page.locator("[data-menu-toggle]").click();
-  await page.locator("[data-search]").click();
+  await page.locator("[data-search]").click({position:{x:32,y:22}});
   await page.locator("#search-input").fill("impossible-needle");
   await page.waitForFunction(() =>
     document
@@ -369,7 +366,9 @@ export async function performance(browser, sites, report, visits = ["first", "su
       await page.addInitScript(() => {
         window.metrics = { lcp: null, cls: 0, events: [], eventCounts: 0, readable: null };
         const readable = () => {
-          if (window.metrics.readable === null && document.readyState !== "loading" && document.querySelector("#content") && !document.documentElement.classList.contains("intro-active")) {
+          const title=document.querySelector('.lead-title,.article-head,#content h1');
+          const clearTitle=title && Number(getComputedStyle(title).opacity)>=.99 && getComputedStyle(title).clipPath==='none';
+          if (window.metrics.readable === null && document.readyState !== "loading" && document.querySelector("#content") && clearTitle && !document.documentElement.classList.contains("intro-active")) {
             requestAnimationFrame(() => requestAnimationFrame(() => {
               if (window.metrics.readable === null && !document.documentElement.classList.contains("intro-active")) window.metrics.readable = performance.now();
             }));
@@ -377,6 +376,7 @@ export async function performance(browser, sites, report, visits = ["first", "su
         };
         new MutationObserver(readable).observe(document, {subtree:true, childList:true, attributes:true, attributeFilter:["class","hidden"]});
         document.addEventListener("DOMContentLoaded", readable);
+        const pollReadable=()=>{readable();if(window.metrics.readable===null)requestAnimationFrame(pollReadable);};requestAnimationFrame(pollReadable);
         new PerformanceObserver((l) =>
           l.getEntries().forEach((e) => (window.metrics.lcp = e.startTime)),
         ).observe({ type: "largest-contentful-paint", buffered: true });
@@ -398,7 +398,7 @@ export async function performance(browser, sites, report, visits = ["first", "su
       assert.ok(readable <= 2500, `${name} first readable ${readable}`);
       await page.locator("[data-menu-toggle]").click();
       await page.locator("[data-mode-toggle]").click();
-      await page.locator("[data-search]").click();
+      await page.locator("[data-search]").click({position:{x:32,y:22}});
       await page.locator("#search-input").fill("Hypergraph");
       await page.locator("[data-results] li").first().waitFor();
       await page.keyboard.press("Escape");

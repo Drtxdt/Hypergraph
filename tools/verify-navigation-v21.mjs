@@ -15,10 +15,14 @@ const server=http.createServer((req,res)=>{res.setHeader('Content-Type',req.url=
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 let browser;
 try {
- browser=await chromium.launch({channel:process.platform==='win32'?'msedge':undefined,headless:true});
+ browser=await chromium.launch({channel:process.env.HG_BROWSER==='chromium'?undefined:(process.env.HG_BROWSER||(process.platform==='win32'?'msedge':undefined)),headless:true});
  const page=await browser.newPage({viewport:{width:1440,height:900}});
- await page.goto(`http://127.0.0.1:${server.address().port}`);
+ let releaseModule; const moduleGate=new Promise(resolve=>{releaseModule=resolve;});
+ await page.route('**/panels.js',async route=>{await moduleGate;await route.continue();});
+ await page.goto(`http://127.0.0.1:${server.address().port}`,{waitUntil:'commit'});
+ await page.locator('.brand').waitFor();await page.mouse.move(30,100);releaseModule();
  await page.waitForFunction(()=>window.ready);
+ await page.waitForFunction(()=>document.querySelector(".site-header").classList.contains("rail-open"));
  await page.locator('#outside').focus();
  await page.mouse.move(500,500);
  await page.mouse.move(30,100);
@@ -38,6 +42,13 @@ try {
  assert.equal(await page.locator('.site-header').evaluate(e=>e.classList.contains('rail-open')),true,'focus opens rail');
  await page.locator('#outside').focus();
  await page.waitForFunction(()=>!document.querySelector('.site-header').classList.contains('rail-open'));
+ for(let i=0;i<30;i++) {
+  await page.mouse.move(500,500);await page.locator('#outside').focus();
+  await page.waitForFunction(()=>!document.querySelector('.site-header').classList.contains('rail-open'));
+  await page.mouse.move(30,100);await page.waitForFunction(()=>document.querySelector('.site-header').classList.contains('rail-open'));
+  await page.evaluate(()=>document.dispatchEvent(new Event('hypergraph:mount')));
+  assert.equal(await page.locator('.site-header').evaluate(e=>e.classList.contains('rail-open')),true);
+ }
  await page.setViewportSize({width:390,height:844});
  await page.locator('[data-menu-toggle]').click();
  assert.equal(await page.locator('#content').evaluate(e=>e.inert),true);

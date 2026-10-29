@@ -61,18 +61,6 @@ const appearance: import("./modules/appearance").Appearance = JSON.parse(
   document.querySelector("#hg-config")!.textContent!,
 ).appearance;
 async function mountAppearance(root: HTMLElement, signal: AbortSignal, transition = false) {
-  if (document.documentElement.classList.contains("intro-active")) {
-    await new Promise<void>(resolve => {
-      const done = () => {
-        document.removeEventListener("hypergraph:intro-end", done);
-        signal.removeEventListener("abort", done);
-        resolve();
-      };
-      document.addEventListener("hypergraph:intro-end", done, { once: true });
-      signal.addEventListener("abort", done, { once: true });
-      if (signal.aborted) done();
-    });
-  }
   if (signal.aborted) return;
   if (
     appearance.fallback_image ||
@@ -294,7 +282,10 @@ if (config.navigation) {
       swup.hooks.on("page:view", () => mountPage(true));
       const error = document.querySelector<HTMLElement>("#navigation-error")!;
       let failedUrl = "";
-      const fail = (visit: { to: { url: string }; from: { url: string } }) => {
+      let latestVisit: number | undefined;
+      swup.hooks.on("visit:start", visit => { latestVisit = visit.id; });
+      const fail = (visit: { id?: number; to: { url: string }; from: { url: string } }) => {
+        if (visit.id !== latestVisit) return;
         failedUrl = visit.to.url;
         error.hidden = false;
         swup.classes.clear();

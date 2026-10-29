@@ -9,8 +9,17 @@ export function dismissPanels(restore = false) {
     // CSS visibility remains visible until the exit transition ends. A closed
     // mobile navigation is already semantically unavailable during that interval.
     const parentNav = target?.closest<HTMLElement>("#site-nav");
-    const closedMobileNav = parentNav && matchMedia("(max-width:1023px)").matches && !parentNav.classList.contains("is-open");
-    if (target?.isConnected && !closedMobileNav && target.getClientRects().length && getComputedStyle(target).visibility !== "hidden") target.focus();
+    const closedMobileNav =
+      parentNav &&
+      matchMedia("(max-width:1023px), (hover:none)").matches &&
+      !parentNav.classList.contains("is-open");
+    if (
+      target?.isConnected &&
+      !closedMobileNav &&
+      target.getClientRects().length &&
+      getComputedStyle(target).visibility !== "hidden"
+    )
+      target.focus();
     else {
       const menu = document.querySelector<HTMLElement>("[data-menu-toggle]");
       (menu?.getClientRects().length
@@ -49,12 +58,15 @@ export function mountShell(signal: AbortSignal) {
   const header = document.querySelector<HTMLElement>(".site-header")!;
   const menu = document.querySelector<HTMLButtonElement>("[data-menu-toggle]")!;
   const rail = document.querySelector<HTMLAnchorElement>(".brand")!;
-  const mq = matchMedia("(max-width:1023px)");
+  const mq = matchMedia("(max-width:1023px), (hover:none)");
   const finePointer = matchMedia("(hover:hover) and (pointer:fine)");
   let hovering = false;
   let suppressAuto = false;
   let leaveTimer: ReturnType<typeof setTimeout> | undefined;
-  const clearLeave = () => { clearTimeout(leaveTimer); leaveTimer = undefined; };
+  const clearLeave = () => {
+    clearTimeout(leaveTimer);
+    leaveTimer = undefined;
+  };
   const close = () => {
     clearLeave();
     nav.classList.remove("is-open");
@@ -70,7 +82,11 @@ export function mountShell(signal: AbortSignal) {
     document.body.classList.remove("panel-lock");
   };
   const open = (trigger: HTMLElement, automatic = false) => {
-    if (automatic && (mq.matches || suppressAuto || (active && active.element !== nav))) return;
+    if (
+      automatic &&
+      (mq.matches || suppressAuto || (active && active.element !== nav))
+    )
+      return;
     clearLeave();
     if (active?.element !== nav) activatePanel(nav, close, trigger);
     suppressAuto = false;
@@ -78,43 +94,87 @@ export function mountShell(signal: AbortSignal) {
     if (mq.matches) {
       nav.classList.add("is-open");
       document.body.classList.add("panel-lock");
-      document.querySelectorAll<HTMLElement>("#content,.site-footer").forEach((el) => {
-        if (!el.inert) { el.inert = true; el.dataset.shellInert = ""; }
-      });
+      document
+        .querySelectorAll<HTMLElement>("#content,.site-footer")
+        .forEach((el) => {
+          if (!el.inert) {
+            el.inert = true;
+            el.dataset.shellInert = "";
+          }
+        });
       nav.querySelector<HTMLElement>("a,summary")?.focus();
     } else header.classList.add("rail-open");
   };
   const maybeClose = () => {
     clearLeave();
     leaveTimer = setTimeout(() => {
-      if (!hovering && !header.contains(document.activeElement) && active?.element === nav) dismissPanels();
+      if (
+        !hovering &&
+        !header.contains(document.activeElement) &&
+        active?.element === nav
+      )
+        dismissPanels();
     }, 160);
   };
-  menu.addEventListener("click", () => {
-    if (active?.element === nav) releasePanel(nav);
-    else open(menu);
-  }, { signal });
-  header.addEventListener("pointerenter", (event) => {
-    if (mq.matches || !finePointer.matches || event.pointerType === "touch") return;
-    hovering = true;
-    open(rail, true);
-  }, { signal });
-  header.addEventListener("pointerleave", () => {
-    hovering = false;
-    suppressAuto = false;
-    maybeClose();
-  }, { signal });
-  header.addEventListener("focusin", () => open(rail, true), { signal });
-  header.addEventListener("focusout", (event) => {
-    if (!header.contains(event.relatedTarget as Node | null)) {
+  menu.addEventListener(
+    "click",
+    () => {
+      if (active?.element === nav) releasePanel(nav);
+      else open(menu);
+    },
+    { signal },
+  );
+  header.addEventListener(
+    "pointerenter",
+    (event) => {
+      if (mq.matches || !finePointer.matches || event.pointerType === "touch")
+        return;
+      hovering = true;
+      suppressAuto = false;
+      open(rail, true);
+    },
+    { signal },
+  );
+  header.addEventListener(
+    "pointerleave",
+    () => {
+      hovering = false;
       suppressAuto = false;
       maybeClose();
-    }
-  }, { signal });
-  document.addEventListener("pointerdown", (event) => {
-    if (!mq.matches && active?.element === nav && !header.contains(event.target as Node)) dismissPanels();
-  }, { signal });
-  finePointer.addEventListener("change", () => { hovering = false; dismissPanels(); }, { signal });
+    },
+    { signal },
+  );
+  header.addEventListener("focusin", () => open(rail, true), { signal });
+  header.addEventListener(
+    "focusout",
+    (event) => {
+      if (!header.contains(event.relatedTarget as Node | null)) {
+        suppressAuto = false;
+        maybeClose();
+      }
+    },
+    { signal },
+  );
+  document.addEventListener(
+    "pointerdown",
+    (event) => {
+      if (
+        !mq.matches &&
+        active?.element === nav &&
+        !header.contains(event.target as Node)
+      )
+        dismissPanels();
+    },
+    { signal },
+  );
+  finePointer.addEventListener(
+    "change",
+    () => {
+      hovering = false;
+      dismissPanels();
+    },
+    { signal },
+  );
   nav.addEventListener(
     "click",
     (e) => {
@@ -177,7 +237,8 @@ export function mountShell(signal: AbortSignal) {
   };
   const reconcile = () => {
     hovering = header.matches(":hover") && finePointer.matches;
-    if (!mq.matches && (hovering || header.contains(document.activeElement))) open(rail, true);
+    if (!mq.matches && (hovering || header.contains(document.activeElement)))
+      open(rail, true);
   };
   header.addEventListener("pointermove", reconcile, { signal });
   document.addEventListener("hypergraph:intro-end", reconcile, { signal });
@@ -185,5 +246,12 @@ export function mountShell(signal: AbortSignal) {
   reconcile();
   update();
   document.addEventListener("hypergraph:mount", update, { signal });
-  signal.addEventListener("abort", () => { clearLeave(); dismissPanels(); }, { once: true });
+  signal.addEventListener(
+    "abort",
+    () => {
+      clearLeave();
+      dismissPanels();
+    },
+    { once: true },
+  );
 }

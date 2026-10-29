@@ -1,5 +1,5 @@
 /* Navigation state choreography. The document keeps its 72px gutter. */
-@media (min-width: 1024px) {
+@media (min-width: 1024px) and (hover:hover) {
   .site-header { transition: width 280ms cubic-bezier(.2,.7,.2,1), box-shadow 280ms; }
   .site-header nav { align-items: stretch; }
   .site-header nav > a, .nav-group > summary {
@@ -26,7 +26,7 @@
   .site-header nav a[aria-current="page"]:before { transition: height 220ms, background-color 220ms; }
   .nav-group > div { z-index: 1; }
 }
-@media (max-width: 1023px) {
+@media (max-width: 1023px), (hover: none) {
   .site-header nav {
     display: flex; visibility: hidden; pointer-events: none; opacity: 0;
     transform: translateY(-12px);
@@ -53,7 +53,7 @@
   .site-header nav > *, .site-header nav > a > span, .nav-group > summary > span { opacity: 1 !important; transform: none !important; }
 }
 
-@media(min-width:1024px){
+@media(min-width:1024px) and (hover:hover){
 .site-header,.site-header.rail-open{width:240px;padding:20px 0;align-items:stretch;clip-path:inset(0 168px 0 0);transition:clip-path 200ms cubic-bezier(.2,.7,.2,1)}
 .site-header.rail-open{clip-path:inset(0);transition-duration:240ms}
 .site-header .brand{margin-left:16px;align-self:flex-start}

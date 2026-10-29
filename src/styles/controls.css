@@ -1,6 +1,6 @@
 /* Semantic controls: stable icons, directional fill, visible keyboard state. */
 .icon-button,.article-tools button,.article-tools summary,.post-actions>a,.post-actions>button,#search-dialog button,.rail-tools button{
- position:relative;isolation:isolate;display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;border:1px solid var(--line);background:transparent;color:var(--ink);text-decoration:none;transition:color 160ms;overflow:hidden;cursor:pointer;
+ position:relative;isolation:isolate;display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-decoration:none;transition:color 160ms;overflow:hidden;cursor:pointer;
 }
 .icon-button::before,.article-tools button::before,.article-tools summary::before,.post-actions>a::before,.post-actions>button::before,#search-dialog button::before,.rail-tools button::before,.menu-toggle::before{
  content:"";position:absolute;inset:0;z-index:-1;background:var(--signal);transform:scaleX(0);transform-origin:left;transition:transform 260ms cubic-bezier(.2,.7,.2,1);

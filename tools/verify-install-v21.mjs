@@ -34,7 +34,8 @@ const install = () =>
         ]
       : []),
   ]);
-const pack = path.resolve("dist/hexo-theme-hypergraph-2.1.0-beta.1.tgz");
+const version = JSON.parse(await fs.readFile("package.json", "utf8")).version;
+const pack = path.resolve(`dist/hexo-theme-hypergraph-${version}.tgz`);
 const pkg = JSON.parse(await fs.readFile("demo/package.json", "utf8"));
 pkg.dependencies["hexo-theme-hypergraph"] = "file:" + pack;
 await fs.cp("demo/source", path.join(root, "source"), { recursive: true });
@@ -142,7 +143,7 @@ try {
       {
         passed: true,
         root,
-        version: "2.1.0-beta.1",
+        version,
         freshNodeModules: true,
         extension: evidence,
         disabledNoRequest: true,

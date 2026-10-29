@@ -1,5 +1,6 @@
 export type Appearance = {
   intro: "session" | "always" | "off";
+  intro_scope: "home" | "all";
   fallback_image: string;
   captions: boolean;
   motion: "cinematic" | "subtle" | "off";
@@ -87,9 +88,16 @@ function mountMotion(
     const animation = element.animate(
       cinematic && element.matches(".lead-title,.lead-media")
         ? [{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0)" }]
-        : [{ opacity: .85, transform: "translateY(6px)" }, { opacity: 1, transform: "translateY(0)" }],
+        : [
+            { opacity: 0.85, transform: "translateY(6px)" },
+            { opacity: 1, transform: "translateY(0)" },
+          ],
       {
-        duration: cinematic ? (element.matches(".lead-media") ? 420 : 320) : 180,
+        duration: cinematic
+          ? element.matches(".lead-media")
+            ? 420
+            : 320
+          : 180,
         delay,
         easing: "cubic-bezier(.2,.7,.2,1)",
       },
@@ -97,15 +105,29 @@ function mountMotion(
     animations.add(animation);
     animation.finished.then(() => animations.delete(animation)).catch(() => {});
   };
-  root
-    .querySelectorAll(
-      ".lead-media,.lead .section-kicker,.lead-title,.lead-link,.article-head",
-    )
-    .forEach((el, i) => {
-      const options = JSON.parse(document.querySelector("#hg-config")!.textContent!);
-      if (options.effects?.typewriter && el.matches(".lead-title")) return;
-      animate(el, cinematic ? i * 60 : 0);
+  const enter = () => {
+    if (signal.aborted || document.documentElement.dataset.transition) return;
+    const options = JSON.parse(
+      document.querySelector("#hg-config")!.textContent!,
+    );
+    for (const [selector, delay] of [
+      [".lead-media", 0],
+      [".lead .section-kicker", 40],
+      [".lead-title", 80],
+      [".lead-link", 120],
+    ] as const) {
+      if (options.effects?.typewriter && selector === ".lead-title") continue;
+      root
+        .querySelectorAll(selector)
+        .forEach((el) => animate(el, cinematic ? delay : 0));
+    }
+  };
+  if (document.documentElement.classList.contains("intro-active"))
+    document.addEventListener("hypergraph:intro-reveal", enter, {
+      once: true,
+      signal,
     });
+  else enter();
   const observer = new IntersectionObserver(
     (entries) =>
       entries.forEach((entry) => {
