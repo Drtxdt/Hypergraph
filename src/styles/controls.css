@@ -9,7 +9,7 @@
 :is(.icon-button,.article-tools button,.article-tools summary,.post-actions>a,.post-actions>button,#search-dialog button,.rail-tools button,.menu-toggle):is(:hover,:focus-visible){color:#171819;background:transparent;text-decoration:none}
 .icon-button[aria-pressed=true]{background:var(--signal);color:#171819}
 .icon-button svg{flex-shrink:0;pointer-events:none}
-.post-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:24px 0}
+.post-actions{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;padding:24px 0}
 .share-feedback{flex-basis:100%;font-size:13px;color:var(--muted)}
 .toc-panel summary{display:flex;align-items:center;gap:10px}.toc-panel summary::marker{content:""}
 .article-tools details:not([open]) .toc-label{display:none}.article-tools .toc-panel summary{padding:10px;min-width:44px}
@@ -66,7 +66,12 @@
 [data-unlock][data-state=error] input{border-color:#c94737;box-shadow:inset 3px 0 #c94737}[data-unlock][data-state=error] [role=status]{color:#c94737}[data-unlock][data-state=success]{border-color:var(--signal)}
 [data-key-visibility][aria-pressed=true]{background:var(--signal);color:#171819}
 
-.share-platforms{flex-basis:auto}.share-platforms>summary{list-style:none;cursor:pointer}.share-platforms>summary::-webkit-details-marker{display:none}.share-platforms[open]{flex-basis:100%}.share-platform-list{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;padding:16px 0;border-block:1px solid var(--line)}
+.share-platforms { flex: 0 1 auto; min-width: 0; }
+.share-platforms > summary { list-style: none; cursor: pointer; float: left; }
+.share-platforms > summary::-webkit-details-marker { display: none; }
+.share-platforms[open] { flex: 1 1 44px; }
+.share-platform-list { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 0 54px; padding: 0; }
+.share-platforms[open] > summary { background: var(--signal); color: #171819; }
 .section-heading::before,.section-title::before{content:"";display:block;width:14px;height:14px;border:2px solid currentColor;box-shadow:5px 5px 0 var(--signal);flex-shrink:0;margin-right:10px}.section-heading{justify-content:flex-start;gap:16px}.section-heading>span{margin-left:auto}.section-title{display:flex;align-items:center;gap:16px}.section-title h1{margin:12px 0}.lead h1,.entry h2{line-break:strict;text-wrap:wrap}
 
 .toc-close{position:absolute;right:16px;top:16px;margin:0;z-index:1}.toc-mobile .toc{clear:both;margin-top:16px}.toc-mobile details[open] summary{width:calc(100% - 56px)}

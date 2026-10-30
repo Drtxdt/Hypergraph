@@ -1,0 +1,72 @@
+/* Shared square controls: quiet surface, directional signal feedback. */
+.back-to-top, .audio-controls button, .lightbox button, .player [data-player-close] {
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 44px;
+  position: relative;
+  isolation: isolate;
+  background: var(--surface);
+  color: var(--ink);
+  overflow: hidden;
+}
+.back-to-top::before, .audio-controls button::before, .lightbox button::before, .player [data-player-close]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--signal);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 240ms cubic-bezier(.2,.7,.2,1);
+}
+:is(.back-to-top,.audio-controls button,.lightbox button,.player [data-player-close]):is(:hover,:focus-visible)::before { transform: scaleX(1); }
+:is(.back-to-top,.audio-controls button,.lightbox button,.player [data-player-close]):is(:hover,:focus-visible) { color: #171819; }
+.back-to-top { position: fixed; margin: 0; box-shadow: 3px 3px 0 var(--line); }
+.top-arrow { transition: transform 240ms cubic-bezier(.2,.7,.2,1); }
+.back-to-top:is(:hover,:focus-visible) .top-arrow { transform: translateY(-3px); }
+.back-to-top:active .top-arrow { transform: translateY(-5px); }
+.player { width: 320px; padding: 16px; border-top: 2px solid var(--signal); }
+.player > span { font-size: 14px; line-height: 1.5; padding-right: 44px; margin: 0 0 18px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.player [data-player-close] { position: absolute; top: 6px; right: 6px; width: 32px; height: 32px; min-height: 32px; }
+.player audio[hidden] { display: none; }
+.audio-controls { display: grid; grid-template-columns: 44px minmax(0,1fr) 44px; gap: 12px; align-items: center; }
+.audio-controls output { grid-column: 1 / 3; grid-row: 2; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.audio-volume { grid-column: 2 / 4; grid-row: 2; justify-self: end; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.audio-volume input { max-width: 64px; }
+.audio-controls input { appearance: none; width: 100%; min-width: 0; height: 4px; border: 0; border-radius: 0; margin: 0; padding: 0; background: linear-gradient(to right,var(--ink) var(--played,0%),var(--line) var(--played,0%)); cursor: pointer; }
+.audio-controls input::-webkit-slider-thumb { appearance: none; width: 12px; height: 16px; border: 2px solid var(--paper); border-radius: 0; background: var(--ink); }
+.audio-controls input::-moz-range-thumb { width: 8px; height: 12px; border: 2px solid var(--paper); border-radius: 0; background: var(--ink); }
+.audio-controls input:disabled { opacity: .4; cursor: default; }
+.audio-controls button[aria-pressed=true] { border-color: var(--ink); }
+.audio-status { margin: 8px 0 0; font-size: 12px; }
+.audio-status:empty { display: none; }
+.player select { width: 100%; margin-top: 12px; padding: 8px; background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
+.lightbox { width: min(1280px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 64px 64px 20px; overflow: auto; }
+.lightbox::backdrop { background: #101214ed; }
+.lightbox img { display: block; margin: auto; width: auto; max-width: 100%; max-height: calc(100dvh - 180px); object-fit: contain; }
+.lightbox p { margin: 16px 0 0; text-align: center; color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+.lightbox button { position: absolute; margin: 0; }
+.lightbox .image-close { top: 12px; right: 12px; }
+.lightbox .image-previous { left: 8px; top: calc(50% - 22px); }
+.lightbox .image-next { right: 8px; top: calc(50% - 22px); }
+.lightbox button[hidden] { display: none; }
+@media (max-width: 1023px) {
+  .player { width: 100%; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); }
+  .player > span { margin-bottom: 10px; }
+}
+@media (max-width: 600px) {
+  .lightbox { padding: 60px 12px 70px; }
+  .lightbox img { max-height: calc(100dvh - 220px); }
+  .lightbox .image-previous { top: auto; bottom: 12px; left: calc(50% - 50px); }
+  .lightbox .image-next { top: auto; bottom: 12px; right: calc(50% - 50px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .top-arrow, .back-to-top::before, .audio-controls button::before, .lightbox button::before, .player [data-player-close]::before { transition: none; }
+}
+@media print { .back-to-top, .player, .lightbox { display: none; } }

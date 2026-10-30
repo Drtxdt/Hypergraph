@@ -1,7 +1,7 @@
 [data-intro] { display:none; }
 .intro-active [data-intro]:not([hidden]) { display:block; position:fixed; inset:0; z-index:110; background:#141414; color:#ededeb; overflow:hidden; }
 [data-intro]::after { content:""; position:absolute; inset:0; background:var(--signal); transform:scaleX(0); transform-origin:left; pointer-events:none; }
-[data-intro].is-leaving::after { transform:scaleX(1); transition:transform 480ms cubic-bezier(.7,0,.2,1); }
+[data-intro].is-leaving::after { transform:scaleX(var(--intro-sweep,0)); }
 .intro-identity { position:absolute; left:34%; top:34%; max-width:56%; }
 .intro-identity strong { font:800 clamp(32px,6vw,88px)/1.1 system-ui,system-ui; overflow-wrap:anywhere; }
 .intro-identity p { font:14px system-ui,sans-serif; border-top:1px solid #666; padding-top:20px; }

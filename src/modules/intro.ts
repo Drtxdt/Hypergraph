@@ -43,6 +43,12 @@ export async function mount(signal: AbortSignal) {
       host.classList.add("is-leaving");
       document.dispatchEvent(new Event("hypergraph:intro-reveal"));
     }
+    if (revealing) {
+      // One clock drives coverage and dismissal, including late module startup.
+      const sweep = Math.min(1, Math.max(0, (elapsed - 1960) / 240));
+      host.style.setProperty("--intro-sweep", String(1 - Math.pow(1 - sweep, 3)));
+      host.style.opacity = String(1 - Math.min(1, Math.max(0, (elapsed - 2200) / 240)));
+    }
     if (elapsed >= 2440) {
       stop();
       return;

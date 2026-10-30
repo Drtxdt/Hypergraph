@@ -10,7 +10,7 @@ export function mount(config: Options, signal: AbortSignal) {
   if (config.back_to_top) {
     const button = document.createElement("button");
     button.className = "back-to-top";
-    button.textContent = "↑";
+    button.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path class="top-cap" d="M5 4h14"/><path class="top-arrow" d="m6 13 6-6 6 6M12 7v14"/></svg>';
     button.setAttribute("aria-label", t("返回顶部 / Back to top"));
     document.body.append(button);
     button.addEventListener(
