@@ -14,7 +14,7 @@ hexo.extend.filter.register(
     data.hg_encrypted = true;
     data.comments = false;
     data.description = data.abstract || "";
-    data.content = `<section class="encrypted" ${math ? 'data-math="katex"' : ""}><p>${summary}</p><form data-unlock><label>${t.password} <input type="password" required autocomplete="off"></label> <button type="submit" class="icon-button" aria-label="${t.unlock}" title="${t.unlock}"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 11h14v11H5ZM8 11V6a4 4 0 0 1 8 0M12 15v4"/></svg></button><p role="status" aria-live="polite"></p></form><script type="application/json" data-cipher>${json(payload)}</script><div data-plaintext></div></section>`;
+    data.content = `<section class="encrypted" ${math ? 'data-math="katex"' : ""}><p>${summary}</p><form data-unlock><label>${t.password} <input type="password" required autocomplete="off"></label> <button disabled type="submit" class="icon-button" aria-label="${t.unlock}" title="${t.unlock}"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 11h14v11H5ZM8 11V6a4 4 0 0 1 8 0M12 15v4"/></svg></button><p role="status" aria-live="polite"></p></form><script type="application/json" data-cipher>${json(payload)}</script><div data-plaintext></div></section>`;
     data.excerpt = `<p>${summary}</p>`;
     data.more = data.content;
     data.raw = "";

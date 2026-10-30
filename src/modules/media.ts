@@ -36,7 +36,7 @@ export function mount(root: HTMLElement, signal: AbortSignal) {
     ...root.querySelectorAll<HTMLImageElement>(
       ".prose img,.gallery img,.collection-gallery img",
     ),
-  ].filter((img) => !img.closest("a"));
+  ].filter((img) => !img.closest("a") || !!img.closest(".photo-grid"));
   let index = 0;
   let animation: Animation | undefined;
   let request = 0;
@@ -103,16 +103,21 @@ export function mount(root: HTMLElement, signal: AbortSignal) {
   close.addEventListener("click", () => dialog.close(), { signal });
   dialog.addEventListener("click", (event) => { if (event.target === dialog) dialog.close(); }, { signal });
   for (const img of images) {
-    if (img.closest("a")) continue;
-    img.tabIndex = 0;
-    img.setAttribute("role", "button");
-    img.setAttribute("aria-label", t("查看大图 / View image"));
+    const link = img.closest("a");
+    if (link && !img.closest(".photo-grid")) continue;
+    const trigger: HTMLElement = link || img;
+    trigger.tabIndex = 0;
+    if (!link) trigger.setAttribute("role", "button");
+    trigger.setAttribute("aria-label", t("查看大图 / View image"));
     const open = () => {
       show(images.indexOf(img));
       openModal(dialog);
     };
-    img.addEventListener("click", open, { signal });
-    img.addEventListener(
+    trigger.addEventListener("click", (event) => {
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      event.preventDefault(); open();
+    }, { signal });
+    trigger.addEventListener(
       "keydown",
       (e) => {
         if (e.key === "Enter" || e.key === " ") {

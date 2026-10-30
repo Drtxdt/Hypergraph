@@ -149,7 +149,7 @@ export function mount(
                 list.append(li);
               });
             toc.querySelector("ol")?.remove();
-            toc.append(list);
+            (toc.querySelector(".toc-content") || toc).append(list);
             (toc.closest(".toc-panel") as HTMLElement).hidden =
               !list.children.length;
           }
@@ -188,5 +188,6 @@ export function mount(
       },
       { signal },
     );
+    form.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled = false;
   });
 }

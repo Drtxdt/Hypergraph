@@ -48,6 +48,11 @@ export async function checkBeta4(browser, sites, out, report) {
     const title = await page.locator('.toc-mobile summary').boundingBox();
     const close = await page.locator('.toc-close').boundingBox();
     assert.ok(Math.abs(title.y-close.y)<2 && close.x>title.x && close.width>=44);
+    const panel = await page.locator('.toc-mobile details').boundingBox();
+    const list = await page.locator('.toc-mobile .toc').boundingBox();
+    const firstItem = await page.locator('.toc-mobile .toc a').first().boundingBox();
+    assert.ok(list.width >= panel.width - 40, 'TOC text occupies the usable panel width');
+    assert.ok(firstItem.width > 200 && firstItem.height < 80, 'ordinary headings remain readable horizontal lines');
     await page.locator('.toc-close').click();
     assert.equal(await page.locator('.back-to-top').evaluate(el=>getComputedStyle(el).position),'static');
     await page.goto(sites.main.url+'media-regression/');

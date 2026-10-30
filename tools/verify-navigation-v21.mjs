@@ -11,7 +11,7 @@ const css = await fs.readFile('src/styles/navigation.css', 'utf8');
 const html = `<!doctype html><html><head><style>
 body{margin:0}.site-header{position:fixed;left:0;top:0;width:72px;height:100vh;background:white}.rail-open{width:240px}.site-header nav{display:flex;flex-direction:column}#content{margin-left:260px;height:100vh}.menu-toggle{display:none}.site-header nav a{padding:20px} @media(max-width:1023px){.site-header{width:100%;height:64px}.site-header nav{position:absolute;top:64px;width:100vw;height:calc(100vh - 64px)}.menu-toggle{display:inline}.rail-expand{display:none}}
 ${css}</style></head><body><button id="outside" style="position:absolute;left:300px">Outside</button><header class="site-header"><a class="brand" href="/">Brand</a><button data-menu-toggle class="menu-toggle" aria-expanded="false">Menu</button><nav id="site-nav"><a href="/">Home</a><details class="nav-group"><summary>Group</summary><div><a href="/two">Child</a></div></details></nav></header><main id="content" tabindex="-1"></main><footer class="site-footer"></footer><script type="module">import {mountShell} from '/panels.js';window.controller=new AbortController();mountShell(window.controller.signal);window.ready=true;</script></body></html>`;
-const server=http.createServer((req,res)=>{res.setHeader('Content-Type',req.url==='/panels.js'?'text/javascript':'text/html');res.end(req.url==='/panels.js'?js:html);});
+const server=http.createServer((req,res)=>{res.setHeader('Content-Type',req.url==='/panels.js'?'text/javascript':'text/html');res.end(req.url==='/panels.js'?js:req.url==='/without-logo'?html.replace('<a class="brand" href="/">Brand</a>',''):html);});
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 let browser;
 try {
@@ -58,5 +58,16 @@ try {
  assert.equal(await page.locator('[data-menu-toggle]').evaluate(e=>e===document.activeElement),true);
  assert.equal(await page.locator('#content').evaluate(e=>e.inert),false);
  await page.evaluate(()=>window.controller.abort());
+ await page.goto(`http://127.0.0.1:${server.address().port}/without-logo`);
+ await page.waitForFunction(()=>window.ready);
+ await page.locator('[data-menu-toggle]').click();
+ assert.equal(await page.locator('#content').evaluate(e=>e.inert),true);
+ await page.keyboard.press('Escape');
+ assert.equal(await page.locator('#content').evaluate(e=>e.inert),false);
+ await page.setViewportSize({width:1440,height:900});
+ await page.mouse.move(500,500);await page.mouse.move(30,100);
+ await page.waitForFunction(()=>document.querySelector('.site-header').classList.contains('rail-open'));
+ await page.keyboard.press('Escape');
+ assert.equal(await page.locator('.site-header').evaluate(e=>e.classList.contains('rail-open')),false);
  console.log('Navigation v2.1: hover, no focus theft, delayed close, navigation reconciliation, Escape, focus, mobile inert and focus return passed.');
 } finally { await browser?.close();await new Promise(resolve=>server.close(resolve)); }

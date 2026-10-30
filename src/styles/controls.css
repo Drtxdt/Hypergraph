@@ -74,10 +74,12 @@
 .share-platforms[open] > summary { background: var(--signal); color: #171819; }
 .section-heading::before,.section-title::before{content:"";display:block;width:14px;height:14px;border:2px solid currentColor;box-shadow:5px 5px 0 var(--signal);flex-shrink:0;margin-right:10px}.section-heading{justify-content:flex-start;gap:16px}.section-heading>span{margin-left:auto}.section-title{display:flex;align-items:center;gap:16px}.section-title h1{margin:12px 0}.lead .lead-heading,.entry h2{line-break:strict;text-wrap:wrap}
 
-.toc-mobile details[open]{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:16px}
-.toc-mobile details[open]>summary{grid-column:1;grid-row:1;width:auto}
-.toc-mobile details[open]>.toc-close{position:static;grid-column:2;grid-row:1;width:44px;height:44px;margin:0;padding:0}
-.toc-mobile details>.toc{grid-column:1/-1;margin:0}
+.toc-mobile details[open]{display:block}
+.toc-mobile details[open]>summary{width:calc(100% - 60px);min-height:44px;margin-bottom:16px}
+.toc-mobile details[open] .toc-close{position:absolute;top:16px;right:16px;width:44px;height:44px;margin:0;padding:0}
+.toc-mobile .toc-content{min-width:0;width:100%;max-height:calc(65vh - 94px);overflow:auto}
+.toc-mobile .toc-content>.toc{margin:0;padding-left:0;width:100%}
+@media(scripting:none){.toc-close{display:none!important}}
 
 .site-header nav a[aria-current=page]{font-weight:650;background:transparent}
 

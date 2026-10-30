@@ -115,7 +115,7 @@ export function mountShell(signal: AbortSignal) {
   const nav = document.querySelector<HTMLElement>("#site-nav")!;
   const header = document.querySelector<HTMLElement>(".site-header")!;
   const menu = document.querySelector<HTMLButtonElement>("[data-menu-toggle]")!;
-  const rail = document.querySelector<HTMLAnchorElement>(".brand")!;
+  const rail = document.querySelector<HTMLElement>(".brand") || header;
   const mq = matchMedia("(max-width:1023px), (hover:none)");
   const finePointer = matchMedia("(hover:hover) and (pointer:fine)");
   let hovering = false;
