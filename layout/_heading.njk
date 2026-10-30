@@ -1,0 +1,6 @@
+{% macro heading(title, count, description, level=2) %}
+<header class="section-heading">
+  <div><h{{ level }}>{{ title }}</h{{ level }}>{% if description %}<p>{{ description }}</p>{% endif %}</div>
+  {% if count != null %}<span>{{ count }} {{ hg_t('articles') }}</span>{% endif %}
+</header>
+{% endmacro %}

@@ -172,7 +172,7 @@ main {
 .lead-title {
   padding: 36px 0 32px;
 }
-.lead h1 {
+.lead .lead-heading {
   margin: 12px 0 28px;
   font-family: system-ui, system-ui, sans-serif;
   font-weight: 800;
@@ -181,10 +181,10 @@ main {
   letter-spacing: -0.035em;
   overflow-wrap: anywhere;
 }
-.lead h1 a:hover {
+.lead .lead-heading a:hover {
   text-decoration: none;
 }
-.lead h1 a:hover {
+.lead .lead-heading a:hover {
   box-shadow: 0 3px 0 var(--signal);
 }
 .lead p {
@@ -258,7 +258,7 @@ main {
 .text-only .lead-title .categories {
   grid-column: 1/-1;
 }
-.text-only .lead-title h1 {
+.text-only .lead-title .lead-heading {
   margin-bottom: 0;
   max-width: 18em;
 }
@@ -662,11 +662,13 @@ html[data-motion="off"] .home-entry .entry-media img {
   .lead-copy {
     margin: 0;
     padding: 0 0 24px;
+    align-self: stretch;
+    width: 100%;
   }
   .lead-title {
     padding: 28px 0;
   }
-  .lead h1 {
+  .lead .lead-heading {
     font-size: 34px;
     margin-bottom: 22px;
   }
@@ -682,7 +684,7 @@ html[data-motion="off"] .home-entry .entry-media img {
     display: block;
     padding: 28px 0;
   }
-  .text-only .lead-title h1 {
+  .text-only .lead-title .lead-heading {
     margin-bottom: 24px;
   }
   .text-only .lead-copy {
@@ -810,13 +812,6 @@ html[data-motion="off"] .home-entry .entry-media img {
   transform: translate(3px, -3px);
   background: var(--signal);
   color: #191919;
-}
-.home-introduction {
-  padding: 32px 0;
-  border-bottom: 1px solid var(--line);
-}
-.home-introduction h1 {
-  font-size: 24px;
 }
 .home-body.with-sidebar {
   display: grid;

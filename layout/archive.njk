@@ -1,7 +1,13 @@
 {% set archive = hg_archive(page) %}{% set media = hg_media(page, archive.type) %}
-<header class="article-head"><p class="eyebrow">{{ hg_t('archive') }} / {{ archive.count }} {{ hg_t('articles') }}</p><div class="section-title"><h1>{{ page.category or page.tag or hg_t('archive') }}{% if page.year %} · {{ page.year }}{% if page.month %} / {{ page.month }}{% endif %}{% endif %}</h1></div></header>
+{% from '_heading.njk' import heading with context %}
+{{ heading(page.category or page.tag or hg_t('archive'), archive.count, page.year, 1) }}
 {% include '_media.njk' %}
 <div class="taxonomy">{% for category in site.categories.toArray() %}<a href="{{ url_for(category.path) }}">{{ category.name }} <small>{{ category.length }}</small></a>{% endfor %}</div>
+<div class="archive-layout">
+{% macro month_links() %}<nav aria-label="{{ hg_t('archive') }}">{% for group in archive.groups %}<a href="#month-{{ loop.index }}">{{ group.month }}</a>{% endfor %}</nav>{% endmacro %}
+{% if archive.groups.length %}<aside class="archive-index archive-index-desktop">{{ month_links() }}</aside><details class="archive-index archive-index-mobile"><summary>{{ hg_t('archive') }}</summary>{{ month_links() }}</details>{% endif %}
 <section class="archive-list {% if (page.category and hg().appearance.category_layout == 'cards') or (page.tag and hg().appearance.tag_layout == 'cards') %}archive-cards{% endif %}">
-{% for group in archive.groups %}<section class="archive-month"><h2>{{ group.month }}</h2>{% for post in group.posts %}<article class="entry"><time>{{ date(post.date,'MM.DD') }}</time><h3><a href="{{ url_for(post.path) }}">{{ post.title }}</a></h3></article>{% endfor %}</section>{% else %}<p class="empty-state">{{ hg_t('empty') }}</p>{% endfor %}</section>
-<div class="pagination">{{ paginator() | safe }}</div>
+{% for group in archive.groups %}<section class="archive-month" id="month-{{ loop.index }}"><h2>{{ group.month }}</h2>{% for post in group.posts %}<article class="entry"><time>{{ date(post.date,'MM.DD') }}</time><h3><a href="{{ url_for(post.path) }}">{{ post.title }}</a></h3></article>{% endfor %}</section>{% else %}<p class="empty-state">{{ hg_t('empty') }}</p>{% endfor %}</section>
+</div>
+{% if site.tags.length %}<details class="archive-tags"><summary>{{ hg_t('tags') }}</summary><div class="taxonomy">{% for tag in site.tags.toArray() %}<a href="{{ url_for(tag.path) }}">{{ tag.name }} <small>{{ tag.length }}</small></a>{% endfor %}</div></details>{% endif %}
+{% if page.total > 1 %}<div class="pagination">{{ paginator() | safe }}</div>{% endif %}
