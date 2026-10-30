@@ -74,7 +74,7 @@ async function mountAppearance(root: HTMLElement, signal: AbortSignal, transitio
 }
 let pageController = new AbortController();
 if (document.documentElement.classList.contains("intro-active"))
-  void import("./modules/intro").then(m => m.mount(globalController.signal)).catch(() => {});
+  void import("./modules/intro").then(m => m.mount(globalController.signal)).catch(() => (window as Window & { __hgIntroFinish?: () => void }).__hgIntroFinish?.());
 
 let epoch = 0;
 async function mountUnlocked(root: HTMLElement, signal: AbortSignal) {

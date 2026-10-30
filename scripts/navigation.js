@@ -146,3 +146,9 @@ hexo.extend.helper.register("hg_archive", function (page) {
     type: page.category ? "category" : page.tag ? "tag" : "archive",
   };
 });
+
+hexo.extend.helper.register("hg_intro_bootstrap", function () {
+  const boot = require("../lib/intro-bootstrap.cjs");
+  const args = JSON.stringify([hexo.theme.config.appearance.intro, "hypergraph:intro:" + this.url_for("/")]).replace(/</g,"\\u003c");
+  return "(" + boot.toString() + ")(..." + args + ");";
+});

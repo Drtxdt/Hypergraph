@@ -12,7 +12,16 @@ export function mount(config: Options, signal: AbortSignal) {
     button.className = "back-to-top";
     button.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path class="top-cap" d="M5 4h14"/><path class="top-arrow" d="m6 13 6-6 6 6M12 7v14"/></svg>';
     button.setAttribute("aria-label", t("返回顶部 / Back to top"));
-    document.body.append(button);
+    const footer = document.querySelector('.site-footer');
+    if (footer) footer.before(button);
+    else document.body.append(button);
+    const updateVisibility = () => {
+      button.hidden = matchMedia('(min-width:1024px)').matches && scrollY <= innerHeight && document.activeElement !== button;
+    };
+    document.addEventListener('scroll', updateVisibility, { passive: true, signal });
+    window.addEventListener('resize', updateVisibility, { signal });
+    button.addEventListener('blur', updateVisibility, { signal });
+    updateVisibility();
     button.addEventListener(
       "click",
       () =>
