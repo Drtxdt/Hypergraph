@@ -66,7 +66,7 @@ export async function generate(base, options = {}) {
   config.url =
     "https://example.com" + (root === "/" ? "" : root.replace(/\/$/, ""));
   config.language = options.language || "zh-CN";
-  config.index_generator.per_page = 30;
+  config.index_generator.per_page = options.perPage ?? 30;
   await fs.writeFile(path.join(base, "_config.yml"), yaml.dump(config));
   const theme = merge(
     {

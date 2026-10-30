@@ -69,6 +69,7 @@ try {
   }
   const variants = {
     main: {},
+    paginated: { perPage:1 },
     content: { content:true, theme: { music: { enable:false } } },
     noCover: { noCover: true },
     empty: { empty: true },

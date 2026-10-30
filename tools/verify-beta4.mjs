@@ -17,6 +17,14 @@ export async function checkBeta4(browser, sites, out, report) {
       assert.equal(await page.locator('.home-introduction h1').count(), 1);
       assert.equal(await page.locator('#latest,.pagination').count(), 0);
     }
+    await page.goto(sites.paginated.url);
+    assert.equal(await page.locator('#latest').count(), 0);
+    assert.equal(await page.locator('.pagination').count(), 1, 'a featured-only first page retains access to subsequent pages');
+    await page.locator('.pagination a[href$="/page/2/"]').first().click();
+    await page.waitForURL('**/page/2/');
+    await page.locator('.entry').waitFor();
+    assert.equal(await page.locator('.entry').count(), 1);
+    assert.equal(await page.locator('.lead').count(), 0);
     await page.goto(sites.main.url+'archives/');
     assert.equal(await page.locator('.archive-index-mobile').getAttribute('open'), null);
     await page.locator('.archive-index-mobile summary').click();
