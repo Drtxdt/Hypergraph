@@ -366,8 +366,9 @@ export async function performance(browser, sites, report, visits = ["first", "su
         resources.clear();
       }
       await page.addInitScript(() => {
-        window.metrics = { lcp: null, cls: 0, shifts: [], events: [], eventCounts: 0, readable: null };
+        window.metrics = { lcp: null, cls: 0, shifts: [], events: [], eventDetails: [], eventCounts: 0, readable: null };
         const readable = () => {
+          if (window.metrics.readable !== null) return;
           const title=document.querySelector('.lead-title,.article-head,#content h1');
           const clearTitle=title && Number(getComputedStyle(title).opacity)>=.99 && getComputedStyle(title).clipPath==='none';
           if (window.metrics.readable === null && document.readyState !== "loading" && document.querySelector("#content") && clearTitle && !document.documentElement.classList.contains("intro-active")) {
@@ -392,7 +393,7 @@ export async function performance(browser, sites, report, visits = ["first", "su
         ).observe({ type: "layout-shift", buffered: true });
         new PerformanceObserver((l) =>
           l.getEntries().forEach((e) => {
-            if (e.interactionId) window.metrics.events.push(e.duration);
+            if (e.interactionId) { window.metrics.events.push(e.duration); window.metrics.eventDetails.push({name:e.name,duration:e.duration,processing:e.processingEnd-e.processingStart,target:e.target?.outerHTML?.slice(0,180)}); }
           }),
         ).observe({ type: "event", buffered: true, durationThreshold: 16 });
       });

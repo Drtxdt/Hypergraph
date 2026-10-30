@@ -45,6 +45,19 @@ export async function checkBeta3(browser, sites, out, report) {
     await page.locator('[data-menu-toggle]').click();
     await page.locator('[data-player-toggle]').click();
     assert.equal(await page.locator('.player').isVisible(),false);
+    await page.goto(sites.main.url+routes.long);
+    await page.waitForFunction(()=>window.__hypergraph?.swup);
+    const before = await page.locator('#content').evaluate(e=>e.getBoundingClientRect().height);
+    await page.locator('[data-menu-toggle]').click();
+    const covered = await page.locator('#content').evaluate(e=>({height:e.getBoundingClientRect().height,visibility:getComputedStyle(e).contentVisibility}));
+    assert.equal(covered.visibility,'hidden');
+    assert.ok(Math.abs(covered.height-before)<2,'covered page must keep its exact height');
+    await page.locator('[data-search]').click({position:{x:32,y:22}});
+    await page.keyboard.press('Escape');
+    assert.equal(await page.locator('#content').evaluate(e=>getComputedStyle(e).contentVisibility),'visible');
+    assert.ok(await page.locator('.prose').evaluate(e=>{const range=document.createRange();range.selectNodeContents(e);const selection=getSelection();selection.removeAllRanges();selection.addRange(range);const intact=selection.toString().length>100000;selection.removeAllRanges();return intact;}));
+    await page.evaluate(()=>document.querySelector('#Section-159').scrollIntoView());
+    assert.ok(await page.locator('#Section-159').isVisible());
     report.beta3={standaloneWidths:6,unlockedTocCycles:3,desktopResize:true,postEndAxis:true,share:true,initialMusicClose:true};
   } finally {await context.close();}
 }

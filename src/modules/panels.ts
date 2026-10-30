@@ -1,5 +1,15 @@
 type Panel = { element: HTMLElement; close: () => void; trigger?: HTMLElement };
 let active: Panel | undefined;
+// The covered page keeps its exact geometry, but need not repaint thousands of
+// lines while a full-screen menu or search dialog makes it unavailable.
+function reservePageGeometry() {
+  if (document.body.classList.contains("panel-lock") || document.querySelector("#search-dialog[open]")) return;
+  const content = document.querySelector<HTMLElement>("#content");
+  if (!content) return;
+  const style = getComputedStyle(content);
+  const height = content.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+  content.style.setProperty("--covered-page-height", `${height}px`);
+}
 export function dismissPanels(restore = false) {
   const previous = active;
   active = undefined;
@@ -47,6 +57,7 @@ export function releasePanel(element: HTMLElement) {
 }
 export function openModal(dialog: HTMLDialogElement) {
   if (dialog.open) return;
+  reservePageGeometry();
   activatePanel(dialog, () => {
     if (dialog.open) dialog.close();
   });
@@ -88,6 +99,7 @@ export function mountShell(signal: AbortSignal) {
     )
       return;
     clearLeave();
+    if (mq.matches) reservePageGeometry();
     if (active?.element !== nav) activatePanel(nav, close, trigger);
     suppressAuto = false;
     trigger.setAttribute("aria-expanded", "true");

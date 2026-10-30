@@ -15,7 +15,7 @@
 .article-tools details:not([open]) .toc-label{display:none}.article-tools .toc-panel summary{padding:10px;min-width:44px}
 #search-dialog{width:min(720px,calc(100vw - 32px));height:min(720px,calc(100dvh - 64px));max-height:calc(100dvh - 64px);padding:28px;border:1px solid var(--line);border-top:4px solid var(--signal);border-radius:0;box-shadow:0 24px 100px #0004}
 #search-dialog[open]{display:flex;flex-direction:column;gap:16px}
-#search-dialog::backdrop{background:#101214aa;backdrop-filter:blur(6px)}
+#search-dialog::backdrop{background:var(--paper)}
 #search-dialog .dialog-heading{margin:0;gap:12px}#search-dialog h2{font-size:24px;font-weight:650;margin:0}
 #search-dialog>label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 .search-field{display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--line);padding:10px 0}.search-field:focus-within{border-color:var(--signal)}
@@ -72,3 +72,7 @@
 .toc-close{position:absolute;right:16px;top:16px;margin:0;z-index:1}.toc-mobile .toc{clear:both;margin-top:16px}.toc-mobile details[open] summary{width:calc(100% - 56px)}
 
 .site-header nav a[aria-current=page]{font-weight:650;background:transparent}
+
+/* Only inaccessible content beneath full-screen panels skips painting. */
+.panel-lock #content,body:has(#search-dialog[open]) #content{content-visibility:hidden;contain-intrinsic-block-size:var(--covered-page-height)}
+@media print{.panel-lock #content,body:has(#search-dialog[open]) #content{content-visibility:visible;contain-intrinsic-block-size:none}}
