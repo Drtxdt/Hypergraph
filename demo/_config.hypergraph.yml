@@ -1,25 +1,7 @@
 preset: endfield
 color_mode: auto
-menu:
-  - label: home
-    url: /
-    icon: home
-  - label: archives
-    url: /archives/
-    icon: archive
-  - label: 空间
-    icon: grid
-    children:
-      - label: 关于
-        url: /about/
-      - label: 影像
-        url: /gallery/
-      - label: 音乐
-        url: /music/
-      - label: 友链
-        url: /friends/
 home:
-  title: 记录当下，连接未知。
+  title: Hypergraph
   description: 技术、生活，以及值得留下的思考。
 pages:
   about:
@@ -59,7 +41,6 @@ sidebar:
     - tags
     - archives
 appearance:
-  avatar: /hypergraph.svg
   motion: cinematic
 comments:
   enable: false

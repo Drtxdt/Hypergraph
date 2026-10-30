@@ -1,0 +1,10 @@
+{% from '_heading.njk' import heading with context %}
+{{ heading(page.title, null, page.description, 1) }}
+<section class="about-profile">{% if page.profile.avatar or hg().appearance.avatar %}<img src="{{ hg_image(page.profile.avatar or hg().appearance.avatar) }}" alt="" width="120" height="120">{% endif %}<div><h2>{{ page.profile.name or config.author or config.title }}</h2><p>{{ page.profile.bio or config.description }}</p>{% if page.profile.status %}<small>{{ page.profile.status }}</small>{% endif %}</div></section>
+{% for item in page.items %}<section class="about-section"><h2>{{ item.title }}</h2><p>{{ item.description }}</p></section>{% endfor %}
+{% if page.projects.length %}<section class="about-section"><h2>{{ hg_t('projects') }}</h2><div class="portal-grid">{% for item in page.projects %}<article class="portal-card"><h3>{% if item.url %}<a href="{{ hg_link(item.url) }}">{{ item.title }} ↗</a>{% else %}{{ item.title }}{% endif %}</h3><p>{{ item.description }}</p></article>{% endfor %}</div></section>{% endif %}
+{% if page.timeline.length %}<section class="about-section"><h2>{{ hg_t('timeline') }}</h2><ol class="experience-list">{% for item in page.timeline %}<li><time>{{ item.date }}</time><div><h3>{{ item.title }}</h3><p>{{ item.description }}</p></div></li>{% endfor %}</ol></section>{% endif %}
+{% if page.interests.length %}<section class="about-section"><h2>{{ hg_t('interests') }}</h2><ul class="interest-list">{% for item in page.interests %}<li>{{ item }}</li>{% endfor %}</ul></section>{% endif %}
+{% if page.links.length %}<nav class="profile-links" aria-label="{{ hg_t('contact') }}">{% for item in page.links %}<a href="{{ hg_link(item.url) }}">{{ item.label or item.title }} ↗</a>{% endfor %}</nav>{% endif %}
+{% if page.linkedPosts.length %}<section class="about-section"><h2>{{ hg_t('related') }}</h2>{% for item in page.linkedPosts %}<p><a href="{{ url_for(item.path) }}">{{ item.title }} ↗</a></p>{% endfor %}</section>{% endif %}
+{% include '_comments.njk' %}

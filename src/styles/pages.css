@@ -737,17 +737,6 @@ html[data-motion="off"] .home-entry .entry-media img {
     display: block;
   }
 }
-/* The media fills the composition without imposing its intrinsic height. */
-@media (min-width: 601px) {
-  .lead.has-image {
-    min-height: clamp(480px, 68svh, 680px);
-  }
-  .lead-media img {
-    position: absolute;
-    inset: 0;
-    min-height: 0;
-  }
-}
 .back-to-top {
   right: 12px;
   bottom: calc(var(--player-space) + 12px);

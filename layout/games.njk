@@ -1,0 +1,4 @@
+{% from '_heading.njk' import heading with context %}{{ heading(page.title, null, page.description, 1) }}
+<div class="portal-grid builtin-grid">{% for item in page.builtins %}<a class="portal-card" href="{{ url_for(item.path) }}"><span class="portal-emblem">{{ hg_icon(item.id) | safe }}</span><h2>{{ item.title }}</h2><p>{{ hg_t(item.id + '_description') }}</p><span class="portal-arrow" aria-hidden="true">↗</span></a>{% endfor %}</div>{% include '_portal-cards.njk' %}
+
+{% if not page.builtins.length and not page.links.length %}<p class="empty-state">{{ hg_t('empty') }}</p>{% endif %}

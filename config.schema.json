@@ -23,6 +23,36 @@
           "label": "archives",
           "url": "/archives/",
           "icon": "archive"
+        },
+        {
+          "label": "gallery",
+          "page": "gallery",
+          "icon": "image"
+        },
+        {
+          "label": "essay",
+          "page": "essay",
+          "icon": "note"
+        },
+        {
+          "label": "friends",
+          "page": "friends",
+          "icon": "users"
+        },
+        {
+          "label": "tools",
+          "page": "tools",
+          "icon": "tool"
+        },
+        {
+          "label": "games",
+          "page": "games",
+          "icon": "gamepad"
+        },
+        {
+          "label": "about",
+          "page": "about",
+          "icon": "user"
         }
       ],
       "items": {
@@ -49,7 +79,10 @@
               "link",
               "grid",
               "user",
-              "users"
+              "users",
+              "note",
+              "tool",
+              "gamepad"
             ]
           },
           "children": {
@@ -58,8 +91,7 @@
               "type": "object",
               "additionalProperties": false,
               "required": [
-                "label",
-                "url"
+                "label"
               ],
               "properties": {
                 "label": {
@@ -67,10 +99,68 @@
                 },
                 "url": {
                   "type": "string"
+                },
+                "enable": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "page": {
+                  "enum": [
+                    "about",
+                    "friends",
+                    "gallery",
+                    "essay",
+                    "equipment",
+                    "music",
+                    "room",
+                    "fcircle",
+                    "tools",
+                    "games"
+                  ]
                 }
-              }
+              },
+              "oneOf": [
+                {
+                  "required": [
+                    "url"
+                  ],
+                  "not": {
+                    "required": [
+                      "page"
+                    ]
+                  }
+                },
+                {
+                  "required": [
+                    "page"
+                  ],
+                  "not": {
+                    "required": [
+                      "url"
+                    ]
+                  }
+                }
+              ]
             },
             "minItems": 1
+          },
+          "enable": {
+            "type": "boolean",
+            "default": true
+          },
+          "page": {
+            "enum": [
+              "about",
+              "friends",
+              "gallery",
+              "essay",
+              "equipment",
+              "music",
+              "room",
+              "fcircle",
+              "tools",
+              "games"
+            ]
           }
         },
         "oneOf": [
@@ -79,8 +169,36 @@
               "url"
             ],
             "not": {
-              "required": [
-                "children"
+              "anyOf": [
+                {
+                  "required": [
+                    "page"
+                  ]
+                },
+                {
+                  "required": [
+                    "children"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "required": [
+              "page"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "url"
+                  ]
+                },
+                {
+                  "required": [
+                    "children"
+                  ]
+                }
               ]
             }
           },
@@ -89,8 +207,17 @@
               "children"
             ],
             "not": {
-              "required": [
-                "url"
+              "anyOf": [
+                {
+                  "required": [
+                    "url"
+                  ]
+                },
+                {
+                  "required": [
+                    "page"
+                  ]
+                }
               ]
             }
           }
@@ -537,7 +664,7 @@
           "properties": {
             "enable": {
               "type": "boolean",
-              "default": false
+              "default": true
             },
             "path": {
               "type": "string"
@@ -552,7 +679,8 @@
               "type": "string",
               "default": ""
             }
-          }
+          },
+          "default": {}
         },
         "friends": {
           "type": "object",
@@ -560,7 +688,7 @@
           "properties": {
             "enable": {
               "type": "boolean",
-              "default": false
+              "default": true
             },
             "path": {
               "type": "string"
@@ -575,7 +703,8 @@
               "type": "string",
               "default": ""
             }
-          }
+          },
+          "default": {}
         },
         "gallery": {
           "type": "object",
@@ -583,7 +712,7 @@
           "properties": {
             "enable": {
               "type": "boolean",
-              "default": false
+              "default": true
             },
             "path": {
               "type": "string"
@@ -598,7 +727,8 @@
               "type": "string",
               "default": ""
             }
-          }
+          },
+          "default": {}
         },
         "essay": {
           "type": "object",
@@ -606,7 +736,7 @@
           "properties": {
             "enable": {
               "type": "boolean",
-              "default": false
+              "default": true
             },
             "path": {
               "type": "string"
@@ -621,7 +751,8 @@
               "type": "string",
               "default": ""
             }
-          }
+          },
+          "default": {}
         },
         "equipment": {
           "type": "object",
@@ -644,7 +775,8 @@
               "type": "string",
               "default": ""
             }
-          }
+          },
+          "default": {}
         },
         "music": {
           "type": "object",
@@ -667,7 +799,8 @@
               "type": "string",
               "default": ""
             }
-          }
+          },
+          "default": {}
         },
         "room": {
           "type": "object",
@@ -690,7 +823,8 @@
               "type": "string",
               "default": ""
             }
-          }
+          },
+          "default": {}
         },
         "fcircle": {
           "type": "object",
@@ -713,7 +847,86 @@
               "type": "string",
               "default": ""
             }
-          }
+          },
+          "default": {}
+        },
+        "tools": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "default": true
+            },
+            "path": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "endpoint": {
+              "type": "string",
+              "default": ""
+            },
+            "builtins": {
+              "type": "array",
+              "uniqueItems": true,
+              "default": [
+                "json",
+                "text",
+                "codec"
+              ],
+              "items": {
+                "enum": [
+                  "json",
+                  "text",
+                  "codec"
+                ]
+              }
+            }
+          },
+          "default": {}
+        },
+        "games": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "default": true
+            },
+            "path": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "endpoint": {
+              "type": "string",
+              "default": ""
+            },
+            "builtins": {
+              "type": "array",
+              "uniqueItems": true,
+              "default": [
+                "2048",
+                "minesweeper"
+              ],
+              "items": {
+                "enum": [
+                  "2048",
+                  "minesweeper"
+                ]
+              }
+            }
+          },
+          "default": {}
         }
       }
     },
@@ -1501,6 +1714,13 @@
             "all"
           ],
           "default": "home"
+        },
+        "cover_fit": {
+          "enum": [
+            "cover",
+            "contain"
+          ],
+          "default": "cover"
         }
       }
     },

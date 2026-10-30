@@ -1,0 +1,322 @@
+/* Dedicated pages reuse surfaces and intent feedback, not a shared content model. */
+.portal-grid,
+.friend-grid,
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 24px;
+  margin: 28px 0;
+}
+.portal-group {
+  margin: 32px 0;
+}
+.portal-card,
+.friend-card {
+  position: relative;
+  isolation: isolate;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 24px;
+  text-decoration: none;
+  color: var(--ink);
+  overflow: hidden;
+}
+.portal-card::before,
+.friend-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--signal);
+  z-index: -1;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 260ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.portal-card:is(:hover, :focus-within)::before,
+.friend-card:is(:hover, :focus-visible)::before {
+  transform: scaleX(1);
+}
+.portal-card:is(:hover, :focus-within),
+.friend-card:is(:hover, :focus-visible) {
+  color: #171819;
+}
+.portal-card h2,
+.portal-card h3 {
+  font: 650 24px/1.4 var(--display-font, system-ui);
+  margin: 20px 0 8px;
+}
+.portal-card p {
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 0 0 24px;
+}
+.portal-emblem {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 1px solid var(--line);
+  background: repeating-linear-gradient(
+    135deg,
+    transparent 0 6px,
+    var(--line) 6px 7px
+  );
+}
+.portal-emblem svg {
+  width: 32px;
+  height: 32px;
+}
+.portal-arrow {
+  display: block;
+  text-align: right;
+  font-size: 26px;
+}
+.portal-card > img {
+  width: 100%;
+  height: 160px;
+  object-fit: contain;
+}
+.friend-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.friend-card > img {
+  object-fit: cover;
+  width: 56px;
+  height: 56px;
+}
+.friend-card > svg {
+  flex-shrink: 0;
+}
+.friend-card > div {
+  flex: 1;
+}
+.friend-card h3 {
+  margin: 0;
+  font-size: 18px;
+}
+.friend-card p {
+  margin: 6px 0;
+  font-size: 14px;
+}
+.about-profile {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin: 40px 0;
+}
+.about-profile img {
+  object-fit: cover;
+}
+.about-profile h2 {
+  font: 700 32px/1.3 var(--display-font, system-ui);
+}
+.about-section {
+  margin: 36px 0;
+  max-width: 72rem;
+}
+.about-section > h2 {
+  border-left: 3px solid var(--signal);
+  padding-left: 12px;
+}
+.experience-list {
+  list-style: none;
+  padding: 0;
+}
+.experience-list li {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 24px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+.experience-list h3 {
+  margin: 0;
+}
+.interest-list,
+.profile-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+}
+.interest-list li,
+.profile-links a {
+  background: var(--surface);
+  padding: 8px 16px;
+}
+.album-card {
+  text-decoration: none;
+}
+.album-card img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+}
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 24px;
+  margin: 28px 0;
+}
+.photo-grid figure {
+  margin: 0;
+  background: var(--surface);
+}
+.photo-grid img {
+  display: block;
+  width: 100%;
+  height: 300px;
+  object-fit: contain;
+}
+.photo-grid figcaption {
+  padding: 12px 16px;
+  font-size: 14px;
+}
+.parent-link {
+  display: inline-block;
+  margin-top: 24px;
+}
+.utility {
+  max-width: 64rem;
+  margin: 28px auto;
+}
+.utility label {
+  display: block;
+}
+.utility textarea {
+  display: block;
+  resize: vertical;
+  width: 100%;
+  min-height: 220px;
+  padding: 16px;
+  font: 15px/1.7 var(--code-font, monospace);
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.utility-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.utility-actions button {
+  padding: 10px 16px;
+}
+.utility-status {
+  min-height: 28px;
+}
+.game-shell {
+  max-width: 440px;
+  margin: 32px auto;
+}
+.game-board {
+  display: grid;
+  gap: 8px;
+  background: var(--line);
+  padding: 8px;
+  touch-action: none;
+}
+.game-board[data-game="2048"] {
+  grid-template-columns: repeat(4, 1fr);
+}
+.game-cell {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  background: var(--surface);
+  font:
+    700 clamp(22px, 5vw, 34px)/1 ui-monospace,
+    monospace;
+  color: var(--ink);
+}
+.game-cell[data-value]:not([data-value="0"]) {
+  background: var(--signal);
+  color: #171819;
+}
+.game-cell[data-value="2"],
+.game-cell[data-value="4"] {
+  background: var(--paper);
+  color: var(--ink);
+}
+.game-board[data-game="minesweeper"] {
+  grid-template-columns: repeat(9, 1fr);
+  gap: 3px;
+  padding: 4px;
+}
+.mine-cell {
+  min-height: 0;
+  min-width: 0;
+  padding: 0;
+  aspect-ratio: 1;
+  border: 0;
+  background: var(--surface);
+  font:
+    600 16px/1 ui-monospace,
+    monospace;
+  color: var(--ink);
+}
+.mine-cell[data-open="true"] {
+  background: var(--paper);
+}
+.mine-cell[data-flag="true"] {
+  background: var(--signal);
+  color: #171819;
+}
+.game-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+.game-controls button {
+  min-width: 44px;
+  min-height: 44px;
+}
+.game-status {
+  min-height: 32px;
+  font-variant-numeric: tabular-nums;
+}
+.game-board:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 4px;
+}
+@media (max-width: 600px) {
+  .about-profile {
+    gap: 16px;
+  }
+  .about-profile img {
+    width: 72px;
+    height: 72px;
+  }
+  .about-profile h2 {
+    font-size: 26px;
+  }
+  .experience-list li {
+    grid-template-columns: 80px 1fr;
+    gap: 12px;
+  }
+  .portal-grid,
+  .friend-grid {
+    gap: 16px;
+  }
+  .portal-card {
+    padding: 20px;
+  }
+  .game-shell {
+    max-width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .portal-card::before,
+  .friend-card::before {
+    transition: none;
+  }
+}
+
+.portal-group .portal-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+}

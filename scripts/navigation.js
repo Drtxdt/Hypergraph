@@ -1,6 +1,26 @@
 "use strict";
 const { escape } = require("../lib/utils.cjs");
 const paths = {
+  json: "M9 3H6v7l-3 2 3 2v7h3M15 3h3v7l3 2-3 2v7h-3",
+  text: "M4 5h16M4 10h16M4 15h10M4 20h7",
+  codec: "m8 6-6 6 6 6m8-12 6 6-6 6M14 3l-4 18",
+  format: "M4 5h16M8 10h12M8 15h12M4 20h16",
+  minify: "m3 3 6 6M3 9h6V3m12 18-6-6m0 6v-6h6",
+  validate: "m4 12 5 5L20 6",
+  count: "M3 4h2v6M3 14h3l-3 7h3M10 6h11M10 17h11",
+  clear: "M3 6h18M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7M14 10v7",
+  new_game: "M4 8a9 9 0 1 1-1 8M4 2v6h6",
+  continue: "m7 3 14 9-14 9Z",
+  flag: "M5 22V3l14 5-14 5",
+  url_encode: "M3 12h18m-5-5 5 5-5 5M3 5v14",
+  url_decode: "M3 12h18M8 7l-5 5 5 5M21 5v14",
+  base64_encode: "M3 3h18v18H3Zm3 9h12m-5-5 5 5-5 5",
+  base64_decode: "M3 3h18v18H3Zm3 9h12m-7-5-5 5 5 5",
+  "2048": "M3 3h7v7H3Zm11 0h7v7h-7ZM3 14h7v7H3Zm11 0h7v7h-7Z",
+  minesweeper: "M12 1v4m0 14v4M1 12h4m14 0h4M4 4l3 3m10 10 3 3M4 20l3-3M17 7l3-3M12 5a7 7 0 1 0 0 14 7 7 0 0 0 0-14",
+  note: "M5 3h14v18H5ZM9 8h6M9 12h6M9 16h4",
+  tool: "m14 3 2 5 5 2-4 4-4-1-7 8-3-3 8-7-1-4Z",
+  gamepad: "M7 6h10l4 11-3 3-4-4h-4l-4 4-3-3ZM5 11h6M8 8v6M16 10h1M18 13h1",
   copy: "M8 8h13v13H8ZM16 8V3H3v13h5",
   telegram: "M2 10 22 2l-5 20-6-7-4 3v-6ZM7 12 22 2M11 15 22 2",
   facebook: "M14 22V12h4l1-4h-5V6c0-2 1-3 4-3V0c-6-1-8 1-8 6v2H7v4h3v10",
@@ -38,7 +58,21 @@ hexo.extend.helper.register("hg_icon", function (name) {
   );
 });
 hexo.extend.helper.register("hg_menu", function () {
+  const resolve = (item) => {
+    if (item.enable === false) return null;
+    if (item.page) {
+      const page = hexo.theme.config.pages[item.page];
+      if (!page?.enable) return null;
+      return { ...item, url: require("../lib/page-path.cjs").pagePath(item.page, page) };
+    }
+    if (item.children) {
+      const children = item.children.map(resolve).filter(Boolean);
+      return children.length ? { ...item, children } : null;
+    }
+    return item;
+  };
   return hexo.theme.config.menu
+    .map(resolve).filter(Boolean)
     .map((item) => {
       const label = escape(this.hg_t(item.label));
       const icon = this.hg_icon(item.icon || "link");
@@ -107,7 +141,15 @@ hexo.extend.helper.register("hg_media", function (post, type = "post") {
     has_image: !!url,
     position: focus,
     height: cfg.hero.height,
+    fit: post.cover_fit || cfg.cover_fit || "cover",
   };
+});
+
+hexo.extend.helper.register("hg_topics", function () {
+  return hexo.locals.get("categories").toArray().filter(c => c.length)
+    .sort((a,b) => b.length-a.length || a.name.localeCompare(b.name)).slice(0,2)
+    .map(c => ({ name:c.name, path:c.path, count:c.length,
+      latest:c.posts.sort('-date').toArray().find(p=>!p.password&&!p.hg_encrypted) }));
 });
 hexo.extend.helper.register("hg_archive", function (page) {
   const all = hexo.locals

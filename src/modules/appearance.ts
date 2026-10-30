@@ -127,7 +127,7 @@ function mountMotion(
       once: true,
       signal,
     });
-  else enter();
+  else if (!(window as Window & { __hgIntroResult?: unknown }).__hgIntroResult) enter();
   const observer = new IntersectionObserver(
     (entries) =>
       entries.forEach((entry) => {
@@ -140,7 +140,7 @@ function mountMotion(
   );
   root.querySelectorAll(".entry").forEach((el) => observer.observe(el));
   const media = root.querySelector<HTMLElement>(".lead-media");
-  if (cinematic && !mobile && matchMedia("(pointer:fine)").matches && media) {
+  if (cinematic && !mobile && matchMedia("(pointer:fine)").matches && media && media.dataset.fit !== "contain") {
     const image = media.querySelector<HTMLElement>("img");
     media.addEventListener(
       "pointermove",
