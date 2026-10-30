@@ -29,6 +29,7 @@ export async function checkIntegrations(browser, site, report) {
   await page.locator("dialog.lightbox[open]").waitFor();
   await page.keyboard.press("ArrowRight");
   await page.keyboard.press("Escape");
+  await page.locator("#search-dialog").waitFor({state:"hidden"});
   assert.equal(await page.locator("dialog.lightbox[open]").count(), 0);
   await page.goto(site.url + route(site, "field-study"));
   await page.locator(".copy-code").first().waitFor();
@@ -59,6 +60,7 @@ export async function checkIntegrations(browser, site, report) {
     );
   }
   await page.keyboard.press("Escape");
+  await page.locator("#search-dialog").waitFor({state:"hidden"});
   assert.ok(
     await page.evaluate(() =>
       document.activeElement?.matches("[data-menu-toggle]"),
@@ -82,6 +84,7 @@ export async function checkIntegrations(browser, site, report) {
   await page.locator("[data-menu-toggle]").click();
   await page.locator("[data-mode-toggle]").click();
   await page.keyboard.press("Escape");
+  await page.locator("#search-dialog").waitFor({state:"hidden"});
   const html = await fs.readFile(
     site.base + "/public/" + route(site, "welcome") + "index.html",
     "utf8",
@@ -152,6 +155,7 @@ export async function checkIntegrations(browser, site, report) {
   await page.locator("#search-input").fill("External");
   await page.getByRole("link", { name: "Verified external result" }).waitFor();
   await page.keyboard.press("Escape");
+  await page.locator("#search-dialog").waitFor({state:"hidden"});
   assert.deepEqual(errors, []);
   report.integrations = {
     tabs: true,
