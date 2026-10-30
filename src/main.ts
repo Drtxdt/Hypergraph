@@ -151,6 +151,14 @@ async function mountPage(focus = false) {
   if (focus) {
     root.focus({ preventScroll: true });
   }
+  if (root.querySelector('[data-utility]')) {
+    const module = await import('./modules/utilities');
+    if (!signal.aborted) module.mount(root, signal);
+  }
+  if (root.querySelector('[data-game-app]')) {
+    const module = await import('./modules/games');
+    if (!signal.aborted) module.mount(root, signal);
+  }
   if (root.querySelector(".prose")) {
     const mod = await import("./modules/reading");
     if (version === epoch) mod.mount(root, signal, config.code);
