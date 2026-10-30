@@ -18,6 +18,8 @@ On mobile, the square back-to-top button appears in document flow before the foo
 
 The lightbox supports not-yet-loaded images, responsive sources, loading/failure/retry states and stale-load protection. Changing a picture starts its reveal only after decode. Closing the dialog or changing pages invalidates pending results.
 
+Share-platform expansion uses native CSS animations, so early clicks do not depend on the optional action module arriving first. The UI regression gates that module while exercising expansion and records actual animation start/end events.
+
 ## Content and migration
 
 `examples/content` supplies licensed photographs, a portrait, original technical artwork and short notes. Its README records sources and cover safety guidance. Keep original government imagery as article content only; no endorsement or author identity is implied.

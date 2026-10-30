@@ -8,14 +8,33 @@ await fs.mkdir(directory, { recursive: true });
   for (const width of [1440, 390]) {
     const context = await browser.newContext({ viewport: { width, height: 900 } });
     const page = await context.newPage();
-    await page.goto(site.url + route(site, 'field-study'));
+    await page.addInitScript(() => {
+      window.shareMotionEvents=[];
+      for(const type of ['animationstart','animationend','animationcancel']) document.addEventListener(type, event => {
+        if(event.target.closest?.('.share-platform-list') && event.animationName==='share-reveal') window.shareMotionEvents.push({type,at:performance.now(),elapsed:event.elapsedTime});
+      });
+    });
+    const actionsGate=Promise.withResolvers();
+    await page.route('**/chunk-actions-*.js', async request => { await actionsGate.promise; await request.continue().catch(()=>{}); });
+    try {
+    await page.goto(site.url + route(site, 'field-study'), {waitUntil:'domcontentloaded'});
     await page.evaluate(() => scrollTo(0, document.body.scrollHeight));
     await page.waitForSelector('.back-to-top svg');
     const square = await page.locator('.back-to-top').boundingBox();
     assert.equal(square.width, square.height);
     await page.locator('.share-platforms summary').click();
-    assert.ok(await page.locator('.share-platform-list').evaluate(el => el.getAnimations({ subtree: true }).length > 0), 'platform buttons animate on expansion');
-    await page.waitForTimeout(450);
+    await page.waitForFunction(() => {
+      const events=window.shareMotionEvents;
+      return events.some(e=>e.type==='animationstart') && events.filter(e=>e.type==='animationend').length===document.querySelectorAll('.share-platform-list > *').length;
+    });
+    await page.locator('.share-platforms summary').click();
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    await page.locator('.share-platforms summary').click();
+    await page.waitForFunction(()=>window.shareMotionEvents.filter(e=>e.type==='animationend').length===2*document.querySelectorAll('.share-platform-list > *').length);
+    const shareEvents=await page.evaluate(()=>window.shareMotionEvents);
+    await fs.writeFile(path.join(directory, `share-timeline-${width}.json`),JSON.stringify(shareEvents,null,2));
+    assert.ok(shareEvents.filter(e=>e.type==='animationend').every(e=>Math.abs(e.elapsed-.24)<.01));
+    } finally { actionsGate.resolve(); }
     const sharePositions = await page.locator('.post-actions').evaluate(el => [...el.querySelectorAll(':scope > button,.share-platforms > summary')].map(button => button.getBoundingClientRect().top));
     assert.ok(Math.max(...sharePositions) - Math.min(...sharePositions) < 2, 'primary share controls stay on the same top axis');
     await page.screenshot({ path: path.join(directory, `share-${width}.png`) });

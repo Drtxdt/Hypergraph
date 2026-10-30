@@ -84,3 +84,27 @@
 /* Only inaccessible content beneath full-screen panels skips painting. */
 .panel-lock #content,body:has(#search-dialog[open]) #content{content-visibility:hidden;contain-intrinsic-block-size:var(--covered-page-height)}
 @media print{.panel-lock #content,body:has(#search-dialog[open]) #content{content-visibility:visible;contain-intrinsic-block-size:none}}
+
+/* Native disclosure feedback also works before optional action modules load.
+   Own the hidden state so Chromium does not freeze completed child animations
+   inside its content-visibility-hidden ::details-content subtree. */
+.share-platforms::details-content { content-visibility:visible; }
+.share-platforms:not([open]) .share-platform-list { display:none; }
+@keyframes share-reveal {
+  from { opacity:0; transform:translateX(-16px); }
+  to { opacity:1; transform:translateX(0); }
+}
+.share-platforms[open] .share-platform-list > * {
+  animation:share-reveal 240ms cubic-bezier(.2,.7,.2,1) backwards;
+  animation-delay:168ms;
+}
+.share-platforms[open] .share-platform-list > :nth-child(1) { animation-delay:0ms; }
+.share-platforms[open] .share-platform-list > :nth-child(2) { animation-delay:28ms; }
+.share-platforms[open] .share-platform-list > :nth-child(3) { animation-delay:56ms; }
+.share-platforms[open] .share-platform-list > :nth-child(4) { animation-delay:84ms; }
+.share-platforms[open] .share-platform-list > :nth-child(5) { animation-delay:112ms; }
+.share-platforms[open] .share-platform-list > :nth-child(6) { animation-delay:140ms; }
+html[data-motion="off"] .share-platforms[open] .share-platform-list > * { animation:none; }
+@media(prefers-reduced-motion:reduce) {
+  .share-platforms[open] .share-platform-list > * { animation:none; }
+}

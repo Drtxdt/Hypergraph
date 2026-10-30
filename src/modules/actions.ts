@@ -3,19 +3,6 @@ export function mount(root: HTMLElement, signal: AbortSignal) {
   root
     .querySelectorAll<HTMLDetailsElement>(".share-platforms")
     .forEach((details) => {
-      const animations: Animation[] = [];
-      const cancel = () => animations.splice(0).forEach((animation) => animation.cancel());
-      details.addEventListener("toggle", () => {
-        cancel();
-        if (!details.open || matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.dataset.motion === "off") return;
-        details.querySelectorAll<HTMLElement>(".share-platform-list > *").forEach((item, index) => {
-          animations.push(item.animate([
-            { opacity: 0, transform: "translateX(-16px)" },
-            { opacity: 1, transform: "translateX(0)" },
-          ], { duration: 240, delay: Math.min(index, 6) * 28, easing: "cubic-bezier(.2,.7,.2,1)", fill: "backwards" }));
-        });
-      }, { signal });
-      signal.addEventListener("abort", cancel, { once: true });
       details.addEventListener(
         "keydown",
         (event) => {
