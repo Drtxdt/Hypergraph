@@ -12,6 +12,8 @@ export async function generate(base, options = {}) {
   await fs.cp("examples/visual/source", path.join(base, "source"), {
     recursive: true,
   });
+  await fs.mkdir(path.join(base, "source/standalone"), {recursive:true});
+  await fs.writeFile(path.join(base, "source/standalone/index.md"), "---\nlayout: page\ntitle: 独立页面阅读指南\n---\n## 从这里开始\n\n这是普通页面的真实正文，用于验证标题、内容与评论的共同阅读轴。\n\n## 保持连续\n\n正文可以选择、复制与打印。\n");
   const postDir = path.join(base, "source/_posts");
   if (options.empty || options.few)
     for (const file of await fs.readdir(postDir))
@@ -56,6 +58,7 @@ export async function generate(base, options = {}) {
     );
   }
   const config = yaml.load(await fs.readFile("demo/_config.yml", "utf8"));
+  config.timezone = "UTC";
   config.root = root;
   config.url =
     "https://example.com" + (root === "/" ? "" : root.replace(/\/$/, ""));
@@ -126,6 +129,7 @@ export async function generate(base, options = {}) {
   };
   await hexo.init();
   await hexo.call("generate", { concurrency: 1 });
+  await fs.writeFile(path.join(base, "routes.json"), JSON.stringify(Object.fromEntries(hexo.locals.get("posts").toArray().map(post => [post.slug, post.path])), null, 2));
   await hexo.exit();
   if (errors.length) throw Error(errors.join("\n"));
   const html = await fs.readFile(path.join(base, "public/index.html"), "utf8");
@@ -166,6 +170,7 @@ export async function serve(base, mount = "/") {
   });
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
   return {
+    routes: JSON.parse(await fs.readFile(path.join(base, "routes.json"), "utf8").catch(()=>"{}")),
     url: "http://127.0.0.1:" + server.address().port + mount,
     close: () =>
       new Promise((resolve) => {
@@ -182,3 +187,5 @@ export async function files(root) {
   }
   return out;
 }
+
+export function route(site, slug) { const value=site.routes?.[slug]; if (!value) throw Error("Missing generated route: "+slug); return value; }

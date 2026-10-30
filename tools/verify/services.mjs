@@ -1,3 +1,4 @@
+import {route} from "./fixture.mjs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fork } from "node:child_process";
@@ -70,7 +71,7 @@ export async function checkServices(browser, site, waline, report) {
   ).then((r) => r.json());
   assert.ok(JSON.stringify(list).includes(marker));
   const html = await fs.readFile(
-    path.join(site.base, "public/2026/10/28/welcome/index.html"),
+    path.join(site.base, "public", route(site,"welcome"), "index.html"),
     "utf8",
   );
   const cases = [

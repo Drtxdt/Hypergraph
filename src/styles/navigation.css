@@ -22,7 +22,7 @@
   }
   .site-header nav > a:hover, .site-header nav > a:focus-visible,
   .nav-group > summary:hover, .nav-group > summary:focus-visible { background: var(--surface); text-decoration: none; }
-  .site-header nav a[aria-current="page"] { background: var(--surface); }
+  .site-header nav a[aria-current="page"] { background: transparent; }
   .site-header nav a[aria-current="page"]:before { transition: height 220ms, background-color 220ms; }
   .nav-group > div { z-index: 1; }
 }

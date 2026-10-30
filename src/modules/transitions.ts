@@ -49,7 +49,7 @@ export function mount(
     clear();
     controller = new AbortController();
     owner = visit.id;
-    fromHome = !!document.querySelector(".lead");
+    fromHome = document.querySelector("#content")?.getAttribute("data-page-kind") === "home";
     visit.animation.wait = true;
     const saveData = (
       navigator as Navigator & { connection?: { saveData?: boolean } }
@@ -73,7 +73,7 @@ export function mount(
       !!target &&
       !!new DOMParser()
         .parseFromString(target.html, "text/html")
-        .querySelector(".article-head");
+        .querySelector('[data-page-kind="post"]');
     document.documentElement.dataset.transition = "leaving";
     const content = document.querySelector("#content");
     if (content)

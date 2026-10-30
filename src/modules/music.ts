@@ -36,7 +36,7 @@ export async function mount(
       if (host.hidden) {
         activatePanel(host, () => setOpen(false), toggle || undefined);
         setOpen(true);
-      } else releasePanel(host);
+      } else { releasePanel(host); setOpen(false); }
       if (!host.hidden)
         host.querySelector<HTMLButtonElement>("[data-player-close]")?.focus();
     },
@@ -55,6 +55,7 @@ export async function mount(
     "keydown",
     (event) => {
       if (event.key === "Escape") {
+        releasePanel(host);
         setOpen(false);
         toggle?.focus();
       }

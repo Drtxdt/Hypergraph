@@ -1,18 +1,17 @@
+import {route} from "./fixture.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 export async function checkAdvanced(browser, sites, report) {
   const context = await browser.newContext();
   const page = await context.newPage();
   page.setDefaultTimeout(20000);
-  await page.goto(sites.options.url + "2026/10/28/welcome/");
+  await page.goto(sites.options.url + route(sites.options,"welcome"));
   await page.getByText("Independent extension v2", { exact: true }).waitFor();
   await page.waitForFunction(() => navigator.serviceWorker.controller);
   await page.evaluate(() => window.__hypergraph.swup.navigate("/"));
   await page.locator(".lead").waitFor();
   assert.equal(await page.locator("[data-reading-note]").count(), 0);
-  await page.evaluate(() =>
-    window.__hypergraph.swup.navigate("/2026/10/28/welcome/"),
-  );
+  await page.evaluate(url => window.__hypergraph.swup.navigate(url), sites.options.url + route(sites.options,"welcome"));
   await page.getByText("Independent extension v2", { exact: true }).waitFor();
   assert.equal(await page.locator("[data-reading-note]").count(), 1);
   const before = await page.locator(".prose").textContent();
@@ -31,7 +30,7 @@ export async function checkAdvanced(browser, sites, report) {
   assert.ok((await page.locator("body").textContent()).includes("暂时离线"));
   await context.close();
   const html = await fs.readFile(
-    sites.main.base + "/public/2026/10/29/field-study/index.html",
+    sites.main.base + "/public/" + route(sites.main,"field-study") + "index.html",
     "utf8",
   );
   report.appearance = [];

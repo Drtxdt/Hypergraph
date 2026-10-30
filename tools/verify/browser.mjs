@@ -1,3 +1,4 @@
+import { route } from "./fixture.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -10,8 +11,8 @@ export async function checkBrowser(browser, sites, report, out) {
   page.on("pageerror", (e) => errors.push(e.message));
   page.setDefaultTimeout(20000);
   const main = sites.main.url,
-    article = "2026/10/29/field-study/",
-    long = "2026/10/20/long/";
+    article = route(sites.main, "field-study"),
+    long = route(sites.main, "long");
   const navigate = async (route) => {
     await page.evaluate(
       (url) => window.__hypergraph.swup.navigate(url),
@@ -21,7 +22,7 @@ export async function checkBrowser(browser, sites, report, out) {
     await page.waitForTimeout(100);
   };
   report.visual = [];
-  for (const width of [360, 390, 768, 1440])
+  for (const width of [360, 390, 768, 1024, 1440])
     for (const mode of ["light", "dark"])
       for (const [view, url] of [
         ["home", main],
@@ -41,7 +42,9 @@ export async function checkBrowser(browser, sites, report, out) {
           document.documentElement.dataset.mode = mode;
           return document.fonts.ready;
         }, mode);
-        await page.waitForFunction(() => !document.documentElement.classList.contains("intro-active"));
+        await page.waitForFunction(
+          () => !document.documentElement.classList.contains("intro-active"),
+        );
         await page.waitForTimeout(350);
         assert.ok(
           await page.evaluate(
@@ -91,7 +94,7 @@ export async function checkBrowser(browser, sites, report, out) {
   for (let i = 0; i < 30; i++) {
     const chart = i % 6 === 0;
     await navigate(
-      chart ? "2026/10/28/showcase/" : i % 2 ? article : "archives/",
+      chart ? route(sites.main, "showcase") : i % 2 ? article : "archives/",
     );
     if (chart) {
       await page.locator("[data-diagram=chartjs] canvas").waitFor();
@@ -139,24 +142,30 @@ export async function checkBrowser(browser, sites, report, out) {
   await page.locator("#navigation-error button").click();
   await page.waitForFunction(() => !window.__hypergraph.swup.navigating);
   await page.locator(".lead").waitFor();
-  await page.locator("[data-search]").click({position:{x:32,y:22}});
+  await page.locator("[data-search]").click({ position: { x: 32, y: 22 } });
   await page.locator("#search-input").fill("Hypergraph");
   await page.locator("[data-results] li").first().waitFor();
   await page.keyboard.press("Escape");
+  await page.locator("#search-dialog").waitFor({ state: "hidden" });
   assert.equal(await page.locator("#search-dialog").isVisible(), false);
-  assert.equal(await page.locator('[data-rail-expand]').count(),0);
-  await page.mouse.move(600,500);await page.mouse.move(30,100);
-  await page.waitForFunction(()=>document.querySelector('.site-header').classList.contains('rail-open'));
+  assert.equal(await page.locator("[data-rail-expand]").count(), 0);
+  await page.mouse.move(600, 500);
+  await page.mouse.move(30, 100);
+  await page.waitForFunction(() =>
+    document.querySelector(".site-header").classList.contains("rail-open"),
+  );
   await page.keyboard.press("Escape");
+  await page.locator("#search-dialog").waitFor({ state: "hidden" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator("[data-menu-toggle]").click();
   assert.ok(await page.locator("#content").evaluate((el) => el.inert));
-  await page.locator("[data-search]").click({position:{x:32,y:22}});
+  await page.locator("[data-search]").click({ position: { x: 32, y: 22 } });
   assert.equal(
     await page.locator("#content").evaluate((el) => el.inert),
     false,
   );
   await page.keyboard.press("Escape");
+  await page.locator("#search-dialog").waitFor({ state: "hidden" });
   await page.locator("[data-menu-toggle]").click();
   await page.locator("[data-player-toggle]").click();
   await page.locator("[data-player-close]").click();
@@ -190,7 +199,7 @@ export async function checkBrowser(browser, sites, report, out) {
       .evaluate((el) => el.classList.contains("reading-mode")),
   );
   await page.locator("[data-reading]").click();
-  await page.goto(main + "2026/10/28/showcase/");
+  await page.goto(main + route(sites.main, "showcase"));
   await page.locator("[data-diagram=mermaid] svg").waitFor({ timeout: 60000 });
   await page.locator("[data-diagram=chartjs] canvas").waitFor();
   await page.locator("[data-diagram=score] svg").first().waitFor();
@@ -198,7 +207,7 @@ export async function checkBrowser(browser, sites, report, out) {
   await navigate("");
   assert.equal(await page.locator("[data-diagram]").count(), 0);
   for (const type of ["plain", "code", "math"]) {
-    await page.goto(main + "2026/10/19/private-" + type + "/");
+    await page.goto(main + route(sites.main, "private-" + type));
     await page.locator("[data-unlock] input").fill("wrong");
     await page.locator("[data-unlock] button[type=submit]").click();
     await page.waitForFunction(() =>
@@ -217,7 +226,7 @@ export async function checkBrowser(browser, sites, report, out) {
     if (type === "math")
       assert.ok((await page.locator("[data-plaintext] .katex").count()) > 0);
     await navigate("");
-    await navigate("2026/10/19/private-" + type + "/");
+    await navigate(route(sites.main, "private-" + type));
     assert.equal(await page.locator("[data-plaintext]").textContent(), "");
   }
   for (const type of [
@@ -263,7 +272,7 @@ export async function checkBrowser(browser, sites, report, out) {
   assert.ok(page.url().includes("/blog/2026/"));
   await page.goto(sites.english.url);
   await page.locator("[data-menu-toggle]").click();
-  await page.locator("[data-search]").click({position:{x:32,y:22}});
+  await page.locator("[data-search]").click({ position: { x: 32, y: 22 } });
   await page.locator("#search-input").fill("impossible-needle");
   await page.waitForFunction(() =>
     document
@@ -332,128 +341,252 @@ export async function checkBrowser(browser, sites, report, out) {
   };
   await context.close();
 }
-export async function performance(browser, sites, report, visits = ["first", "subsequent"]) {
+export async function performance(
+  browser,
+  sites,
+  report,
+  visits = ["first", "subsequent"],
+) {
   report.performance = [];
   for (const visit of visits)
-  for (let run = 0; run < 3; run++)
-    for (const [name, url, site] of [
-      ["home", sites.main.url, sites.main],
-      ["no-cover", sites.noCover.url, sites.noCover],
-      ["long", sites.main.url + "2026/10/20/long/", sites.main],
-    ]) {
-      const context = await browser.newContext({
-        viewport: { width: 390, height: 844 },
-        isMobile: true,
-        deviceScaleFactor: 1,
-      });
-      const page = await context.newPage();
-      const client = await context.newCDPSession(page);
-      const resources = new Set();
-      page.on("request", (r) => resources.add(r.url()));
-      await client.send("Emulation.setCPUThrottlingRate", { rate: 4 });
-      await client.send("Network.enable");
-      await client.send("Network.emulateNetworkConditions", {
-        offline: false,
-        latency: 150,
-        downloadThroughput: 200000,
-        uploadThroughput: 93750,
-      });
-      if (visit === "subsequent") {
-        assert.equal((await page.goto(url)).status(), 200);
-        await page.waitForFunction(() => !document.documentElement.classList.contains("intro-active"));
-        resources.clear();
-      }
-      await page.addInitScript(() => {
-        window.metrics = { lcp: null, cls: 0, events: [], eventCounts: 0, readable: null };
-        const readable = () => {
-          const title=document.querySelector('.lead-title,.article-head,#content h1');
-          const clearTitle=title && Number(getComputedStyle(title).opacity)>=.99 && getComputedStyle(title).clipPath==='none';
-          if (window.metrics.readable === null && document.readyState !== "loading" && document.querySelector("#content") && clearTitle && !document.documentElement.classList.contains("intro-active")) {
-            requestAnimationFrame(() => requestAnimationFrame(() => {
-              if (window.metrics.readable === null && !document.documentElement.classList.contains("intro-active")) window.metrics.readable = performance.now();
-            }));
-          }
-        };
-        new MutationObserver(readable).observe(document, {subtree:true, childList:true, attributes:true, attributeFilter:["class","hidden"]});
-        document.addEventListener("DOMContentLoaded", readable);
-        const pollReadable=()=>{readable();if(window.metrics.readable===null)requestAnimationFrame(pollReadable);};requestAnimationFrame(pollReadable);
-        new PerformanceObserver((l) =>
-          l.getEntries().forEach((e) => (window.metrics.lcp = e.startTime)),
-        ).observe({ type: "largest-contentful-paint", buffered: true });
-        new PerformanceObserver((l) =>
-          l.getEntries().forEach((e) => {
-            if (!e.hadRecentInput) window.metrics.cls += e.value;
-          }),
-        ).observe({ type: "layout-shift", buffered: true });
-        new PerformanceObserver((l) =>
-          l.getEntries().forEach((e) => {
-            if (e.interactionId) window.metrics.events.push(e.duration);
-          }),
-        ).observe({ type: "event", buffered: true, durationThreshold: 16 });
-      });
-      assert.equal((await page.goto(url)).status(), 200);
-      await page.waitForFunction(() => !document.documentElement.classList.contains("intro-active"));
-      await page.waitForFunction(() => window.metrics.readable !== null);
-      const readable = await page.evaluate(() => window.metrics.readable);
-      assert.ok(readable <= 2500, `${name} first readable ${readable}`);
-      await page.locator("[data-menu-toggle]").click();
-      await page.locator("[data-mode-toggle]").click();
-      await page.locator("[data-search]").click({position:{x:32,y:22}});
-      await page.locator("#search-input").fill("Hypergraph");
-      await page.locator("[data-results] li").first().waitFor();
-      await page.keyboard.press("Escape");
-      await page.waitForTimeout(120);
-      const metrics = await page.evaluate(() => ({
-        ...window.metrics,
-        eventCounts: performance.eventCounts?.get("click") || 0,
-      }));
-      assert.ok(Number.isFinite(metrics.lcp) && metrics.lcp > 0, "Missing LCP");
-      assert.ok(metrics.eventCounts >= 3, "Missing interaction observations");
-      // Event Timing omits events below its minimum threshold. A populated eventCounts with
-      // no duration entries proves sampled interactions were below 16ms, not missing data.
-      const interactionBound = metrics.events.length
-        ? Math.max(...metrics.events)
-        : 16;
-      let js = 0,
-        css = 0,
-        font = 0,
-        image = 0;
-      for (const url of resources) {
-        const u = new URL(url);
-        if (u.origin !== new URL(site.url).origin) continue;
-        const relative = decodeURIComponent(u.pathname)
-          .replace(/^\/blog\//, "/")
-          .replace(/^\//, "");
-        try {
-          const body = await fs.readFile(
-            path.join(site.base, "public", relative),
+    for (let run = 0; run < 3; run++)
+      for (const [name, url, site] of [
+        ["home", sites.main.url, sites.main],
+        ["no-cover", sites.noCover.url, sites.noCover],
+        ["long", sites.main.url + route(sites.main, "long"), sites.main],
+        ["standalone", sites.main.url + "standalone/", sites.main],
+      ]) {
+        const context = await browser.newContext({
+          viewport: { width: 390, height: 844 },
+          isMobile: true,
+          deviceScaleFactor: 1,
+        });
+        const page = await context.newPage();
+        const client = await context.newCDPSession(page);
+        const resources = new Set();
+        page.on("request", (r) => resources.add(r.url()));
+        await client.send("Emulation.setCPUThrottlingRate", { rate: 4 });
+        await client.send("Network.enable");
+        await client.send("Network.emulateNetworkConditions", {
+          offline: false,
+          latency: 150,
+          downloadThroughput: 200000,
+          uploadThroughput: 93750,
+        });
+        if (visit === "subsequent") {
+          assert.equal((await page.goto(url)).status(), 200);
+          await page.waitForFunction(
+            () => !document.documentElement.classList.contains("intro-active"),
           );
-          if (relative.endsWith(".js")) js += gzipSync(body).length;
-          else if (relative.endsWith(".css")) css += gzipSync(body).length;
-          else if (/woff/.test(relative)) font += body.length;
-          else if (/\.(svg|png|jpg|webp)$/.test(relative)) image += body.length;
-        } catch {}
+          resources.clear();
+        }
+        await page.addInitScript(() => {
+          window.metrics = {
+            lcp: null,
+            cls: 0,
+            shifts: [],
+            events: [],
+            eventDetails: [],
+            eventCounts: 0,
+            readable: null,
+          };
+          document.addEventListener(
+            "keydown",
+            (event) => {
+              if (
+                event.key === "Escape" &&
+                document.querySelector("#search-dialog[open]")
+              )
+                window.metrics.restoreStart = performance.now();
+            },
+            true,
+          );
+          document.addEventListener(
+            "close",
+            (event) => {
+              if (
+                event.target.id === "search-dialog" &&
+                window.metrics.restoreStart !== undefined
+              )
+                requestAnimationFrame(() =>
+                  requestAnimationFrame(() => {
+                    window.metrics.restoreMs =
+                      performance.now() - window.metrics.restoreStart;
+                  }),
+                );
+            },
+            true,
+          );
+          const readable = () => {
+            if (window.metrics.readable !== null) return;
+            const title = document.querySelector(
+              ".lead-title,.article-head,#content h1",
+            );
+            const clearTitle =
+              title &&
+              Number(getComputedStyle(title).opacity) >= 0.99 &&
+              getComputedStyle(title).clipPath === "none";
+            if (
+              window.metrics.readable === null &&
+              document.readyState !== "loading" &&
+              document.querySelector("#content") &&
+              clearTitle &&
+              !document.documentElement.classList.contains("intro-active")
+            ) {
+              requestAnimationFrame(() =>
+                requestAnimationFrame(() => {
+                  if (
+                    window.metrics.readable === null &&
+                    !document.documentElement.classList.contains("intro-active")
+                  )
+                    window.metrics.readable = performance.now();
+                }),
+              );
+            }
+          };
+          new MutationObserver(readable).observe(document, {
+            subtree: true,
+            childList: true,
+            attributes: true,
+            attributeFilter: ["class", "hidden"],
+          });
+          document.addEventListener("DOMContentLoaded", readable);
+          const pollReadable = () => {
+            readable();
+            if (window.metrics.readable === null)
+              requestAnimationFrame(pollReadable);
+          };
+          requestAnimationFrame(pollReadable);
+          new PerformanceObserver((l) =>
+            l.getEntries().forEach((e) => (window.metrics.lcp = e.startTime)),
+          ).observe({ type: "largest-contentful-paint", buffered: true });
+          new PerformanceObserver((l) =>
+            l.getEntries().forEach((e) => {
+              if (!e.hadRecentInput) {
+                window.metrics.cls += e.value;
+                window.metrics.shifts.push({
+                  at: e.startTime,
+                  value: e.value,
+                  sources: e.sources?.map((s) => ({
+                    node: s.node?.nodeName,
+                    previous: s.previousRect,
+                    current: s.currentRect,
+                  })),
+                });
+              }
+            }),
+          ).observe({ type: "layout-shift", buffered: true });
+          new PerformanceObserver((l) =>
+            l.getEntries().forEach((e) => {
+              if (e.interactionId) {
+                window.metrics.events.push(e.duration);
+                window.metrics.eventDetails.push({
+                  name: e.name,
+                  duration: e.duration,
+                  processing: e.processingEnd - e.processingStart,
+                  target: e.target?.outerHTML?.slice(0, 180),
+                });
+              }
+            }),
+          ).observe({ type: "event", buffered: true, durationThreshold: 16 });
+        });
+        assert.equal((await page.goto(url)).status(), 200);
+        await page.waitForFunction(
+          () => !document.documentElement.classList.contains("intro-active"),
+        );
+        await page.waitForFunction(() => window.metrics.readable !== null);
+        const readable = await page.evaluate(() => window.metrics.readable);
+        assert.ok(readable <= 2500, `${name} first readable ${readable}`);
+        // Capture stability before any interaction can exclude a late layout shift.
+        await page.waitForTimeout(
+          Math.max(0, 5000 - (await page.evaluate(() => performance.now()))),
+        );
+        const stability = await page.evaluate(() => ({
+          lcp: window.metrics.lcp,
+          cls: window.metrics.cls,
+          shifts: window.metrics.shifts,
+        }));
+        await page.reload();
+        await page.waitForFunction(
+          () =>
+            window.metrics.readable !== null &&
+            !document.documentElement.classList.contains("intro-active"),
+        );
+        await page.locator("[data-menu-toggle]").click();
+        await page.locator("[data-mode-toggle]").click();
+        await page
+          .locator("[data-search]")
+          .click({ position: { x: 32, y: 22 } });
+        await page.locator("#search-input").fill("Hypergraph");
+        await page.locator("[data-results] li").first().waitFor();
+        await page.keyboard.press("Escape");
+        await page.locator("#search-dialog").waitFor({ state: "hidden" });
+        await page.waitForFunction(() =>
+          Number.isFinite(window.metrics.restoreMs),
+        );
+        const restoreMs = await page.evaluate(() => window.metrics.restoreMs);
+        assert.ok(restoreMs <= 500, `${name} modal restoration ${restoreMs}`);
+        await page.waitForTimeout(120);
+        const metrics = await page.evaluate(() => ({
+          ...window.metrics,
+          eventCounts: performance.eventCounts?.get("click") || 0,
+        }));
+        assert.ok(
+          Number.isFinite(metrics.lcp) && metrics.lcp > 0,
+          "Missing LCP",
+        );
+        assert.ok(metrics.eventCounts >= 3, "Missing interaction observations");
+        // Event Timing omits events below its minimum threshold. A populated eventCounts with
+        // no duration entries proves sampled interactions were below 16ms, not missing data.
+        const interactionBound = metrics.events.length
+          ? Math.max(...metrics.events)
+          : 16;
+        let js = 0,
+          css = 0,
+          font = 0,
+          image = 0;
+        for (const url of resources) {
+          const u = new URL(url);
+          if (u.origin !== new URL(site.url).origin) continue;
+          const relative = decodeURIComponent(u.pathname)
+            .replace(/^\/blog\//, "/")
+            .replace(/^\//, "");
+          try {
+            const body = await fs.readFile(
+              path.join(site.base, "public", relative),
+            );
+            if (relative.endsWith(".js")) js += gzipSync(body).length;
+            else if (relative.endsWith(".css")) css += gzipSync(body).length;
+            else if (/woff/.test(relative)) font += body.length;
+            else if (/\.(svg|png|jpg|webp)$/.test(relative))
+              image += body.length;
+          } catch {}
+        }
+        report.performance.push({
+          name,
+          visit,
+          run: run + 1,
+          ...metrics,
+          ...stability,
+          interactionBound,
+          restoreMs,
+          readable,
+          jsGzip: js,
+          cssGzip: css,
+          fontBytes: font,
+          imageBytes: image,
+        });
+        assert.ok(
+          stability.lcp > 0 && stability.lcp <= 2500,
+          `${name} LCP ${stability.lcp}`,
+        );
+        assert.ok(stability.cls <= 0.1, `${name} CLS ${stability.cls}`);
+        assert.ok(
+          interactionBound <= 200,
+          `${name} interaction ${interactionBound}`,
+        );
+        assert.ok(js <= 61440, `${name} JS ${js}`);
+        assert.ok(css <= 40960, `${name} CSS ${css}`);
+        await context.close();
       }
-      report.performance.push({
-        name,
-        visit,
-        run: run + 1,
-        ...metrics,
-        interactionBound,
-        readable,
-        jsGzip: js,
-        cssGzip: css,
-        fontBytes: font,
-        imageBytes: image,
-      });
-      assert.ok(metrics.lcp <= 2500, `${name} LCP ${metrics.lcp}`);
-      assert.ok(metrics.cls <= 0.1, `${name} CLS ${metrics.cls}`);
-      assert.ok(
-        interactionBound <= 200,
-        `${name} interaction ${interactionBound}`,
-      );
-      assert.ok(js <= 61440, `${name} JS ${js}`);
-      assert.ok(css <= 40960, `${name} CSS ${css}`);
-      await context.close();
-    }
 }

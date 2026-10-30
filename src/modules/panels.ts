@@ -1,39 +1,66 @@
-type Panel = { element: HTMLElement; close: () => void; trigger?: HTMLElement };
+type Panel = {
+  element: HTMLElement;
+  close: (animate?: boolean) => void | Promise<void>;
+  trigger?: HTMLElement;
+};
 let active: Panel | undefined;
+let finishClosing: (() => void) | undefined;
+// The covered page keeps its exact geometry, but need not repaint thousands of
+// lines while a full-screen menu or search dialog makes it unavailable.
+function reservePageGeometry() {
+  if (
+    document.body.classList.contains("panel-lock") ||
+    document.querySelector("#search-dialog[open]")
+  )
+    return;
+  const content = document.querySelector<HTMLElement>("#content");
+  if (!content) return;
+  const style = getComputedStyle(content);
+  const height =
+    content.clientHeight -
+    parseFloat(style.paddingTop) -
+    parseFloat(style.paddingBottom);
+  content.style.setProperty("--covered-page-height", `${height}px`);
+}
 export function dismissPanels(restore = false) {
   const previous = active;
   active = undefined;
-  previous?.close();
-  if (restore) {
-    const target = previous?.trigger;
-    // CSS visibility remains visible until the exit transition ends. A closed
-    // mobile navigation is already semantically unavailable during that interval.
-    const parentNav = target?.closest<HTMLElement>("#site-nav");
-    const closedMobileNav =
-      parentNav &&
-      matchMedia("(max-width:1023px), (hover:none)").matches &&
-      !parentNav.classList.contains("is-open");
-    if (
-      target?.isConnected &&
-      !closedMobileNav &&
-      target.getClientRects().length &&
-      getComputedStyle(target).visibility !== "hidden"
-    )
-      target.focus();
-    else {
-      const menu = document.querySelector<HTMLElement>("[data-menu-toggle]");
-      (menu?.getClientRects().length
-        ? menu
-        : document.querySelector<HTMLElement>(".brand")
-      )?.focus();
+  const closing = previous?.close(restore);
+  const restoreFocus = () => {
+    if (restore && !active) {
+      const target = previous?.trigger;
+      // CSS visibility remains visible until the exit transition ends. A closed
+      // mobile navigation is already semantically unavailable during that interval.
+      const parentNav = target?.closest<HTMLElement>("#site-nav");
+      const closedMobileNav =
+        parentNav &&
+        matchMedia("(max-width:1023px), (hover:none)").matches &&
+        !parentNav.classList.contains("is-open");
+      if (
+        target?.isConnected &&
+        !closedMobileNav &&
+        target.getClientRects().length &&
+        getComputedStyle(target).visibility !== "hidden"
+      )
+        target.focus();
+      else {
+        const menu = document.querySelector<HTMLElement>("[data-menu-toggle]");
+        (menu?.getClientRects().length
+          ? menu
+          : document.querySelector<HTMLElement>(".brand")
+        )?.focus();
+      }
     }
-  }
+  };
+  if (closing) void closing.then(restoreFocus);
+  else restoreFocus();
 }
 export function activatePanel(
   element: HTMLElement,
-  close: () => void,
+  close: (animate?: boolean) => void | Promise<void>,
   trigger?: HTMLElement,
 ) {
+  finishClosing?.();
   const origin = trigger || (document.activeElement as HTMLElement);
   dismissPanels();
   active = {
@@ -47,8 +74,39 @@ export function releasePanel(element: HTMLElement) {
 }
 export function openModal(dialog: HTMLDialogElement) {
   if (dialog.open) return;
-  activatePanel(dialog, () => {
-    if (dialog.open) dialog.close();
+  reservePageGeometry();
+  activatePanel(dialog, (animate) => {
+    if (!dialog.open) return;
+    if (
+      !animate ||
+      dialog.id !== "search-dialog" ||
+      document.hidden ||
+      document.documentElement.dataset.motion === "off" ||
+      matchMedia("(prefers-reduced-motion:reduce)").matches
+    ) {
+      dialog.close();
+      return;
+    }
+    return new Promise<void>((resolve) => {
+      const animation = dialog.animate(
+        [
+          { opacity: 1, transform: "translateY(0)" },
+          { opacity: 0, transform: "translateY(-6px)" },
+        ],
+        { duration: 100, easing: "ease-out", fill: "forwards" },
+      );
+      let done = false;
+      const finish = () => {
+        if (done) return;
+        done = true;
+        if (finishClosing === finish) finishClosing = undefined;
+        if (dialog.open) dialog.close();
+        animation.cancel();
+        resolve();
+      };
+      finishClosing = finish;
+      void animation.finished.then(finish, finish);
+    });
   });
   dialog.addEventListener("close", () => releasePanel(dialog), { once: true });
   dialog.showModal();
@@ -88,6 +146,7 @@ export function mountShell(signal: AbortSignal) {
     )
       return;
     clearLeave();
+    if (mq.matches) reservePageGeometry();
     if (active?.element !== nav) activatePanel(nav, close, trigger);
     suppressAuto = false;
     trigger.setAttribute("aria-expanded", "true");
@@ -231,9 +290,6 @@ export function mountShell(signal: AbortSignal) {
         link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");
     });
-    const toc =
-      document.querySelector<HTMLDetailsElement>(".toc-panel details");
-    if (toc) toc.open = !mq.matches;
   };
   const reconcile = () => {
     hovering = header.matches(":hover") && finePointer.matches;

@@ -1,3 +1,2 @@
 {% set media = hg_media(page, "page") %}
-<article class="article"><div class="article-head"><h1>{{ page.title }}</h1></div>{% include '_media.njk' %}<div class="prose standalone">{{ page.content | safe }}</div></article>
-{% include "_comments.njk" %}
+<article class="standalone-page"><div class="article-head"><h1>{{ page.title }}</h1></div>{% include '_media.njk' %}<div class="prose standalone">{{ page.content | safe }}</div>{% include "_comments.njk" %}</article>

@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import {checkBeta3} from "./verify-beta3.mjs";
 import {checkBeta2} from "./verify-beta2.mjs";
 import {checkMotionV21} from "./verify-motion-v21.mjs";
 import path from "node:path";
@@ -11,6 +12,7 @@ import { checkAdvanced } from "./verify/advanced.mjs";
 import { checkIntegrations } from "./verify/integrations.mjs";
 import { startWaline, checkServices } from "./verify/services.mjs";
 import { checkBrowser, performance } from "./verify/browser.mjs";
+process.env.TZ = "UTC";
 const out = path.resolve(".local/verification");
 await fs.mkdir(out, { recursive: true });
 const temp = await fs.mkdtemp(path.resolve(".local/verify-"));
@@ -128,6 +130,7 @@ try {
   });
   report.browser = browser.version();
   report.environment = {
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     node: process.version,
     platform: process.platform,
     arch: process.arch,
@@ -144,6 +147,7 @@ try {
   await run(["tools/verify-navigation-v21.mjs"]);
   await checkBrowser(browser, sites, report, out);
   console.log("Browser functional and visual checks passed");
+  await checkBeta3(browser, sites, out, report);
   await checkBeta2(browser, sites, out, report);
   console.log("Beta.2 controls and navigation race checks passed");
   await checkIntegrations(browser, sites.main, report);

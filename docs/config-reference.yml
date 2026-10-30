@@ -172,7 +172,7 @@ chat:
 ads: []
 appearance:
   intro_scope: home # home / all
-  intro: session # session / always / off
+  intro: always # session / always / off
   favicon: /hypergraph.svg
   avatar: ''
   author_status: ''

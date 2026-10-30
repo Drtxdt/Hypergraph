@@ -1,5 +1,5 @@
 import { t } from "./i18n";
-import { openModal } from "./panels";
+import { openModal, releasePanel } from "./panels";
 type Entry = { title: string; path: string; text: string; tags: string[] };
 export function mount(
   root: string,
@@ -133,10 +133,20 @@ export function mount(
         a.href = url.href;
         a.textContent = entry.title;
         const pos = entry.text.toLocaleLowerCase().indexOf(term);
-        p.textContent = entry.text.replace(/&(quot|amp|lt|gt|nbsp|#39);/g, (_, entity: string) => ({quot:'"',amp:'&',lt:'<',gt:'>',nbsp:' ', '#39':"'"}[entity] || '')).slice(
-          Math.max(0, pos - 35),
-          Math.max(0, pos - 35) + 130,
-        );
+        p.textContent = entry.text
+          .replace(
+            /&(quot|amp|lt|gt|nbsp|#39);/g,
+            (_, entity: string) =>
+              ({
+                quot: '"',
+                amp: "&",
+                lt: "<",
+                gt: ">",
+                nbsp: " ",
+                "#39": "'",
+              })[entity] || "",
+          )
+          .slice(Math.max(0, pos - 35), Math.max(0, pos - 35) + 130);
         li.append(a, p);
         results.append(li);
       }
@@ -152,17 +162,18 @@ export function mount(
     () => {
       openModal(dialog);
       input.focus();
-      if (!input.value.trim()) status.textContent = t("输入关键词 / Type to search");
+      if (!input.value.trim())
+        status.textContent = t("输入关键词 / Type to search");
     },
     { signal },
   );
   dialog
     .querySelector("[data-close]")
-    ?.addEventListener("click", () => dialog.close(), { signal });
+    ?.addEventListener("click", () => releasePanel(dialog), { signal });
   dialog.addEventListener(
     "click",
     (e) => {
-      if ((e.target as HTMLElement).closest("a")) dialog.close();
+      if ((e.target as HTMLElement).closest("a")) releasePanel(dialog);
     },
     { signal },
   );
