@@ -47,8 +47,9 @@ export async function checkMotionV21(browser, sites, out, report = {}) {
    await page.screenshot({path:path.join(dir,`home-${width}-light.png`)});
    const evidence=await page.evaluate(()=>window.introEvidence);
    const frames=await page.evaluate(()=>window.introFrames);
+   await fs.writeFile(path.join(dir,`timeline-${width}.json`),JSON.stringify(frames));
    for(let i=1;i<frames.length;i++) {assert.ok(frames[i].value>=frames[i-1].value);assert.ok(Math.abs(frames[i].bar*100-frames[i].value)<1.1);}
-   const held=frames.filter(f=>f.value===60);assert.ok(held.length>1 && held.at(-1).at-held[0].at>=900 && held.at(-1).at-held[0].at<=1150,'60% holds one second');
+   const held=frames.filter(f=>f.value===60);assert.ok(held.length>1 && held.at(-1).at-held[0].at>=700 && held.at(-1).at-held[0].at<=950,'60% holds 800ms');
    assert.equal(await page.evaluate(()=>window.introEndCount),1);
    await fs.writeFile(path.join(dir,`timeline-${width}.json`),JSON.stringify(frames));
    await page.reload({waitUntil:'domcontentloaded'});
@@ -99,7 +100,7 @@ export async function checkMotionV21(browser, sites, out, report = {}) {
     const first=evidence.find(x=>x.active);
     const final=evidence.find(x=>x.at>first.at&&!x.active);
     assert.ok(final&&final.at-first.at<=2500,'bootstrap must release within the readability budget including observation tolerance');
-    assert.equal(await page.locator('[data-intro-value]').innerText(),'0','blocked script must not fabricate completed progress');
+    assert.equal(await page.locator('[data-intro]').getAttribute('data-end-reason'),'error','blocked script releases through explicit error path');
    }
    assert.ok(await page.locator('#content').isVisible());
    checks.push({name,passed:true,evidence});

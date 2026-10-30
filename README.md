@@ -64,3 +64,7 @@ comments:
 ### beta.3 阅读稳定性
 
 完整打开或刷新首页默认重播入场；设置 `appearance.intro: session` 可保留旧行为。分享平台收纳在“更多”入口，文章目录在桌面和手机原位生成。详见 [变更和验证说明](docs/BETA3.md)。
+
+## beta.4
+
+[Changes, entrance timing and verification](docs/BETA4.md) · [Representative content and image licenses](examples/content/README.md).

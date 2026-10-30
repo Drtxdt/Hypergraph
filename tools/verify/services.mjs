@@ -5,6 +5,7 @@ import { fork } from "node:child_process";
 import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
 export async function startWaline(root, origin) {
+  const started = performance.now();
   await fs.mkdir(root, { recursive: true });
   const db = new DatabaseSync(path.join(root, "waline.sqlite"));
   db.exec(await fs.readFile("deploy/waline/sqlite.sql", "utf8"));
@@ -44,7 +45,7 @@ export async function startWaline(root, origin) {
       child.once("exit", resolve);
       child.kill();
     });
-  return { url, close };
+  return { url, close, startupMs: performance.now() - started };
 }
 export async function checkServices(browser, site, waline, report) {
   const headers = {

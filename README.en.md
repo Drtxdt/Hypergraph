@@ -28,7 +28,7 @@ Run `npm run verify` for isolated public fixtures, browser tests, SQLite comment
 
 ## 2.1 entrance motion
 
-`appearance.intro: session | always | off` defaults to `session`. The intro runs only with `appearance.motion: cinematic`; reduced motion, data saving, history restoration and deep anchors bypass it. `interaction.loading_bar` remains the separate navigation waiting indicator. Desktop navigation expands on hover or keyboard focus, without a pin button. Touch devices use the menu button.
+`appearance.intro: session | always | off` defaults to `always`. The intro runs only with `appearance.motion: cinematic`; reduced motion, data saving, history restoration and deep anchors bypass it. `interaction.loading_bar` remains the separate navigation waiting indicator. Desktop navigation expands on hover or keyboard focus, without a pin button. Touch devices use the menu button.
 
 ## 2.1 beta.2 reading and entrance
 
@@ -41,3 +41,7 @@ Code language badges and copy share one toolbar. Syntax colors support explicit 
 ### beta.3 reading stability
 
 Full homepage loads and reloads replay the entrance by default. Set `appearance.intro: session` to retain the previous behavior. Sharing platforms are expandable; desktop and mobile outlines render in place. See [changes and verification](docs/BETA3.md).
+
+## beta.4
+
+[Changes, entrance timing and verification](docs/BETA4.md) · [Representative content and image licenses](examples/content/README.md).

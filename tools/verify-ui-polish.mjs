@@ -1,35 +1,15 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { chromium } from 'playwright';
-import { generate, serve, route } from './verify/fixture.mjs';
+import { route } from './verify/fixture.mjs';
 
-const directory = path.resolve('.local/ui-polish');
-await generate(directory);
-const site = await serve(directory);
-const browser = await chromium.launch({ headless: true, ...(process.platform === 'win32' ? { channel: 'msedge' } : {}) });
-try {
+export async function checkUiPolish(browser, site, directory, report = {}) {
+await fs.mkdir(directory, { recursive: true });
   for (const width of [1440, 390]) {
     const context = await browser.newContext({ viewport: { width, height: 900 } });
     const page = await context.newPage();
-    await page.addInitScript(() => {
-      window.sweepFrames = [];
-      const sample = () => {
-        const host = document.querySelector('[data-intro]');
-        if (host?.classList.contains('is-leaving') && !host.hidden) {
-          const style = getComputedStyle(host, '::after');
-          window.sweepFrames.push({ scale: new DOMMatrix(style.transform).a, opacity: Number(getComputedStyle(host).opacity), width: host.getBoundingClientRect().width });
-        }
-        if (!host?.hidden) requestAnimationFrame(sample);
-      };
-      requestAnimationFrame(sample);
-    });
-    await page.goto(site.url);
-    await page.waitForFunction(() => !document.documentElement.classList.contains('intro-active'));
-    const frames = await page.evaluate(() => window.sweepFrames);
-    assert.ok(frames.some(frame => frame.scale >= .999 && frame.width === width && frame.opacity > .1), 'yellow reaches full viewport before dismissal');
-    assert.ok(frames.some(frame => frame.opacity > .1 && frame.opacity < .9), 'full-screen yellow fades rather than disappearing');
     await page.goto(site.url + route(site, 'field-study'));
+    await page.evaluate(() => scrollTo(0, document.body.scrollHeight));
     await page.waitForSelector('.back-to-top svg');
     const square = await page.locator('.back-to-top').boundingBox();
     assert.equal(square.width, square.height);
@@ -53,6 +33,12 @@ try {
     assert.equal(await page.locator('.player audio').evaluate(el => el.volume), .35);
     await page.locator('.audio-controls button').first().click();
     assert.equal(await page.locator('.player audio').evaluate(el => el.paused), true);
+    const rangeResponse = await context.request.get(site.url + 'audio/sample.wav', {headers:{Range:'bytes=100-199'}});
+    assert.equal(rangeResponse.status(), 206);
+    assert.equal((await rangeResponse.body()).length, 100);
+    await page.locator('.audio-controls > input').fill('35');
+    await page.waitForFunction(() => { const audio=document.querySelector('.player audio'); return !audio.seeking && Math.abs(audio.currentTime/audio.duration-.35)<.02; });
+    if(width===390) for(const selector of ['[data-player-close]','.audio-controls > input','.audio-volume input']) assert.ok((await page.locator(selector).boundingBox()).height>=44);
     await page.screenshot({ path: path.join(directory, `audio-${width}.png`) });
     await page.locator('[data-player-close]').click();
     await page.evaluate(() => window.savedAudio = document.querySelector('.player audio'));
@@ -66,7 +52,7 @@ try {
     await page.waitForTimeout(250);
     await page.screenshot({ path: path.join(directory, `image-${width}.png`) });
     await page.locator('.image-next').click();
-    assert.match(await page.locator('.lightbox p').innerText(), /^2 \/ 2/);
+    assert.match(await page.locator('.lightbox p').first().innerText(), /^2 \/ 2/);
     await page.keyboard.press('Escape');
     assert.equal(await page.locator('.lightbox').isVisible(), false);
     await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -84,4 +70,52 @@ try {
   await page.goto(site.url);
   assert.equal(await page.locator('.player audio[controls]').isVisible(), true);
   await noScript.close();
-} finally { await browser.close(); await site.close(); }
+report.uiPolish = { passed: true, widths: [1440, 390] };
+}
+export async function checkIntroCoverage(browser, site, directory, report = {}) {
+ await fs.mkdir(directory, { recursive: true });
+ for (const width of [1440, 390]) {
+  const context = await browser.newContext({ viewport: { width, height: 900 } });
+  try {
+   const page = await context.newPage();
+    await page.addInitScript(() => {
+      window.sweepFrames = [];
+      const sample = () => {
+        const host = document.querySelector('[data-intro]');
+        if (host?.classList.contains('is-leaving') && !host.hidden) {
+          const style = getComputedStyle(host, '::after');
+          window.sweepFrames.push({ at:performance.now(), phase:host.dataset.phase, scale: new DOMMatrix(style.transform).a, opacity: Number(getComputedStyle(host).opacity), width: host.getBoundingClientRect().width });
+        }
+        if (!host?.hidden) requestAnimationFrame(sample);
+      };
+      requestAnimationFrame(sample);
+    });
+    await page.goto(site.url);
+    await page.waitForFunction(() => !document.documentElement.classList.contains('intro-active'));
+    const frames = await page.evaluate(() => window.sweepFrames);
+    await fs.writeFile(path.join(directory, `sweep-${width}.json`), JSON.stringify(frames));
+    assert.ok(frames.some(frame => frame.scale >= .999 && frame.width === width && frame.opacity > .1), 'yellow reaches full viewport before dismissal');
+    assert.ok(frames.some(frame => frame.opacity > .1 && frame.opacity < .9), 'full-screen yellow fades rather than disappearing');
+    const fade = frames.filter(frame => frame.phase === 'fade');
+    assert.ok(fade.length > 1 && fade.at(-1).at - fade[0].at >= 300 && fade.at(-1).at - fade[0].at <= 450, 'frame-observed fade spans approximately 400ms');
+
+  } finally { await context.close(); }
+ }
+ for (const name of ['slow-cover','stalled-cover']) {
+  const context = await browser.newContext();
+  try {
+   const page = await context.newPage();
+   await page.route('**/images/field.svg', async request => {
+    if (name === 'slow-cover') { await new Promise(resolve=>setTimeout(resolve,1000)); await request.continue().catch(()=>{}); }
+   });
+   await page.goto(site.url, {waitUntil:'domcontentloaded'});
+   await page.waitForFunction(()=>!!window.__hgIntroResult);
+   const result = await page.evaluate(()=>window.__hgIntroResult);
+   await fs.writeFile(path.join(directory,`${name}.json`),JSON.stringify(result,null,2));
+   assert.ok(result.ended-result.started <= 4000, 'visible blocking never exceeds four seconds');
+   if(name==='slow-cover') { assert.equal(result.reason,'complete'); assert.ok(result.readyAt>=1000); }
+   else assert.equal(result.reason,'resource-timeout');
+  } finally { await context.close(); }
+ }
+ report.introCoverage = { passed: true };
+}

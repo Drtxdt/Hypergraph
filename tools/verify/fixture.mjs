@@ -14,6 +14,9 @@ export async function generate(base, options = {}) {
   });
   await fs.mkdir(path.join(base, "source/standalone"), {recursive:true});
   await fs.writeFile(path.join(base, "source/standalone/index.md"), "---\nlayout: page\ntitle: 独立页面阅读指南\n---\n## 从这里开始\n\n这是普通页面的真实正文，用于验证标题、内容与评论的共同阅读轴。\n\n## 保持连续\n\n正文可以选择、复制与打印。\n");
+  await fs.mkdir(path.join(base, "source/media-regression"), {recursive:true});
+  await fs.writeFile(path.join(base, "source/media-regression/index.md"), '---\nlayout: page\ntitle: Image loading regression\n---\n<img src="/images/record.svg" alt="First image">\n<div style="height:10000px"></div>\n<img src="/images/connect.svg" loading="lazy" alt="Deferred image">\n');
+  if (options.content) await fs.cp("examples/content/source", path.join(base, "source"), {recursive:true});
   const postDir = path.join(base, "source/_posts");
   if (options.empty || options.few)
     for (const file of await fs.readdir(postDir))
@@ -159,10 +162,22 @@ export async function serve(base, mount = "/") {
       const file = path.resolve(root, name);
       if (!file.startsWith(root + path.sep)) throw Error();
       const data = await fs.readFile(file);
-      res.writeHead(200, {
-        "Content-Type": types[path.extname(file)] || "application/octet-stream",
-      });
-      res.end(data);
+      const headers = { "Content-Type": types[path.extname(file)] || "application/octet-stream", "Accept-Ranges": "bytes" };
+      const range = /^bytes=(\d+)-(\d*)$/.exec(req.headers.range || "");
+      if (range) {
+        const start = Number(range[1]), end = Math.min(data.length - 1, range[2] ? Number(range[2]) : data.length - 1);
+        if (start > end || start >= data.length) { res.writeHead(416, { "Content-Range": `bytes */${data.length}` }); res.end(); return; }
+        res.writeHead(206, { ...headers, "Content-Range": `bytes ${start}-${end}/${data.length}`, "Content-Length": end - start + 1 });
+        res.end(data.subarray(start, end + 1));
+      } else {
+        // Negotiate only shipped sidecars, as nginx gzip_static does. Never
+        // synthesize smaller responses just for the performance fixture.
+        const acceptsGzip = (req.headers["accept-encoding"] || "").split(",").some(value => /^gzip(?:\s*;|$)/.test(value.trim()) && !/;\s*q=0(?:\.0*)?$/.test(value.trim()));
+        const compressed = acceptsGzip ? await fs.readFile(file + ".gz").catch(() => null) : null;
+        const body = compressed || data;
+        res.writeHead(200, { ...headers, "Vary": "Accept-Encoding", ...(compressed ? { "Content-Encoding": "gzip" } : {}), "Content-Length": body.length });
+        res.end(body);
+      }
     } catch {
       res.writeHead(404);
       res.end("Not found");

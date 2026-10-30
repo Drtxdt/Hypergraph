@@ -10,6 +10,13 @@ await fs.copyFile(
 );
 const { build } = await import("vite");
 await build();
+// Ship the exact compressed critical assets used by the static-host benchmark.
+// Hosts without gzip_static can serve the original files unchanged.
+const { gzipSync } = await import("node:zlib");
+for (const name of ["main.css", "main.js"]) {
+  const file = "source/assets/" + name;
+  await fs.writeFile(file + ".gz", gzipSync(await fs.readFile(file), { level: 9 }));
+}
 await fs.mkdir("source/assets/katex", { recursive: true });
 await fs.copyFile(
   "node_modules/katex/dist/katex.min.css",

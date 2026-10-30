@@ -73,7 +73,7 @@ export async function checkBrowser(browser, sites, report, out) {
           const { root } = await client.send("DOM.getDocument");
           const { nodeId } = await client.send("DOM.querySelector", {
             nodeId: root.nodeId,
-            selector: ".lead h1",
+            selector: ".lead .lead-heading",
           });
           report.platformFonts = (
             await client.send("CSS.getPlatformFontsForNode", { nodeId })
@@ -257,7 +257,7 @@ export async function checkBrowser(browser, sites, report, out) {
   );
   await page.goto(main + "categories/" + encodeURIComponent("设计观察") + "/");
   assert.match(
-    await page.locator(".article-head .eyebrow").textContent(),
+    await page.locator(".section-heading > span").textContent(),
     /1 篇文章/,
   );
   await page.goto(sites.subdir.url);
@@ -496,6 +496,8 @@ export async function performance(
         );
         await page.waitForFunction(() => window.metrics.readable !== null);
         const readable = await page.evaluate(() => window.metrics.readable);
+        report.performance.push({name, visit, run: run + 1, phase: "readability", readable, evidence: await page.evaluate(() => ({ metrics:window.metrics, intro:window.__hgIntroResult }))});
+        await fs.writeFile(path.resolve('.local/verification/performance-partial.json'), JSON.stringify(report.performance, null, 2));
         assert.ok(readable <= 2500, `${name} first readable ${readable}`);
         // Capture stability before any interaction can exclude a late layout shift.
         await page.waitForTimeout(
@@ -525,6 +527,8 @@ export async function performance(
           Number.isFinite(window.metrics.restoreMs),
         );
         const restoreMs = await page.evaluate(() => window.metrics.restoreMs);
+        report.performance.at(-1).interactionEvidence = await page.evaluate(() => window.metrics);
+        await fs.writeFile(path.resolve('.local/verification/performance-partial.json'), JSON.stringify(report.performance, null, 2));
         assert.ok(restoreMs <= 500, `${name} modal restoration ${restoreMs}`);
         await page.waitForTimeout(120);
         const metrics = await page.evaluate(() => ({
@@ -562,6 +566,7 @@ export async function performance(
               image += body.length;
           } catch {}
         }
+        report.performance.pop();
         report.performance.push({
           name,
           visit,
@@ -576,6 +581,7 @@ export async function performance(
           fontBytes: font,
           imageBytes: image,
         });
+        await fs.writeFile(path.resolve('.local/verification/performance-partial.json'), JSON.stringify(report.performance, null, 2));
         assert.ok(
           stability.lcp > 0 && stability.lcp <= 2500,
           `${name} LCP ${stability.lcp}`,

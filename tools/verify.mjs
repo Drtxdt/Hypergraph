@@ -1,3 +1,5 @@
+import { checkUiPolish, checkIntroCoverage } from "./verify-ui-polish.mjs";
+import { checkBeta4 } from "./verify-beta4.mjs";
 import fs from "node:fs/promises";
 import {checkBeta3} from "./verify-beta3.mjs";
 import {checkBeta2} from "./verify-beta2.mjs";
@@ -20,7 +22,7 @@ const report = {
   version: JSON.parse(await fs.readFile("package.json", "utf8")).version,
   date: new Date().toISOString(),
   passed: false,
-  conditions: { cpu: 4, latency: 150, downloadMbps: 1.6, viewport: "390x844" },
+  conditions: { cpu: 4, latency: 150, downloadMbps: 1.6, viewport: "390x844", compression: "Shipped main.css.gz/main.js.gz sidecars negotiated with Accept-Encoding; other resources uncompressed" },
   checks: [],
   buildMode: process.argv.includes("--skip-build") ? "diagnostic-skip" : "full",
 };
@@ -67,6 +69,7 @@ try {
   }
   const variants = {
     main: {},
+    content: { content:true, theme: { music: { enable:false } } },
     noCover: { noCover: true },
     empty: { empty: true },
     few: { few: true },
@@ -145,17 +148,25 @@ try {
       }).trim().length > 0,
   };
   await run(["tools/verify-navigation-v21.mjs"]);
+  // Fail early on the real service prerequisite, before expensive UI sampling.
+  // Keep the same startup timeout and SQLite backend; do not retry it silently.
+  waline = await startWaline(path.join(temp, "waline"), new URL(sites.main.url).origin);
+  report.walineStartupMs = waline.startupMs;
+  console.log("Waline SQLite ready in " + Math.round(waline.startupMs) + " ms");
   await checkBrowser(browser, sites, report, out);
   console.log("Browser functional and visual checks passed");
+  const uiFailures = [];
+  for (const check of [checkUiPolish, checkIntroCoverage]) {
+    try { await check(browser, sites.main, path.join(out, "ui-polish"), report); }
+    catch (error) { uiFailures.push(error.stack); }
+  }
+  if (uiFailures.length) { report.uiFailures = uiFailures; throw Error(uiFailures.join("\n")); }
+  await checkBeta4(browser, sites, out, report);
   await checkBeta3(browser, sites, out, report);
   await checkBeta2(browser, sites, out, report);
   console.log("Beta.2 controls and navigation race checks passed");
   await checkIntegrations(browser, sites.main, report);
   await checkAdvanced(browser, sites, report);
-  waline = await startWaline(
-    path.join(temp, "waline"),
-    new URL(sites.main.url).origin,
-  );
   await checkServices(browser, sites.main, waline, report);
   await waline.close();
   waline = undefined;

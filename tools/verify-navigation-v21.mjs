@@ -15,7 +15,8 @@ const server=http.createServer((req,res)=>{res.setHeader('Content-Type',req.url=
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 let browser;
 try {
- browser=await chromium.launch({channel:process.env.HG_BROWSER==='chromium'?undefined:(process.env.HG_BROWSER||(process.platform==='win32'?'msedge':undefined)),headless:true});
+ browser=await chromium.launch({...(process.env.HG_BROWSER_EXECUTABLE ? {executablePath:process.env.HG_BROWSER_EXECUTABLE} : {channel:process.env.HG_BROWSER==='chromium'?undefined:(process.env.HG_BROWSER||(process.platform==='win32'?'msedge':undefined))}),headless:true});
+ console.log('Navigation browser: '+browser.version());
  const page=await browser.newPage({viewport:{width:1440,height:900}});
  let releaseModule; const moduleGate=new Promise(resolve=>{releaseModule=resolve;});
  await page.route('**/panels.js',async route=>{await moduleGate;await route.continue();});
