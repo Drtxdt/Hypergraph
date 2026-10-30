@@ -1,6 +1,7 @@
 "use strict";
 const { escape } = require("../lib/utils.cjs");
 const paths = {
+  copy: "M8 8h13v13H8ZM16 8V3H3v13h5",
   telegram: "M2 10 22 2l-5 20-6-7-4 3v-6ZM7 12 22 2M11 15 22 2",
   facebook: "M14 22V12h4l1-4h-5V6c0-2 1-3 4-3V0c-6-1-8 1-8 6v2H7v4h3v10",
   reddit: "M8 13h.1M16 13h.1M8 17q4 3 8 0M12 8l2-6 5 1M3 10a2 2 0 1 0-2 4m20-4a2 2 0 1 1 2 4M12 8a10 7 0 1 0 0 14 10 7 0 1 0 0-14",

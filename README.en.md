@@ -37,3 +37,7 @@ Run `npm run verify` for isolated public fixtures, browser tests, SQLite comment
 `appearance.intro_scope: home | all` defaults to `home` (first index page only). Percentages describe animation progress, not downloads. Motion uses 480ms to 60%, a 1000ms hold, 480ms to 100%, then a 480ms reveal overlapping the homepage entrance. Readability takes priority: a 2350ms budget measured from navigation can cancel the tail or end a slow start without pretending completion. Skip, reduced motion, data saving, hidden tabs and unavailable storage bypass or stop it. Navigation never repeats the brand intro.
 
 Code language badges and copy share one toolbar. Syntax colors support explicit light/dark code themes independently of page mode. Icon buttons retain accessible names; the key visibility control preserves input and supports reduced motion. Bilibili and Instagram shortcuts copy a link for manual sharing.
+
+### beta.3 reading stability
+
+Full homepage loads and reloads replay the entrance by default. Set `appearance.intro: session` to retain the previous behavior. Sharing platforms are expandable; desktop and mobile outlines render in place. See [changes and verification](docs/BETA3.md).

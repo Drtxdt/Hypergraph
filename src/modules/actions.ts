@@ -1,5 +1,10 @@
 import { t } from "./i18n";
 export function mount(root: HTMLElement, signal: AbortSignal) {
+  root.querySelectorAll<HTMLDetailsElement>(".share-platforms").forEach((details) => {
+    details.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") { details.open = false; details.querySelector("summary")?.focus(); }
+    }, { signal });
+  });
   root.querySelectorAll<HTMLButtonElement>("[data-share],[data-copy-share]").forEach((button) =>
     button.addEventListener(
       "click",

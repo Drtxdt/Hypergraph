@@ -1,3 +1,4 @@
+import { route } from "./fixture.mjs";
 import fs from "node:fs/promises";
 import assert from "node:assert/strict";
 export async function checkIntegrations(browser, site, report) {
@@ -5,7 +6,7 @@ export async function checkIntegrations(browser, site, report) {
   page.setDefaultTimeout(20000);
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto(site.url + "2026/10/29/components/");
+  await page.goto(site.url + route(site, "components"));
   await page.getByRole("tab", { name: "Second", exact: true }).click();
   assert.ok(
     (
@@ -29,7 +30,7 @@ export async function checkIntegrations(browser, site, report) {
   await page.keyboard.press("ArrowRight");
   await page.keyboard.press("Escape");
   assert.equal(await page.locator("dialog.lightbox[open]").count(), 0);
-  await page.goto(site.url + "2026/10/29/field-study/");
+  await page.goto(site.url + route(site, "field-study"));
   await page.locator(".copy-code").first().waitFor();
   await page.evaluate(() =>
     Object.defineProperty(navigator, "clipboard", {
@@ -77,12 +78,12 @@ export async function checkIntegrations(browser, site, report) {
     focusReturn: true,
     bodyTextEnlargement: "200% at 390px",
   };
-  await page.goto(site.url + "2026/10/28/welcome/");
+  await page.goto(site.url + route(site, "welcome"));
   await page.locator("[data-menu-toggle]").click();
   await page.locator("[data-mode-toggle]").click();
   await page.keyboard.press("Escape");
   const html = await fs.readFile(
-    site.base + "/public/2026/10/28/welcome/index.html",
+    site.base + "/public/" + route(site, "welcome") + "index.html",
     "utf8",
   );
   await page.route("**/remote-test/", (r) =>
@@ -137,7 +138,7 @@ export async function checkIntegrations(browser, site, report) {
         hits: [
           {
             title: "Verified external result",
-            path: "2026/10/28/welcome/",
+            path: route(site, "welcome"),
             text: "sample",
           },
         ],

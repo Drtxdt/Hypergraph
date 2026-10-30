@@ -1,3 +1,4 @@
+import { route } from "./fixture.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -10,8 +11,8 @@ export async function checkBrowser(browser, sites, report, out) {
   page.on("pageerror", (e) => errors.push(e.message));
   page.setDefaultTimeout(20000);
   const main = sites.main.url,
-    article = "2026/10/29/field-study/",
-    long = "2026/10/20/long/";
+    article = route(sites.main, "field-study"),
+    long = route(sites.main, "long");
   const navigate = async (route) => {
     await page.evaluate(
       (url) => window.__hypergraph.swup.navigate(url),
@@ -21,7 +22,7 @@ export async function checkBrowser(browser, sites, report, out) {
     await page.waitForTimeout(100);
   };
   report.visual = [];
-  for (const width of [360, 390, 768, 1440])
+  for (const width of [360, 390, 768, 1024, 1440])
     for (const mode of ["light", "dark"])
       for (const [view, url] of [
         ["home", main],
@@ -91,7 +92,7 @@ export async function checkBrowser(browser, sites, report, out) {
   for (let i = 0; i < 30; i++) {
     const chart = i % 6 === 0;
     await navigate(
-      chart ? "2026/10/28/showcase/" : i % 2 ? article : "archives/",
+      chart ? route(sites.main, "showcase") : i % 2 ? article : "archives/",
     );
     if (chart) {
       await page.locator("[data-diagram=chartjs] canvas").waitFor();
@@ -190,7 +191,7 @@ export async function checkBrowser(browser, sites, report, out) {
       .evaluate((el) => el.classList.contains("reading-mode")),
   );
   await page.locator("[data-reading]").click();
-  await page.goto(main + "2026/10/28/showcase/");
+  await page.goto(main + route(sites.main, "showcase"));
   await page.locator("[data-diagram=mermaid] svg").waitFor({ timeout: 60000 });
   await page.locator("[data-diagram=chartjs] canvas").waitFor();
   await page.locator("[data-diagram=score] svg").first().waitFor();
@@ -198,7 +199,7 @@ export async function checkBrowser(browser, sites, report, out) {
   await navigate("");
   assert.equal(await page.locator("[data-diagram]").count(), 0);
   for (const type of ["plain", "code", "math"]) {
-    await page.goto(main + "2026/10/19/private-" + type + "/");
+    await page.goto(main + route(sites.main, "private-" + type));
     await page.locator("[data-unlock] input").fill("wrong");
     await page.locator("[data-unlock] button[type=submit]").click();
     await page.waitForFunction(() =>
@@ -217,7 +218,7 @@ export async function checkBrowser(browser, sites, report, out) {
     if (type === "math")
       assert.ok((await page.locator("[data-plaintext] .katex").count()) > 0);
     await navigate("");
-    await navigate("2026/10/19/private-" + type + "/");
+    await navigate(route(sites.main, "private-" + type));
     assert.equal(await page.locator("[data-plaintext]").textContent(), "");
   }
   for (const type of [
@@ -339,7 +340,8 @@ export async function performance(browser, sites, report, visits = ["first", "su
     for (const [name, url, site] of [
       ["home", sites.main.url, sites.main],
       ["no-cover", sites.noCover.url, sites.noCover],
-      ["long", sites.main.url + "2026/10/20/long/", sites.main],
+      ["long", sites.main.url + route(sites.main, "long"), sites.main],
+      ["standalone", sites.main.url + "standalone/", sites.main],
     ]) {
       const context = await browser.newContext({
         viewport: { width: 390, height: 844 },
@@ -364,7 +366,7 @@ export async function performance(browser, sites, report, visits = ["first", "su
         resources.clear();
       }
       await page.addInitScript(() => {
-        window.metrics = { lcp: null, cls: 0, events: [], eventCounts: 0, readable: null };
+        window.metrics = { lcp: null, cls: 0, shifts: [], events: [], eventCounts: 0, readable: null };
         const readable = () => {
           const title=document.querySelector('.lead-title,.article-head,#content h1');
           const clearTitle=title && Number(getComputedStyle(title).opacity)>=.99 && getComputedStyle(title).clipPath==='none';
@@ -382,7 +384,10 @@ export async function performance(browser, sites, report, visits = ["first", "su
         ).observe({ type: "largest-contentful-paint", buffered: true });
         new PerformanceObserver((l) =>
           l.getEntries().forEach((e) => {
-            if (!e.hadRecentInput) window.metrics.cls += e.value;
+            if (!e.hadRecentInput) {
+              window.metrics.cls += e.value;
+              window.metrics.shifts.push({at:e.startTime,value:e.value,sources:e.sources?.map(s=>({node:s.node?.nodeName,previous:s.previousRect,current:s.currentRect}))});
+            }
           }),
         ).observe({ type: "layout-shift", buffered: true });
         new PerformanceObserver((l) =>
@@ -396,6 +401,11 @@ export async function performance(browser, sites, report, visits = ["first", "su
       await page.waitForFunction(() => window.metrics.readable !== null);
       const readable = await page.evaluate(() => window.metrics.readable);
       assert.ok(readable <= 2500, `${name} first readable ${readable}`);
+      // Capture stability before any interaction can exclude a late layout shift.
+      await page.waitForTimeout(Math.max(0, 5000 - await page.evaluate(() => performance.now())));
+      const stability = await page.evaluate(() => ({lcp:window.metrics.lcp,cls:window.metrics.cls,shifts:window.metrics.shifts}));
+      await page.reload();
+      await page.waitForFunction(() => window.metrics.readable !== null && !document.documentElement.classList.contains("intro-active"));
       await page.locator("[data-menu-toggle]").click();
       await page.locator("[data-mode-toggle]").click();
       await page.locator("[data-search]").click({position:{x:32,y:22}});
@@ -439,6 +449,7 @@ export async function performance(browser, sites, report, visits = ["first", "su
         visit,
         run: run + 1,
         ...metrics,
+        ...stability,
         interactionBound,
         readable,
         jsGzip: js,
@@ -446,8 +457,8 @@ export async function performance(browser, sites, report, visits = ["first", "su
         fontBytes: font,
         imageBytes: image,
       });
-      assert.ok(metrics.lcp <= 2500, `${name} LCP ${metrics.lcp}`);
-      assert.ok(metrics.cls <= 0.1, `${name} CLS ${metrics.cls}`);
+      assert.ok(stability.lcp > 0 && stability.lcp <= 2500, `${name} LCP ${stability.lcp}`);
+      assert.ok(stability.cls <= 0.1, `${name} CLS ${stability.cls}`);
       assert.ok(
         interactionBound <= 200,
         `${name} interaction ${interactionBound}`,

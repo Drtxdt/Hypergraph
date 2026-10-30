@@ -1,5 +1,5 @@
 {% set archive = hg_archive(page) %}{% set media = hg_media(page, archive.type) %}
-<header class="article-head"><p class="eyebrow">{{ hg_t('archive') }} / {{ archive.count }} {{ hg_t('articles') }}</p><h1>{{ page.category or page.tag or hg_t('archive') }}{% if page.year %} · {{ page.year }}{% if page.month %} / {{ page.month }}{% endif %}{% endif %}</h1></header>
+<header class="article-head"><p class="eyebrow">{{ hg_t('archive') }} / {{ archive.count }} {{ hg_t('articles') }}</p><div class="section-title"><h1>{{ page.category or page.tag or hg_t('archive') }}{% if page.year %} · {{ page.year }}{% if page.month %} / {{ page.month }}{% endif %}{% endif %}</h1></div></header>
 {% include '_media.njk' %}
 <div class="taxonomy">{% for category in site.categories.toArray() %}<a href="{{ url_for(category.path) }}">{{ category.name }} <small>{{ category.length }}</small></a>{% endfor %}</div>
 <section class="archive-list {% if (page.category and hg().appearance.category_layout == 'cards') or (page.tag and hg().appearance.tag_layout == 'cards') %}archive-cards{% endif %}">

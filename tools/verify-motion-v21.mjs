@@ -52,7 +52,7 @@ export async function checkMotionV21(browser, sites, out, report = {}) {
    assert.equal(await page.evaluate(()=>window.introEndCount),1);
    await fs.writeFile(path.join(dir,`timeline-${width}.json`),JSON.stringify(frames));
    await page.reload({waitUntil:'domcontentloaded'});
-   assert.equal(await page.evaluate(()=>window.introEvidence.some(x=>x.active)),false,'session reload must not replay');
+   await visibleOnce(page); await ended(page);
    if(width===1440) {
     await page.mouse.move(600,500);await page.locator('.site-header').hover({position:{x:30,y:100}});
     await page.waitForFunction(()=>document.querySelector('.site-header').classList.contains('rail-open'));
@@ -84,7 +84,7 @@ export async function checkMotionV21(browser, sites, out, report = {}) {
    if(name==='main-blocked')await page.route('**/assets/main.js',r=>r.abort());
    if(name==='resource-failed')await page.route(/\.(?:svg|woff2)(?:\?.*)?$/,r=>r.abort());
    await page.goto(sites.main.url,{waitUntil:'domcontentloaded'});
-   if(['reduced','storage-blocked','save-data'].includes(name)) {
+   if(['reduced','save-data'].includes(name)) {
     await page.waitForTimeout(250);
     assert.equal(await page.evaluate(()=>window.introEvidence.some(x=>x.active)),false,`${name}: intro should not start`);
    } else {

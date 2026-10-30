@@ -1,3 +1,4 @@
+import { route } from "./verify/fixture.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 export async function checkBeta2(browser, sites, out, report) {
@@ -9,7 +10,7 @@ export async function checkBeta2(browser, sites, out, report) {
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   try {
-    await page.goto(sites.main.url + "2026/10/29/field-study/");
+    await page.goto(sites.main.url + route(sites.main, "field-study"));
     await page.locator(".code-toolbar").waitFor();
     assert.ok(
       await page
@@ -19,10 +20,10 @@ export async function checkBeta2(browser, sites, out, report) {
     assert.equal(await page.locator(".code-emblem").textContent(), "TS");
     assert.ok(
       await page
-        .locator(".toc-panel")
+        .locator(".toc-desktop")
         .evaluate((e) => e.getBoundingClientRect().width >= 250),
     );
-    const links = page.locator(".toc a");
+    const links = page.locator(".toc-desktop .toc a");
     for (const i of [3, 0, 2, 1, 3, 0]) {
       await links.nth(i).click();
       assert.equal(await links.nth(i).getAttribute("aria-current"), "location");
@@ -37,7 +38,7 @@ export async function checkBeta2(browser, sites, out, report) {
       await page.evaluate(() => navigator.clipboard.readText()),
       /const journal/,
     );
-    await page.goto(sites.main.url + "2026/10/19/private-plain/");
+    await page.goto(sites.main.url + route(sites.main, "private-plain"));
     const input = page.locator("[data-unlock] input");
     await input.fill("wrong");
     await page.locator("[data-key-visibility]").click();
@@ -83,7 +84,7 @@ export async function checkBeta2(browser, sites, out, report) {
   });
   try {
     const p = await touch.newPage();
-    await p.goto(sites.main.url + "2026/10/29/field-study/");
+    await p.goto(sites.main.url + route(sites.main, "field-study"));
     await p.locator("[data-menu-toggle]").click();
     assert.equal(await p.locator("#content").evaluate((e) => e.inert), true);
     await p.keyboard.press("Escape");

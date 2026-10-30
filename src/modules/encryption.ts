@@ -135,8 +135,7 @@ export function mount(
             new TextDecoder().decode(plain);
           input.value = "";
           form.remove();
-          const toc = root.querySelector(".toc-panel details");
-          if (toc) {
+          for (const toc of root.querySelectorAll(".toc-panel details")) {
             const list = document.createElement("ol");
             list.className = "toc";
             section

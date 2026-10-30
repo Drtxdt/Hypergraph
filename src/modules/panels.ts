@@ -231,9 +231,7 @@ export function mountShell(signal: AbortSignal) {
         link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");
     });
-    const toc =
-      document.querySelector<HTMLDetailsElement>(".toc-panel details");
-    if (toc) toc.open = !mq.matches;
+
   };
   const reconcile = () => {
     hovering = header.matches(":hover") && finePointer.matches;

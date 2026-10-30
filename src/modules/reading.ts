@@ -12,23 +12,19 @@ export function mount(
     theme?: string;
   } = { copy: true, fold: false, max_height: 0 },
 ) {
-  const tocPanel = root.querySelector<HTMLDetailsElement>(".toc-panel details");
-  if (tocPanel) {
+  const tocPanel = root.querySelector<HTMLDetailsElement>(".toc-mobile details");
+  if (tocPanel && !tocPanel.dataset.bound) {
+    tocPanel.dataset.bound = "true";
     const compact = matchMedia("(max-width:1023px)");
     const trigger = tocPanel.querySelector<HTMLElement>("summary")!;
-    const aside = tocPanel.closest<HTMLElement>(".toc-panel")!;
-    const grid = aside.parentElement!;
-    const tools = root.querySelector(".article-tools");
-    const placeToc = () => {
-      if (compact.matches && tools) tools.append(aside);
-      else grid.prepend(aside);
-      tocPanel.open = !compact.matches;
-    };
-    placeToc();
-    compact.addEventListener("change", placeToc, { signal });
+    compact.addEventListener("change", () => {
+      releasePanel(tocPanel);
+      tocPanel.open = false;
+    }, { signal });
     const closeToc = () => {
       tocPanel.open = false;
     };
+    tocPanel.querySelector("[data-toc-close]")?.addEventListener("click", () => { releasePanel(tocPanel); tocPanel.open = false; trigger.focus(); }, { signal });
     tocPanel.addEventListener(
       "toggle",
       () => {
