@@ -5,7 +5,7 @@ An original editorial Hexo theme with light/dark modes, one Endfield-inspired de
 Requires Node.js 22.12+ or 24 and Hexo 7.3 or 8. Install the delivered tarball in your Hexo site, set `theme: hypergraph`, remove other Markdown renderers, and run `hexo clean && hexo generate`. Assets are precompiled; Vite is only needed when developing the theme.
 
 ```sh
-npm install ./hexo-theme-hypergraph-2.0.0.tgz
+npm install ./hexo-theme-hypergraph-2.1.0-beta.5.tgz
 npm uninstall hexo-renderer-marked hexo-renderer-markdown-it
 ```
 
@@ -30,18 +30,7 @@ Run `npm run verify` for isolated public fixtures, browser tests, SQLite comment
 
 `appearance.intro: session | always | off` defaults to `always`. The intro runs only with `appearance.motion: cinematic`; reduced motion, data saving, history restoration and deep anchors bypass it. `interaction.loading_bar` remains the separate navigation waiting indicator. Desktop navigation expands on hover or keyboard focus, without a pin button. Touch devices use the menu button.
 
-## 2.1 beta.2 reading and entrance
 
-`post.cover_mode` accepts `compact` (default), `feature`, or `none`; a post can override it in front matter. `appearance.show_cover: false` always wins. Invalid post values report their source file. Titles and prose share one axis; the right-hand TOC becomes a compact panel on phones.
+## beta.5
 
-`appearance.intro_scope: home | all` defaults to `home` (first index page only). Percentages describe animation progress, not downloads. Motion uses 480ms to 60%, a 1000ms hold, 480ms to 100%, then a 480ms reveal overlapping the homepage entrance. Readability takes priority: a 2350ms budget measured from navigation can cancel the tail or end a slow start without pretending completion. Skip, reduced motion, data saving, hidden tabs and unavailable storage bypass or stop it. Navigation never repeats the brand intro.
-
-Code language badges and copy share one toolbar. Syntax colors support explicit light/dark code themes independently of page mode. Icon buttons retain accessible names; the key visibility control preserves input and supports reduced motion. Bilibili and Instagram shortcuts copy a link for manual sharing.
-
-### beta.3 reading stability
-
-Full homepage loads and reloads replay the entrance by default. Set `appearance.intro: session` to retain the previous behavior. Sharing platforms are expandable; desktop and mobile outlines render in place. See [changes and verification](docs/BETA3.md).
-
-## beta.4
-
-[Changes, entrance timing and verification](docs/BETA4.md) · [Representative content and image licenses](examples/content/README.md).
+[Current installation, page data and tools guide](docs/BETA5.en.md). Default navigation now includes eight configurable destinations. Entrance runs alongside image loading: 480ms → 60% hold 600ms → 480ms → full sweep 240ms → fade 600ms. Historical release notes describe their own versions only.

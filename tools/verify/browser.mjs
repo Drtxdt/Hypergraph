@@ -240,8 +240,8 @@ export async function checkBrowser(browser, sites, report, out) {
     "fcircle",
   ]) {
     await page.goto(main + type + "/");
-    assert.equal(await page.locator(".collection").count(), 1);
-    assert.ok((await page.locator(".collection-card").count()) > 0);
+    assert.equal(await page.locator("#content h1").count(), 1);
+    assert.ok((await page.locator(".collection-card,.about-profile,.friend-card,.photo-grid figure").count()) > 0);
   }
   await page.goto(sites.options.url);
   assert.equal(await page.locator(".sidebar-widget").count(), 3);
@@ -348,10 +348,13 @@ export async function performance(
   visits = ["first", "subsequent"],
 ) {
   report.performance = [];
+  const failures=[];
+  const gate=(condition,message)=>{if(!condition)failures.push(message);};
   for (const visit of visits)
     for (let run = 0; run < 3; run++)
       for (const [name, url, site] of [
         ["home", sites.main.url, sites.main],
+        ["photograph", sites.content.url, sites.content],
         ["no-cover", sites.noCover.url, sites.noCover],
         ["long", sites.main.url + route(sites.main, "long"), sites.main],
         ["standalone", sites.main.url + "standalone/", sites.main],
@@ -419,9 +422,10 @@ export async function performance(
           );
           const readable = () => {
             if (window.metrics.readable !== null) return;
-            const title = document.querySelector(
-              ".lead-title,.article-head,#content h1",
-            );
+            // Selector lists use document order: a hidden mobile identity h1
+            // must not replace the actual featured title in this measurement.
+            const title = document.querySelector('.lead-title') ||
+              document.querySelector('.article-head') || document.querySelector('#content h1');
             const clearTitle =
               title &&
               Number(getComputedStyle(title).opacity) >= 0.99 &&
@@ -494,11 +498,19 @@ export async function performance(
         await page.waitForFunction(
           () => !document.documentElement.classList.contains("intro-active"),
         );
-        await page.waitForFunction(() => window.metrics.readable !== null);
+        try {
+          await page.waitForFunction(() => window.metrics.readable !== null);
+        } catch (error) {
+          const prefix=path.resolve('.local/verification', `performance-failure-${name}-${visit}-${run+1}`);
+          await page.screenshot({path:prefix+'.png'});
+          await fs.writeFile(prefix+'.json', JSON.stringify(await page.evaluate(()=>({metrics:window.metrics,intro:window.__hgIntroResult,headings:[...document.querySelectorAll('.lead-title,.article-head,#content h1')].map(el=>({text:el.textContent,opacity:getComputedStyle(el).opacity,clip:getComputedStyle(el).clipPath,rect:el.getBoundingClientRect().toJSON()}))})),null,2));
+          throw error;
+        }
         const readable = await page.evaluate(() => window.metrics.readable);
+        const intro = await page.evaluate(() => window.__hgIntroResult || null);
         report.performance.push({name, visit, run: run + 1, phase: "readability", readable, evidence: await page.evaluate(() => ({ metrics:window.metrics, intro:window.__hgIntroResult }))});
         await fs.writeFile(path.resolve('.local/verification/performance-partial.json'), JSON.stringify(report.performance, null, 2));
-        assert.ok(readable <= 2500, `${name} first readable ${readable}`);
+        gate(readable <= 2500, `${name} first readable ${readable}`);
         // Capture stability before any interaction can exclude a late layout shift.
         await page.waitForTimeout(
           Math.max(0, 5000 - (await page.evaluate(() => performance.now()))),
@@ -507,6 +519,12 @@ export async function performance(
           lcp: window.metrics.lcp,
           cls: window.metrics.cls,
           shifts: window.metrics.shifts,
+          cover: (() => {
+            const img=document.querySelector('.lead-media img');
+            if(!img)return null;
+            const resource=performance.getEntriesByName(img.currentSrc).at(-1);
+            return {url:img.currentSrc,complete:img.complete,naturalWidth:img.naturalWidth,responseEnd:resource?.responseEnd,transferSize:resource?.transferSize,encodedBodySize:resource?.encodedBodySize};
+          })(),
         }));
         await page.reload();
         await page.waitForFunction(
@@ -529,17 +547,17 @@ export async function performance(
         const restoreMs = await page.evaluate(() => window.metrics.restoreMs);
         report.performance.at(-1).interactionEvidence = await page.evaluate(() => window.metrics);
         await fs.writeFile(path.resolve('.local/verification/performance-partial.json'), JSON.stringify(report.performance, null, 2));
-        assert.ok(restoreMs <= 500, `${name} modal restoration ${restoreMs}`);
+        gate(restoreMs <= 500, `${name} modal restoration ${restoreMs}`);
         await page.waitForTimeout(120);
         const metrics = await page.evaluate(() => ({
           ...window.metrics,
           eventCounts: performance.eventCounts?.get("click") || 0,
         }));
-        assert.ok(
+        gate(
           Number.isFinite(metrics.lcp) && metrics.lcp > 0,
           "Missing LCP",
         );
-        assert.ok(metrics.eventCounts >= 3, "Missing interaction observations");
+        gate(metrics.eventCounts >= 3, "Missing interaction observations");
         // Event Timing omits events below its minimum threshold. A populated eventCounts with
         // no duration entries proves sampled interactions were below 16ms, not missing data.
         const interactionBound = metrics.events.length
@@ -574,6 +592,7 @@ export async function performance(
           ...metrics,
           ...stability,
           interactionBound,
+          intro,
           restoreMs,
           readable,
           jsGzip: js,
@@ -582,17 +601,19 @@ export async function performance(
           imageBytes: image,
         });
         await fs.writeFile(path.resolve('.local/verification/performance-partial.json'), JSON.stringify(report.performance, null, 2));
-        assert.ok(
+        gate(
           stability.lcp > 0 && stability.lcp <= 2500,
           `${name} LCP ${stability.lcp}`,
         );
-        assert.ok(stability.cls <= 0.1, `${name} CLS ${stability.cls}`);
-        assert.ok(
+        gate(stability.cls <= 0.1, `${name} CLS ${stability.cls}`);
+        gate(
           interactionBound <= 200,
           `${name} interaction ${interactionBound}`,
         );
-        assert.ok(js <= 61440, `${name} JS ${js}`);
-        assert.ok(css <= 40960, `${name} CSS ${css}`);
+        gate(js <= 61440, `${name} JS ${js}`);
+        gate(css <= 40960, `${name} CSS ${css}`);
         await context.close();
       }
+  report.performanceFailures=failures;
+  if(failures.length)throw Error(failures.join('\n'));
 }

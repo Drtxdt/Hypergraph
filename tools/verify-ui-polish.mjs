@@ -61,7 +61,8 @@ await fs.mkdir(directory, { recursive: true });
     await page.screenshot({ path: path.join(directory, `audio-${width}.png`) });
     await page.locator('[data-player-close]').click();
     await page.evaluate(() => window.savedAudio = document.querySelector('.player audio'));
-    await page.locator('.brand').click();
+    if (width < 1024) await page.locator('[data-menu-toggle]').click();
+    await page.locator('#site-nav > a').first().click({position:{x:32,y:22}});
     await page.waitForURL(site.url);
     assert.equal(await page.evaluate(() => window.savedAudio === document.querySelector('.player audio')), true, 'navigation preserves the audio instance');
     await page.goto(site.url + 'gallery/');
@@ -116,7 +117,7 @@ export async function checkIntroCoverage(browser, site, directory, report = {}) 
     assert.ok(frames.some(frame => frame.scale >= .999 && frame.width === width && frame.opacity > .1), 'yellow reaches full viewport before dismissal');
     assert.ok(frames.some(frame => frame.opacity > .1 && frame.opacity < .9), 'full-screen yellow fades rather than disappearing');
     const fade = frames.filter(frame => frame.phase === 'fade');
-    assert.ok(fade.length > 1 && fade.at(-1).at - fade[0].at >= 300 && fade.at(-1).at - fade[0].at <= 450, 'frame-observed fade spans approximately 400ms');
+    assert.ok(fade.length > 1 && fade.at(-1).at - fade[0].at >= 500 && fade.at(-1).at - fade[0].at <= 650, 'frame-observed fade spans approximately 600ms');
 
   } finally { await context.close(); }
  }
@@ -132,8 +133,10 @@ export async function checkIntroCoverage(browser, site, directory, report = {}) 
    const result = await page.evaluate(()=>window.__hgIntroResult);
    await fs.writeFile(path.join(directory,`${name}.json`),JSON.stringify(result,null,2));
    assert.ok(result.ended-result.started <= 4000, 'visible blocking never exceeds four seconds');
-   if(name==='slow-cover') { assert.equal(result.reason,'complete'); assert.ok(result.readyAt>=1000); }
-   else assert.equal(result.reason,'resource-timeout');
+   assert.ok(['complete','late-start'].includes(result.reason));
+   assert.ok(result.ended <= 2500, 'cover loading never extends the normal animation');
+   if(name==='slow-cover') assert.ok(result.coverReadyAt>=1000);
+   else assert.equal(result.coverReadyAt,undefined);
   } finally { await context.close(); }
  }
  report.introCoverage = { passed: true };

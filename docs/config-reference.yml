@@ -1,13 +1,6 @@
-# Generated from config.schema.json
+# Generated from config.schema.json; copy only the overrides you need.
 preset: endfield
 color_mode: auto
-menu:
-  - label: home
-    url: /
-    icon: home
-  - label: archives
-    url: /archives/
-    icon: archive
 music:
   enable: false
   src: /audio/bgm.mp3
@@ -15,6 +8,39 @@ music:
   playlist: []
   volume: 0.7
   endpoint: ''
+menu:
+  - label: home
+    url: /
+    icon: home
+    enable: true
+  - label: archives
+    url: /archives/
+    icon: archive
+    enable: true
+  - label: gallery
+    page: gallery
+    icon: image
+    enable: true
+  - label: essay
+    page: essay
+    icon: note
+    enable: true
+  - label: friends
+    page: friends
+    icon: users
+    enable: true
+  - label: tools
+    page: tools
+    icon: tool
+    enable: true
+  - label: games
+    page: games
+    icon: gamepad
+    enable: true
+  - label: about
+    page: about
+    icon: user
+    enable: true
 home:
   title: ''
   description: ''
@@ -80,7 +106,44 @@ colors:
   light: {}
   dark: {}
 extensions: []
-pages: {}
+pages:
+  about:
+    enable: true
+    endpoint: ''
+  friends:
+    enable: true
+    endpoint: ''
+  gallery:
+    enable: true
+    endpoint: ''
+  essay:
+    enable: true
+    endpoint: ''
+  equipment:
+    enable: false
+    endpoint: ''
+  music:
+    enable: false
+    endpoint: ''
+  room:
+    enable: false
+    endpoint: ''
+  fcircle:
+    enable: false
+    endpoint: ''
+  tools:
+    enable: true
+    endpoint: ''
+    builtins:
+      - json
+      - text
+      - codec
+  games:
+    enable: true
+    endpoint: ''
+    builtins:
+      - '2048'
+      - minesweeper
 feeds:
   rss: true
   sitemap: true
@@ -89,7 +152,6 @@ pwa:
   enable: false
   icons: []
 post:
-  cover_mode: compact # compact / feature / none
   share: true
   copyright: true
   license: All rights reserved
@@ -103,7 +165,16 @@ post:
     - reading
   related: true
   related_limit: 3
-  share_sites: [x, bilibili, instagram, telegram, reddit, linkedin, facebook, email] # Bilibili/Instagram copy the link for manual sharing
+  share_sites:
+    - x
+    - bilibili
+    - instagram
+    - telegram
+    - reddit
+    - linkedin
+    - facebook
+    - email
+  cover_mode: compact
 sidebar:
   enable: false
   order:
@@ -172,8 +243,6 @@ chat:
   hide_on_scroll: false
 ads: []
 appearance:
-  intro_scope: home # home / all
-  intro: always # session / always / off
   favicon: /hypergraph.svg
   avatar: ''
   author_status: ''
@@ -205,6 +274,9 @@ appearance:
   show_cover: true
   taxonomy_banners: {}
   motion: cinematic
+  intro: always
+  intro_scope: home
+  cover_fit: cover
 interaction:
   translate: false
   spacing: false

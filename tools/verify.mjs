@@ -1,5 +1,6 @@
 import { checkUiPolish, checkIntroCoverage } from "./verify-ui-polish.mjs";
 import { checkBeta4 } from "./verify-beta4.mjs";
+import { checkBeta5 } from "./verify-beta5.mjs";
 import fs from "node:fs/promises";
 import {checkBeta3} from "./verify-beta3.mjs";
 import {checkBeta2} from "./verify-beta2.mjs";
@@ -69,7 +70,15 @@ try {
   }
   const variants = {
     main: {},
+    beta5: { defaultMenu:true, theme:{pages:{about:{enable:true,path:'profile/'}}}, data:{
+      about:{profile:{name:'记录者',bio:'写作、观察与小型项目。'},projects:[{title:'公开示例',description:'一个可持续维护的记录空间。',url:'/archives/'}],timeline:[{date:'2026',title:'开始记录'}],interests:['设计','技术'],posts:['field-study']},
+      friends:{groups:[{title:'文档',items:[{title:'Hexo',url:'https://hexo.io',description:'静态博客框架'}]}],application:'请通过站长提供的联系方式交流。'},
+      gallery:{albums:[{slug:'field',title:'观察记录',photos:[{image:'/images/record.svg',caption:'结构与秩序'},{image:'/images/connect.svg',caption:'连接'}]}]},
+      tools:{links:[{title:'Hexo 文档',description:'公开技术文档',url:'https://hexo.io/docs/',group:'参考'}]},games:{links:[]}
+    }},
     paginated: { perPage:1 },
+    boundaries: {few:true,manualAbout:true,defaultMenu:true,root:'/blog/',theme:{home:{sections:['featured','posts']},sidebar:{enable:true,order:['announcement'],announcement:'Independent announcement'},pages:{about:{enable:true,path:'profile/'},games:{enable:false}}}},
+    contained: {content:true,theme:{appearance:{cover_fit:'contain'},music:{enable:false}}},
     content: { content:true, theme: { music: { enable:false } } },
     noCover: { noCover: true },
     empty: { empty: true },
@@ -163,6 +172,7 @@ try {
   }
   if (uiFailures.length) { report.uiFailures = uiFailures; throw Error(uiFailures.join("\n")); }
   await checkBeta4(browser, sites, out, report);
+  await checkBeta5(browser, sites, out, report);
   await checkBeta3(browser, sites, out, report);
   await checkBeta2(browser, sites, out, report);
   console.log("Beta.2 controls and navigation race checks passed");

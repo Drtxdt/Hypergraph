@@ -49,7 +49,7 @@ export async function checkMotionV21(browser, sites, out, report = {}) {
    const frames=await page.evaluate(()=>window.introFrames);
    await fs.writeFile(path.join(dir,`timeline-${width}.json`),JSON.stringify(frames));
    for(let i=1;i<frames.length;i++) {assert.ok(frames[i].value>=frames[i-1].value);assert.ok(Math.abs(frames[i].bar*100-frames[i].value)<1.1);}
-   const held=frames.filter(f=>f.value===60);assert.ok(held.length>1 && held.at(-1).at-held[0].at>=700 && held.at(-1).at-held[0].at<=950,'60% holds 800ms');
+   const held=frames.filter(f=>f.value===60);assert.ok(held.length>1 && held.at(-1).at-held[0].at>=500 && held.at(-1).at-held[0].at<=750,'60% holds 600ms');
    assert.equal(await page.evaluate(()=>window.introEndCount),1);
    await fs.writeFile(path.join(dir,`timeline-${width}.json`),JSON.stringify(frames));
    await page.reload({waitUntil:'domcontentloaded'});

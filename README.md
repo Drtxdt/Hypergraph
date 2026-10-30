@@ -7,7 +7,7 @@
 在 Hexo 站点目录安装交付的主题包，然后设置站点 `_config.yml` 的 `theme: hypergraph`。Node.js 要求 22.12+ 或 24，Hexo 支持 7.3 与 8。
 
 ```sh
-npm install ./hexo-theme-hypergraph-2.0.0.tgz
+npm install ./hexo-theme-hypergraph-2.1.0-beta.5.tgz
 npm uninstall hexo-renderer-marked hexo-renderer-markdown-it
 npx hexo clean
 npx hexo generate
@@ -22,9 +22,6 @@ preset: endfield
 color_mode: auto
 home:
   title: 记录当下，连接未知。
-menu:
-  - { label: home, url: /, icon: home }
-  - { label: archives, url: /archives/, icon: archive }
 comments:
   enable: false
 ```
@@ -53,18 +50,7 @@ comments:
 
 截图是当前构建的观察记录，不会自动替换批准的视觉基准；操作系统中文字体差异需要人工比较。真实托管评论账号、线上网络和真实用户 INP 不由本地模拟测试替代。
 
-## 2.1 beta.2 阅读与入场
 
-`post.cover_mode` 支持 `compact`（默认）、`feature` 和 `none`，文章 front matter 可单独覆盖；`appearance.show_cover: false` 始终优先。非法封面模式会报告对应文章位置。标题与正文共用主轴，手机目录收拢到阅读工具区。
+## beta.5
 
-`appearance.intro_scope: home | all` 默认为 `home`，仅首页第一页整页访问播放。百分比表示动画进度：480ms 到 60%，停留 1000ms，再用 480ms 到 100%，480ms 揭幕与首页进入重叠。可读性优先：从导航开始计算的 2350ms 预算可能提前结束揭幕或慢加载，不伪造完成。可跳过；减少动态效果、节省流量、后台与存储不可用时直接显示或结束。站内导航不重复品牌入场。
-
-代码语言徽标与复制按钮使用紧凑工具栏，高亮独立适配明暗代码主题。桌面侧栏仅悬停或键盘展开，触摸设备保留菜单按钮。图标按钮保留可访问名称；协议密钥支持显示切换、错误及成功反馈。B站与 Instagram 快捷按钮复制链接供手动分享。
-
-### beta.3 阅读稳定性
-
-完整打开或刷新首页默认重播入场；设置 `appearance.intro: session` 可保留旧行为。分享平台收纳在“更多”入口，文章目录在桌面和手机原位生成。详见 [变更和验证说明](docs/BETA3.md)。
-
-## beta.4
-
-[Changes, entrance timing and verification](docs/BETA4.md) · [Representative content and image licenses](examples/content/README.md).
+[Current installation, page data and tools guide](docs/BETA5.md). Default navigation now includes eight configurable destinations. Entrance runs alongside image loading: 480ms → 60% hold 600ms → 480ms → full sweep 240ms → fade 600ms. Historical release notes describe their own versions only.

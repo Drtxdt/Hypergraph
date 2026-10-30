@@ -90,11 +90,15 @@ menu:
 
 `cinematic` 只对首页和记录列表应用分段进入及精细指针封面反馈，文章正文不会隐藏等待动画。移动端缩短动效，省流量使用轻反馈，减少动态效果及 `off` 禁用装饰动效。后台暂停，切页清理。导航子项只支持一层。
 
-文章 `cover_position: "50% 50%"` 调整封面焦点，默认居中。无图精选使用文字构图；首页主推荐只从第一页文章集合中选择，优先 sticky，不改变后续分页。`home.sections` 可选 `featured`、`posts`、`intro`，默认不输出口号区。手机目录可折叠，音乐界面可关闭而不停止播放。
+文章 `cover_position: "50% 50%"` 调整封面焦点，默认居中。无图精选使用文字构图；首页主推荐只从第一页文章集合中选择，优先 sticky，不改变后续分页。`home.sections` 可选 `featured`、`posts`、`intro`，默认顺序为 intro、featured、posts；intro 是站主身份区。手机目录可折叠，音乐界面可关闭而不停止播放。
 
 
 ## 2.1 entrance motion
 
 `appearance.intro: session | always | off` defaults to `always`. The intro runs only with `appearance.motion: cinematic`; reduced motion, data saving, history restoration and deep anchors bypass it. `interaction.loading_bar` remains the separate navigation waiting indicator. Desktop navigation expands on hover or keyboard focus; touch devices use the menu button. There is no desktop pin control.
 
-`post.cover_mode: compact | feature | none` defaults to compact and supports per-post overrides. `appearance.intro_scope: home | all` defaults to the first homepage. See README.md / README.en.md for the half-speed entrance timeline and readability-budget cancellation.
+`post.cover_mode: compact | feature | none` defaults to compact and supports per-post overrides. `appearance.intro_scope: home | all` defaults to the first homepage. See BETA5.md for the current parallel entrance timeline.
+
+## beta.5 页面与导航
+
+当前默认八项菜单、page 引用、cover_fit、结构化专页与工具游戏配置见 [beta.5 成品指南](BETA5.md)。旧数组继续兼容；menu 显式数组仍整体替换。

@@ -43,15 +43,15 @@ await fs.cp("examples/visual/source", path.join(root, "source"), {
   recursive: true,
 });
 await fs.copyFile("demo/_config.yml", path.join(root, "_config.yml"));
-await fs.copyFile(
-  "demo/_config.hypergraph.yml",
-  path.join(root, "_config.hypergraph.yml"),
-);
+await fs.writeFile(path.join(root, "_config.hypergraph.yml"), "{}\n");
 await fs.writeFile(
   path.join(root, "package.json"),
   JSON.stringify(pkg, null, 2),
 );
 await install();
+await run([npm, 'exec', '--no', '--', 'hg-cover-candidates', 'source/_posts']);
+const installedPackage=JSON.parse(await fs.readFile(path.join(root,'node_modules/hexo-theme-hypergraph/package.json'),'utf8'));
+assert.equal(installedPackage.bin['hg-cover-candidates'],'tools/cover-candidates.mjs');
 const build = async () => {
   await run([path.join(root, "node_modules/hexo/bin/hexo"), "clean"]);
   await run([path.join(root, "node_modules/hexo/bin/hexo"), "generate"]);
@@ -62,6 +62,11 @@ const build = async () => {
   );
 };
 await build();
+assert.equal(installedPackage.version, version);
+for (const route of ['archives','gallery','essay','friends','tools','games','about'])
+  await fs.access(path.join(root,'public',route,'index.html'));
+const defaultHtml=await fs.readFile(path.join(root,'public/index.html'),'utf8');
+assert.equal((defaultHtml.match(/<nav id="site-nav"[\s\S]*?<div class="rail-tools">/)?.[0].match(/<a /g)||[]).length,8);
 const extension = path.join(root, "extension");
 await fs.cp("examples/extension", extension, { recursive: true });
 const config = yaml.load(

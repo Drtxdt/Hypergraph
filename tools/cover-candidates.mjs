@@ -1,9 +1,10 @@
+#!/usr/bin/env node
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const fm = require('hexo-front-matter');
-const root = path.resolve(process.argv[2] || 'demo/source/_posts');
+const root = path.resolve(process.argv[2] || 'source/_posts');
 const result = [];
 async function walk(directory) {
   for (const entry of await fs.readdir(directory, {withFileTypes:true})) {

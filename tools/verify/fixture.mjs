@@ -17,6 +17,11 @@ export async function generate(base, options = {}) {
   await fs.mkdir(path.join(base, "source/media-regression"), {recursive:true});
   await fs.writeFile(path.join(base, "source/media-regression/index.md"), '---\nlayout: page\ntitle: Image loading regression\n---\n<img src="/images/record.svg" alt="First image">\n<div style="height:10000px"></div>\n<img src="/images/connect.svg" loading="lazy" alt="Deferred image">\n');
   if (options.content) await fs.cp("examples/content/source", path.join(base, "source"), {recursive:true});
+  if (options.data) await fs.writeFile(path.join(base,"source/_data/hypergraph.yml"),yaml.dump(options.data));
+  if (options.manualAbout) {
+    await fs.mkdir(path.join(base,'source/profile'),{recursive:true});
+    await fs.writeFile(path.join(base,'source/profile/index.md'),'---\nlayout: page\ntitle: Handwritten biography\n---\nPreserve my own page.\n');
+  }
   const postDir = path.join(base, "source/_posts");
   if (options.empty || options.few)
     for (const file of await fs.readdir(postDir))
@@ -95,7 +100,7 @@ export async function generate(base, options = {}) {
   );
   await fs.writeFile(
     path.join(base, "_config.hypergraph.yml"),
-    yaml.dump(theme),
+    yaml.dump(options.defaultMenu ? Object.fromEntries(Object.entries(theme).filter(([key])=>key!=="menu")) : theme),
   );
   await fs.writeFile(
     path.join(base, "package.json"),

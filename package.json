@@ -1,6 +1,6 @@
 {
   "name": "hexo-theme-hypergraph",
-  "version": "2.1.0-beta.4",
+  "version": "2.1.0-beta.5",
   "description": "An editorial Hexo theme",
   "engines": {
     "node": ">=22.12"
@@ -70,7 +70,11 @@
     "THIRD-PARTY-NOTICES.md",
     "docs",
     "deploy",
-    "examples"
+    "examples",
+    "tools/cover-candidates.mjs"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "bin": {
+    "hg-cover-candidates": "tools/cover-candidates.mjs"
+  }
 }
