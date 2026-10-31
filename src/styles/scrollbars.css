@@ -1,0 +1,32 @@
+/* Shared by the document, reading surfaces, editors and overlay panels. */
+:root {
+  --scroll-thumb: color-mix(in srgb, var(--ink) 28%, var(--paper));
+  --scroll-track: color-mix(in srgb, var(--ink) 5%, var(--paper));
+  --scroll-active: color-mix(in srgb, var(--ink) 52%, var(--paper));
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+}
+/* Chromium/WebKit expose thumb hover and drag states through these selectors. */
+@supports selector(::-webkit-scrollbar) {
+  * { scrollbar-width: auto; scrollbar-color: auto; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: var(--scroll-track); }
+  ::-webkit-scrollbar-thumb {
+    background: var(--scroll-thumb);
+    border: 2px solid var(--scroll-track);
+    border-radius: 2px;
+  }
+  ::-webkit-scrollbar-thumb:hover,
+  ::-webkit-scrollbar-thumb:active { background: var(--scroll-active); }
+  ::-webkit-scrollbar-corner { background: var(--scroll-track); }
+}
+/* The rail still scrolls in short viewports without exposing a track. */
+.site-header { scrollbar-width: none; }
+.site-header::-webkit-scrollbar { display: none; }
+@media (forced-colors: active) {
+  * { scrollbar-color: auto; }
+  ::-webkit-scrollbar-track { background: Canvas; }
+  ::-webkit-scrollbar-thumb { background: ButtonText; border-color: Canvas; }
+}

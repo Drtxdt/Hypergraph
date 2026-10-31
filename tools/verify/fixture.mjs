@@ -76,11 +76,6 @@ export async function generate(base, options = {}) {
   const theme = merge(
     {
       preset: "endfield",
-      menu: [
-        { label: "home", url: "/", icon: "home" },
-        { label: "archives", url: "/archives/", icon: "archive" },
-        { label: "about", url: "/about/", icon: "about" },
-      ],
       sidebar: { enable: false },
       music: { enable: true, src: "/audio/sample.wav", title: "Sample" },
       pages: Object.fromEntries(
