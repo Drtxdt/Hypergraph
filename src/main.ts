@@ -129,6 +129,7 @@ modeButton?.addEventListener("click", () => {
   } catch {}
 });
 async function mountPage(focus = false) {
+  (window as Window & { __hgImages?: () => void }).__hgImages?.();
   dismissPanels();
   pageController.abort();
   pageController = new AbortController();

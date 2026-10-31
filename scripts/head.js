@@ -5,8 +5,6 @@ hexo.extend.helper.register("hg_head", function () {
   const appearance = cfg.appearance;
   const font = (value) => String(value).replace(/[<>;{}]/g, "");
   let output = `<style>html[data-mode]{--signal:${cfg.colors.accent};--body-font:${font(cfg.fonts.body)};--display-font:${font(cfg.fonts.display)};--code-font:${font(cfg.fonts.code)};--code-white-space:${cfg.code.wrap ? "pre-wrap" : "pre"}}html .prose{font-size:${cfg.fonts.body_size}px;line-height:${cfg.fonts.line_height}}html .prose pre,html .prose figure.highlight{font-size:${cfg.fonts.code_size}px}`;
-  if (cfg.background.image)
-    output += `body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:url(${JSON.stringify(this.url_for(cfg.background.image)).replace(/</g, "\\3c ")} ) center/cover;opacity:${cfg.background.opacity}}`;
   output += `.collection-card,.feature,.link-card{border-radius:${appearance.radius}px}.prose{text-align:${appearance.justify ? "justify" : "start"}}`;
   if (
     appearance.grayscale ||
