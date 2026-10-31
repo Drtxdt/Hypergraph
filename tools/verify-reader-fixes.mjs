@@ -18,7 +18,7 @@ export async function checkReaderFixes(browser, sites, out, report) {
     }
     await page.goto(sites.main.url + route(sites.main,"showcase"));
     const diagram=page.locator('[data-diagram="mermaid"]').first();
-    await diagram.locator('svg').first().waitFor();
+    await diagram.locator('pre svg').waitFor();
     await diagram.locator('.diagram-controls button').nth(1).click();
     assert.equal(await diagram.locator('.diagram-scale').textContent(),'125%');
     await diagram.locator('.diagram-scale').click();

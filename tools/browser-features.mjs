@@ -6,7 +6,7 @@ const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
 const errors = [];
 page.on("pageerror", (e) => errors.push(e.message));
 await page.goto("http://127.0.0.1:4174/2026/10/28/showcase/");
-await page.waitForSelector("[data-diagram=mermaid] svg", { timeout: 60000 });
+await page.waitForSelector("[data-diagram=mermaid] pre svg", { timeout: 60000 });
 await page.waitForSelector("[data-diagram=chartjs] canvas");
 await page.waitForSelector("[data-diagram=score] svg");
 await page.waitForSelector(".wl-panel");

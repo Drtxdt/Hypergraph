@@ -98,7 +98,7 @@ export async function checkBrowser(browser, sites, report, out) {
     );
     if (chart) {
       await page.locator("[data-diagram=chartjs] canvas").waitFor();
-      await page.locator("[data-diagram=mermaid] svg").waitFor();
+      await page.locator("[data-diagram=mermaid] pre svg").waitFor();
       assert.equal(
         await page.locator("[data-diagram=chartjs] canvas").count(),
         1,
@@ -200,7 +200,7 @@ export async function checkBrowser(browser, sites, report, out) {
   );
   await page.locator("[data-reading]").click();
   await page.goto(main + route(sites.main, "showcase"));
-  await page.locator("[data-diagram=mermaid] svg").waitFor({ timeout: 60000 });
+  await page.locator("[data-diagram=mermaid] pre svg").waitFor({ timeout: 60000 });
   await page.locator("[data-diagram=chartjs] canvas").waitFor();
   await page.locator("[data-diagram=score] svg").first().waitFor();
   assert.equal(await page.locator("[data-diagram=chartjs] canvas").count(), 1);

@@ -9,7 +9,7 @@ await page.screenshot({path:'.local/screenshots/release-home-desktop.png',fullPa
 for(const route of ['/2026/10/28/welcome/','/2026/10/28/showcase/','/2026/10/29/components/','/about/','/friends/','/gallery/','/essay/','/equipment/','/music/','/room/','/fcircle/']){
  await page.goto('http://127.0.0.1:4181'+route);
  assert.ok(await page.locator('#content h1').isVisible());
- if(route.includes('showcase'))await page.waitForSelector('[data-diagram=mermaid] svg');
+ if(route.includes('showcase'))await page.waitForSelector('[data-diagram=mermaid] pre svg');
 }
 await page.setViewportSize({width:390,height:844});
 await page.goto('http://127.0.0.1:4181/');

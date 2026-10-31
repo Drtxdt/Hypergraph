@@ -38,7 +38,7 @@ for (const preset of ["industrial", "ledger", "reading"]) {
 for (const route of ["/2026/10/29/components/", "/2026/10/28/showcase/"]) {
   await page.goto("http://127.0.0.1:4178" + route);
   if (route.includes("showcase"))
-    await page.waitForSelector("[data-diagram=mermaid] svg");
+    await page.waitForSelector("[data-diagram=mermaid] pre svg");
   for (const width of [360, 390, 768, 1440])
     for (const mode of ["light", "dark"]) {
       await page.setViewportSize({ width, height: 900 });
