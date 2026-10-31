@@ -146,7 +146,11 @@ try {
   await build();
   server = await serve(root);
   const page = await browser.newPage();
+  await page.addInitScript(() => { document.addEventListener('hypergraph:mount', () => { window.__testMounted = true; }); });
   await page.goto(server.url + 'tools/json/');
+  await page.waitForFunction(() => window.__testMounted);
+  await page.mouse.move(900, 500);
+  await page.waitForFunction(() => !document.querySelector('.site-header').classList.contains('rail-open'));
   await page.locator('#utility-input').fill('{"installed":true}');
   await page.locator('[data-operation="format"]').click();
   await page.waitForFunction(() => document.querySelector('#utility-output').value.includes('installed'));

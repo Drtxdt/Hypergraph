@@ -27,10 +27,14 @@ export async function checkWorkerIsolation(browser, sites, report) {
     );
     const context = await browser.newContext({ reducedMotion: "reduce" });
     const page = await context.newPage();
+    await page.addInitScript(() => { document.addEventListener("hypergraph:mount", () => { window.__testMounted = true; }); });
     const workers = [];
     page.on("worker", (w) => workers.push(w.url()));
     try {
       await page.goto(origin.url + "tools/codec/");
+      await page.waitForFunction(() => window.__testMounted);
+      await page.mouse.move(900, 500);
+      await page.waitForFunction(() => !document.querySelector(".site-header").classList.contains("rail-open"));
       await page.locator("#utility-input").fill("中文 ✨");
       await page.locator("[data-operation=base64_encode]").click();
       await page.waitForFunction(
@@ -75,8 +79,12 @@ export async function checkWorkerIsolation(browser, sites, report) {
       };
     }, fault);
     const page = await context.newPage();
+    await page.addInitScript(() => { document.addEventListener("hypergraph:mount", () => { window.__testMounted = true; }); });
     try {
       await page.goto(sites.main.url + "tools/json/");
+      await page.waitForFunction(() => window.__testMounted);
+      await page.mouse.move(900, 500);
+      await page.waitForFunction(() => !document.querySelector(".site-header").classList.contains("rail-open"));
       await page.locator("#utility-input").fill('{"retained":true}');
       await page.locator("[data-operation=format]").click();
       await page.waitForFunction(
