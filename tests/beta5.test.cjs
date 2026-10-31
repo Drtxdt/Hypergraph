@@ -30,11 +30,8 @@ test("default navigation is usable and explicit arrays and disabled pages surviv
     resolveConfig({ menu: [{ label: "bad", page: "about", url: "/" }] }),
   );
 });
-test("structured collections preserve old arrays and reject unstable albums", () => {
-  assert.equal(
-    normalize("friends", [{ title: "Friend" }]).groups[0].items[0].title,
-    "Friend",
-  );
+test("structured collections reject deprecated arrays and unstable albums", () => {
+  assert.throws(() => normalize("friends", [{ title: "Friend" }]), /structured object/);
   assert.throws(
     () =>
       normalize("gallery", {

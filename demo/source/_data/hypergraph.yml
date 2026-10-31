@@ -1,19 +1,29 @@
 about:
-  - title: 关于 Hypergraph
-    description: 为持续记录而设计。纸白、炭灰与信号黄组成一个安静的阅读空间。
-  - title: 开放的结构
-    description: 调整布局与模块顺序，或通过独立扩展定义新的页面构图。
+  sections:
+    - title: 关于 Hypergraph
+      description: 为持续记录而设计。纸白、炭灰与信号黄组成一个安静的阅读空间。
+    - title: 开放的结构
+      description: 调整布局与模块顺序，或通过独立扩展定义新的页面构图。
 friends:
-  - title: Hexo
-    url: https://hexo.io
-    description: 快速、简洁且高效的博客框架。
+  groups:
+    - title: ''
+      items:
+        - title: Hexo
+          url: https://hexo.io
+          description: 快速、简洁且高效的博客框架。
 gallery:
-  - title: 记录
-    image: /images/record.svg
-    description: 从一个值得保留的想法开始。
-  - title: 连接
-    image: /images/connect.svg
-    description: 让不同的记录彼此关联。
+  albums:
+    - slug: records
+      title: 记录
+      photos:
+        - title: 记录
+          image: /images/record.svg
+          description: 从一个值得保留的想法开始。
+          src: /images/record.svg
+        - title: 连接
+          image: /images/connect.svg
+          description: 让不同的记录彼此关联。
+          src: /images/connect.svg
 essay:
   - title: 从今天开始
     date: '2026-10-29'

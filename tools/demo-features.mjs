@@ -27,13 +27,13 @@ await fs.mkdir(root + "/source/_data", { recursive: true });
 await fs.writeFile(
   root + "/source/_data/hypergraph.yml",
   yaml.dump({
-    friends: [
+    friends: { groups: [{items: [
       {
         title: "Hexo",
         description: "快速、简洁且高效的博客框架。",
         url: "https://hexo.io/",
       },
-    ],
+    ]}] },
     equipment: [
       {
         title: "纸笔",
@@ -48,9 +48,9 @@ await fs.writeFile(
         date: "2026-10-28",
       },
     ],
-    about: [
+    about: { sections: [
       { title: "Hypergraph", description: "为阅读而设计的个人博客主题。" },
-    ],
+    ] },
     room: [{ title: "工作台", description: "保留一些未完成的想法。" }],
     fcircle: [
       {

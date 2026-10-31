@@ -79,7 +79,7 @@ await fs.writeFile(
   }),
 );
 const data = {
-  about: [
+  about: { sections: [
     {
       title: "关于 Hypergraph",
       description:
@@ -89,15 +89,15 @@ const data = {
       title: "开放的结构",
       description: "调整布局与模块顺序，或通过独立扩展定义新的页面构图。",
     },
-  ],
-  friends: [
+  ] },
+  friends: { groups: [{items: [
     {
       title: "Hexo",
       url: "https://hexo.io",
       description: "快速、简洁且高效的博客框架。",
     },
-  ],
-  gallery: [
+  ]}] },
+  gallery: { albums: [{slug:"records",title:"记录",photos: [
     {
       title: "记录",
       image: "/images/record.svg",
@@ -108,7 +108,7 @@ const data = {
       image: "/images/connect.svg",
       description: "让不同的记录彼此关联。",
     },
-  ],
+  ]}] },
   essay: [
     {
       title: "从今天开始",

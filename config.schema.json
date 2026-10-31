@@ -245,13 +245,13 @@
           "type": "array",
           "uniqueItems": true,
           "default": [
-            "intro",
+            "masthead",
             "featured",
             "posts"
           ],
           "items": {
             "enum": [
-              "intro",
+              "masthead",
               "featured",
               "posts"
             ]
@@ -270,6 +270,70 @@
             "off"
           ],
           "default": "auto"
+        },
+        "masthead": {
+          "type": "object",
+          "default": {},
+          "additionalProperties": false,
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "default": true
+            },
+            "image": {
+              "$ref": "#/$defs/responsiveImage",
+              "default": {}
+            },
+            "action": {
+              "type": "object",
+              "default": {},
+              "additionalProperties": false,
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "default": ""
+                },
+                "url": {
+                  "type": "string",
+                  "default": ""
+                }
+              }
+            }
+          }
+        },
+        "topics": {
+          "default": "auto",
+          "anyOf": [
+            {
+              "const": "auto"
+            },
+            {
+              "type": "array",
+              "maxItems": 3,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "title",
+                  "url"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "image": {
+                    "$ref": "#/$defs/responsiveImage"
+                  }
+                }
+              }
+            }
+          ]
         }
       }
     },
@@ -1286,9 +1350,17 @@
       "additionalProperties": false,
       "default": {},
       "properties": {
+        "mode": {
+          "enum": [
+            "paper",
+            "frame",
+            "home"
+          ],
+          "default": "frame"
+        },
         "image": {
-          "type": "string",
-          "default": ""
+          "$ref": "#/$defs/responsiveImage",
+          "default": {}
         },
         "opacity": {
           "type": "number",
@@ -1558,39 +1630,6 @@
           "type": "string",
           "default": ""
         },
-        "hero": {
-          "type": "object",
-          "default": {},
-          "additionalProperties": false,
-          "properties": {
-            "home": {
-              "type": "string",
-              "default": ""
-            },
-            "archive": {
-              "type": "string",
-              "default": ""
-            },
-            "category": {
-              "type": "string",
-              "default": ""
-            },
-            "tag": {
-              "type": "string",
-              "default": ""
-            },
-            "page": {
-              "type": "string",
-              "default": ""
-            },
-            "height": {
-              "type": "number",
-              "default": 260,
-              "minimum": 80,
-              "maximum": 700
-            }
-          }
-        },
         "fallback_image": {
           "type": "string",
           "default": ""
@@ -1682,13 +1721,6 @@
         "show_cover": {
           "type": "boolean",
           "default": true
-        },
-        "taxonomy_banners": {
-          "type": "object",
-          "default": {},
-          "additionalProperties": {
-            "type": "string"
-          }
         },
         "motion": {
           "type": "string",
@@ -1880,6 +1912,95 @@
     "site_logo": {
       "type": "string",
       "default": ""
+    },
+    "page_banner": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "enable": {
+          "type": "boolean",
+          "default": true
+        },
+        "default": {
+          "$ref": "#/$defs/responsiveImage",
+          "default": {}
+        },
+        "height": {
+          "type": "number",
+          "minimum": 80,
+          "maximum": 700,
+          "default": 260
+        },
+        "overrides": {
+          "type": "object",
+          "default": {},
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "const": false
+              },
+              {
+                "$ref": "#/$defs/responsiveImage"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "responsiveImage": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "src": {
+          "type": "string",
+          "default": ""
+        },
+        "mobile": {
+          "type": "string",
+          "default": ""
+        },
+        "dark": {
+          "type": "string",
+          "default": ""
+        },
+        "mobile_dark": {
+          "type": "string",
+          "default": ""
+        },
+        "alt": {
+          "type": "string",
+          "default": ""
+        },
+        "caption": {
+          "type": "string",
+          "default": ""
+        },
+        "fallback": {
+          "type": "string",
+          "default": ""
+        },
+        "fit": {
+          "enum": [
+            "cover",
+            "contain"
+          ],
+          "default": "cover"
+        },
+        "position": {
+          "type": "string",
+          "pattern": "^([0-9]{1,2}|100)(\\.[0-9]+)?% ([0-9]{1,2}|100)(\\.[0-9]+)?%$",
+          "default": "50% 50%"
+        },
+        "mobile_position": {
+          "type": "string",
+          "default": "50% 50%",
+          "pattern": "^([0-9]{1,2}|100)(\\.[0-9]+)?% ([0-9]{1,2}|100)(\\.[0-9]+)?%$"
+        }
+      }
     }
   }
 }

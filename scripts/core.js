@@ -43,7 +43,23 @@ hexo.extend.helper.register(
 hexo.extend.helper.register("hg_runtime", () =>
   json({
     root: hexo.config.root,
-    messages: Object.fromEntries(Object.entries(require("../lib/client-i18n.cjs")).map(([key,value])=>[key, value[String(hexo.config.language).startsWith("zh")?"zh":"en"]])),
+    workers: {
+      tools:
+        hexo.config.root +
+        "assets/" +
+        JSON.parse(
+          fs.readFileSync(
+            path.join(hexo.theme_dir, "source/assets/manifest.json"),
+            "utf8",
+          ),
+        )["src/modules/tool-worker.ts"].file,
+    },
+    messages: Object.fromEntries(
+      Object.entries(require("../lib/client-i18n.cjs")).map(([key, value]) => [
+        key,
+        value[String(hexo.config.language).startsWith("zh") ? "zh" : "en"],
+      ]),
+    ),
     navigation: hexo.theme.config.navigation,
     navigation_exclude: hexo.theme.config.navigation_exclude,
     search: hexo.theme.config.search,
