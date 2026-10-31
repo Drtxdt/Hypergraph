@@ -1,0 +1,11 @@
+home:
+  title: 技术日志
+  description: 问题、实验与实现记录。
+  masthead:
+    image: {}
+  topics: []
+background:
+  mode: paper
+appearance:
+  motion: subtle
+  cover_fit: contain

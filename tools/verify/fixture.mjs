@@ -124,7 +124,7 @@ export async function generate(base, options = {}) {
     "config.schema.json",
     "_config.yml",
   ])
-    await fs.cp(name, path.join(base, "themes/hypergraph", name), {
+    await fs.cp(path.join(options.themeSource || ".", name), path.join(base, "themes/hypergraph", name), {
       recursive: true,
     });
   const Hexo = require(options.hexo || "hexo");
@@ -145,7 +145,7 @@ export async function generate(base, options = {}) {
     throw Error("Invalid generated HTML");
   return base;
 }
-export async function serve(base, mount = "/") {
+export async function serve(base, mount = "/", extraHeaders = {}, transform = null) {
   const root = path.resolve(base, "public");
   const types = {
     ".html": "text/html; charset=utf-8",
@@ -166,8 +166,9 @@ export async function serve(base, mount = "/") {
       if (!name || name.endsWith("/")) name += "index.html";
       const file = path.resolve(root, name);
       if (!file.startsWith(root + path.sep)) throw Error();
-      const data = await fs.readFile(file);
-      const headers = { "Content-Type": types[path.extname(file)] || "application/octet-stream", "Accept-Ranges": "bytes" };
+      const original = await fs.readFile(file);
+      const data = transform ? Buffer.from(await transform(original, file)) : original;
+      const headers = { ...extraHeaders, "Content-Type": types[path.extname(file)] || "application/octet-stream", "Accept-Ranges": "bytes" };
       const range = /^bytes=(\d+)-(\d*)$/.exec(req.headers.range || "");
       if (range) {
         const start = Number(range[1]), end = Math.min(data.length - 1, range[2] ? Number(range[2]) : data.length - 1);
@@ -178,7 +179,7 @@ export async function serve(base, mount = "/") {
         // Negotiate only shipped sidecars, as nginx gzip_static does. Never
         // synthesize smaller responses just for the performance fixture.
         const acceptsGzip = (req.headers["accept-encoding"] || "").split(",").some(value => /^gzip(?:\s*;|$)/.test(value.trim()) && !/;\s*q=0(?:\.0*)?$/.test(value.trim()));
-        const compressed = acceptsGzip ? await fs.readFile(file + ".gz").catch(() => null) : null;
+        const compressed = acceptsGzip && !transform ? await fs.readFile(file + ".gz").catch(() => null) : null;
         const body = compressed || data;
         res.writeHead(200, { ...headers, "Vary": "Accept-Encoding", ...(compressed ? { "Content-Encoding": "gzip" } : {}), "Content-Length": body.length });
         res.end(body);

@@ -1,3 +1,4 @@
+import {checkBeta6} from "./verify-beta6.mjs";
 import { checkReaderFixes } from "./verify-reader-fixes.mjs";
 import { checkUiPolish, checkIntroCoverage } from "./verify-ui-polish.mjs";
 import { checkBeta4 } from "./verify-beta4.mjs";
@@ -70,17 +71,19 @@ try {
     ]);
   }
   const variants = {
-    main: {},
+    main: {theme:{home:{masthead:{image:{src:"/images/record.svg"}}}}},
     beta5: { defaultMenu:true, theme:{pages:{about:{enable:true,path:'profile/'}}}, data:{
       about:{profile:{name:'记录者',bio:'写作、观察与小型项目。'},projects:[{title:'公开示例',description:'一个可持续维护的记录空间。',url:'/archives/'}],timeline:[{date:'2026',title:'开始记录'}],interests:['设计','技术'],posts:['field-study']},
       friends:{groups:[{title:'文档',items:[{title:'Hexo',url:'https://hexo.io',description:'静态博客框架'}]}],application:'请通过站长提供的联系方式交流。'},
       gallery:{albums:[{slug:'field',title:'观察记录',photos:[{image:'/images/record.svg',caption:'结构与秩序'},{image:'/images/connect.svg',caption:'连接'}]}]},
       tools:{links:[{title:'Hexo 文档',description:'公开技术文档',url:'https://hexo.io/docs/',group:'参考'}]},games:{links:[]}
     }},
+    responsive: {theme:{home:{masthead:{image:{src:'/images/record.svg?variant=base',mobile:'/images/record.svg?variant=mobile',dark:'/images/connect.svg?variant=dark',mobile_dark:'/images/connect.svg?variant=mobile-dark'}}},page_banner:{default:{src:'/images/record.svg'},overrides:{about:false}}}},
     paginated: { perPage:1 },
     boundaries: {few:true,manualAbout:true,defaultMenu:true,root:'/blog/',theme:{home:{sections:['featured','posts']},sidebar:{enable:true,order:['announcement'],announcement:'Independent announcement'},pages:{about:{enable:true,path:'profile/'},games:{enable:false}}}},
     contained: {content:true,theme:{appearance:{cover_fit:'contain'},music:{enable:false}}},
-    content: { content:true, theme: { music: { enable:false } } },
+    content: { content:true, theme: {home:{masthead:{image:{src:"/images/landscape.jpg"}}}, music: { enable:false } } },
+    atmosphere: {content:true,theme:{home:{masthead:{image:{src:"/images/landscape.jpg"}}},background:{mode:"frame",image:{src:"/images/record.svg"}}}},
     noCover: { noCover: true },
     empty: { empty: true },
     few: { few: true },
@@ -95,7 +98,7 @@ try {
           },
         ],
         interaction: { translate: true, spacing: true },
-        home: { sections: ["posts", "intro", "featured"] },
+        home: { sections: ["posts", "masthead", "featured"] },
         sidebar: {
           enable: true,
           order: ["profile", "stats", "announcement", "tags"],
@@ -159,6 +162,7 @@ try {
       }).trim().length > 0,
   };
   await run(["tools/verify-navigation-v21.mjs"]);
+  await checkBeta6(browser, sites, out, report);
   // Fail early on the real service prerequisite, before expensive UI sampling.
   // Keep the same startup timeout and SQLite backend; do not retry it silently.
   waline = await startWaline(path.join(temp, "waline"), new URL(sites.main.url).origin);
@@ -206,6 +210,13 @@ try {
         .digest("hex");
 
   await checkMotionV21(browser, sites, out, report);
+  if (!process.argv.includes('--browser-only') && !process.argv.includes('--skip-build')) {
+    await run(['tools/package-release.mjs']);
+    const pack = path.resolve('dist/hexo-theme-hypergraph-' + report.version + '.tgz');
+    const hash = crypto.createHash('sha256').update(await fs.readFile(pack)).digest('hex');
+    await run(['tools/verify-install-v21.mjs',pack,hash]);
+    report.package = {path:pack,sha256:hash,passed:true};
+  }
   report.passed = true;
 } catch (error) {
   report.error = error.stack;

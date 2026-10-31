@@ -25,7 +25,7 @@ try {
       yaml.dump({
         preset,
         comments: { enable: false },
-        home: { sections: ["posts", "intro"], featured: false },
+        home: { sections: ["posts", "masthead"], featured: false },
         sidebar: { enable: false },
         navigation: false,
         search: false,

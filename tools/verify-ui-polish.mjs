@@ -66,6 +66,8 @@ await fs.mkdir(directory, { recursive: true });
     await page.waitForURL(site.url);
     assert.equal(await page.evaluate(() => window.savedAudio === document.querySelector('.player audio')), true, 'navigation preserves the audio instance');
     await page.goto(site.url + 'gallery/');
+    await page.locator('.album-card').first().click();
+    await page.locator('.photo-grid').waitFor();
     await page.locator('.collection-gallery img,.gallery img,.prose img').first().click();
     await page.waitForSelector('.lightbox[open]');
     assert.equal(await page.locator('.lightbox .image-close svg').count(), 1);
@@ -125,7 +127,11 @@ export async function checkIntroCoverage(browser, site, directory, report = {}) 
   const context = await browser.newContext();
   try {
    const page = await context.newPage();
-   await page.route('**/images/field.svg', async request => {
+   const markup = await (await context.request.get(site.url)).text();
+   const hero = /class="responsive-media masthead-media" data-responsive-image="([^"]+)"/.exec(markup);
+   assert.ok(hero, 'slow-resource scenario requires the real masthead image');
+   const image = JSON.parse(hero[1].replaceAll('&quot;', '"').replaceAll('&amp;', '&')).src;
+   await page.route(new URL(image, site.url).href, async request => {
     if (name === 'slow-cover') { await new Promise(resolve=>setTimeout(resolve,1000)); await request.continue().catch(()=>{}); }
    });
    await page.goto(site.url, {waitUntil:'domcontentloaded'});

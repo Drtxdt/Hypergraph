@@ -1,0 +1,19 @@
+gallery:
+  albums:
+    - slug: landscapes
+      title: 风景记录
+      description: 公开摄影素材的比例与图说示例。
+      cover: /images/landscape.jpg
+      photos:
+        - image: /images/landscape.jpg
+          caption: Grand Canyon National Park / National Park Service
+          width: 1200
+          height: 800
+about:
+  sections:
+    - title: 关于这个示例
+      description: 将图片、图说与阅读入口组合成个人作品集；请替换为自己的内容。
+      image: /images/record.svg
+      url: /gallery/
+friends:
+  groups: []

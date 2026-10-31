@@ -1,3 +1,5 @@
+> Historical beta.5 release documentation. Current guide: [beta.6](BETA6.en.md).
+
 # beta.5：从安装到自己的站点
 
 需要 Node 22.12+ / 24、Hexo 7.3 / 8。先在站点副本中安装交付包：

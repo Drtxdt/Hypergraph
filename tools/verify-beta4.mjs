@@ -14,7 +14,7 @@ export async function checkBeta4(browser, sites, out, report) {
     assert.equal(await compressed.text(), await ordinary.text(), 'negotiated CSS has exactly the same decoded content');
     for (const name of ['empty','few']) {
       await page.goto(sites[name].url);
-      assert.equal(await page.locator('.home-introduction h1').count(), 1);
+      assert.equal(await page.locator('.site-masthead h1').count(), 1);
       assert.equal(await page.locator('#latest,.pagination').count(), 0);
     }
     await page.goto(sites.paginated.url);
@@ -32,7 +32,7 @@ export async function checkBeta4(browser, sites, out, report) {
     await page.goto(sites.main.url);
     await page.locator('.lead-heading').evaluate(el => el.textContent = 'Hello World');
     await page.locator('.lead-title p').evaluateAll(elements => elements.forEach(el => el.remove()));
-    const widths = await page.evaluate(() => ['.lead','.lead-copy'].map(s => document.querySelector(s).getBoundingClientRect().width));
+    const widths = await page.evaluate(() => ['.site-masthead','.masthead-copy'].map(s => document.querySelector(s).getBoundingClientRect().width));
     assert.ok(Math.abs(widths[0] - widths[1]) < 1, 'short title and empty excerpt retain the full mobile axis');
     for (const width of [390,768,1024,1440,1920]) {
       await page.setViewportSize({width,height:900});

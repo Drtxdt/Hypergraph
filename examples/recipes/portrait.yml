@@ -1,0 +1,15 @@
+home:
+  title: 观察与创作
+  description: 留下一些值得回看的片段。
+  masthead:
+    image:
+      src: /images/portrait.jpg
+      fit: contain
+      mobile_position: 50% 25%
+      alt: NASA 宇航员 Mae Jemison 的公开肖像
+      caption: 示例素材：NASA，非站长肖像。
+background:
+  mode: frame
+  image:
+    src: /images/record.svg
+  opacity: 0.12

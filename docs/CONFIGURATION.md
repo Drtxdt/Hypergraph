@@ -64,7 +64,7 @@ equipment:
 
 `feeds.rss`、`feeds.sitemap` 默认开启；`pwa.enable` 默认关闭，启用后提供安装清单与离线提示，不缓存解锁正文。图表、乐谱、评论和灯箱按页面元素加载。音乐不自动播放，首次需要访客点击。
 
-`home.sections` 控制介绍、精选、文章列表的顺序与可见性；`sidebar.order` 控制侧栏组件。`appearance` 配置横幅、头像、圆角、表格、图注和图片回退；`taxonomy_banners` 的键采用 `category:名称` 或 `tag:名称`。`fonts` 可设置字号和行高，`post.meta` 可排序日期、更新时间、阅读时间和字符数。
+`home.sections` 控制介绍、精选、文章列表的顺序与可见性；`sidebar.order` 控制侧栏组件。`appearance` 配置头像、圆角、表格、图注和图片回退；横幅使用 `page_banner`，定向覆盖的键采用 `category:名称` 或 `tag:名称`。`fonts` 可设置字号和行高，`post.meta` 可排序日期、更新时间、阅读时间和字符数。
 
 `interaction` 包含工具栏、工具面板、简繁、排版间距、预取、隐私提示和可选右键菜单。右键菜单在链接、图片、输入框、代码和文字选择上保留浏览器默认行为，按 Shift 也能直接打开原生菜单。`effects` 默认全部关闭，并遵循减少动态效果、节省流量、后台暂停与手机开关。
 
@@ -90,15 +90,15 @@ menu:
 
 `cinematic` 只对首页和记录列表应用分段进入及精细指针封面反馈，文章正文不会隐藏等待动画。移动端缩短动效，省流量使用轻反馈，减少动态效果及 `off` 禁用装饰动效。后台暂停，切页清理。导航子项只支持一层。
 
-文章 `cover_position: "50% 50%"` 调整封面焦点，默认居中。无图精选使用文字构图；首页主推荐只从第一页文章集合中选择，优先 sticky，不改变后续分页。`home.sections` 可选 `featured`、`posts`、`intro`，默认顺序为 intro、featured、posts；intro 是站主身份区。手机目录可折叠，音乐界面可关闭而不停止播放。
+文章 `cover_position: "50% 50%"` 调整封面焦点，默认居中。无图精选使用文字构图；首页主推荐只从第一页文章集合中选择，优先 sticky，不改变后续分页。`home.sections` 可选 `masthead`、`featured`、`posts`，默认按此顺序。masthead 是独立站点主视觉。手机目录可折叠，音乐界面可关闭而不停止播放。
 
 
 ## 2.1 entrance motion
 
 `appearance.intro: session | always | off` defaults to `always`. The intro runs only with `appearance.motion: cinematic`; reduced motion, data saving, history restoration and deep anchors bypass it. `interaction.loading_bar` remains the separate navigation waiting indicator. Desktop navigation expands on hover or keyboard focus; touch devices use the menu button. There is no desktop pin control.
 
-`post.cover_mode: compact | feature | none` defaults to compact and supports per-post overrides. `appearance.intro_scope: home | all` defaults to the first homepage. See BETA5.md for the current parallel entrance timeline.
+`post.cover_mode: compact | feature | none` defaults to compact and supports per-post overrides. `appearance.intro_scope: home | all` defaults to the first homepage. See BETA6-MIGRATION.md for the current parallel entrance timeline.
 
-## beta.5 页面与导航
+## beta.6 页面与导航
 
-当前默认八项菜单、page 引用、cover_fit、结构化专页与工具游戏配置见 [beta.5 成品指南](BETA5.md)。旧数组继续兼容；menu 显式数组仍整体替换。
+当前默认八项菜单、图片与结构化专页配置见 [beta.6 字段指南](BETA6-MIGRATION.md)。关于、友链、相册不再接受旧数组；menu 显式数组仍整体替换。

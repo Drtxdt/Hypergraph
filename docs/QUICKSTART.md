@@ -54,7 +54,7 @@ comments: true
 
 ## 专用页面与音频
 
-在 `_config.hypergraph.yml` 打开 `pages.gallery.enable` 等开关，在 `source/_data/hypergraph.yml` 填写同名数组。同路径已有手写页面优先于自动生成页面。关于、友链、相册还支持 [beta.5](BETA5.md) 的结构化数据。
+在 `_config.hypergraph.yml` 打开 `pages.gallery.enable` 等开关，在 `source/_data/hypergraph.yml` 填写数据。同路径已有手写页面优先于自动生成页面。关于、友链、相册仅接受 [beta.6](BETA6-MIGRATION.md) 的结构化对象；其他集合继续接受数组。
 
 ```yaml
 gallery:

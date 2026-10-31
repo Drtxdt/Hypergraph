@@ -241,7 +241,7 @@ export async function checkBrowser(browser, sites, report, out) {
   ]) {
     await page.goto(main + type + "/");
     assert.equal(await page.locator("#content h1").count(), 1);
-    assert.ok((await page.locator(".collection-card,.about-profile,.friend-card,.photo-grid figure").count()) > 0);
+    assert.ok((await page.locator(".collection-card,.about-profile,.friend-card,.photo-grid figure,.album-card").count()) > 0);
   }
   await page.goto(sites.options.url);
   assert.equal(await page.locator(".sidebar-widget").count(), 3);
@@ -251,7 +251,7 @@ export async function checkBrowser(browser, sites, report, out) {
         document
           .querySelector("#latest")
           .compareDocumentPosition(
-            document.querySelector(".home-introduction"),
+            document.querySelector(".site-masthead"),
           ) & Node.DOCUMENT_POSITION_FOLLOWING,
     ),
   );
@@ -356,12 +356,15 @@ export async function performance(
         ["home", sites.main.url, sites.main],
         ["photograph", sites.content.url, sites.content],
         ["no-cover", sites.noCover.url, sites.noCover],
+        ["atmosphere-light", sites.atmosphere.url, sites.atmosphere],
+        ["atmosphere-dark", sites.atmosphere.url, sites.atmosphere],
         ["long", sites.main.url + route(sites.main, "long"), sites.main],
         ["standalone", sites.main.url + "standalone/", sites.main],
       ]) {
         const context = await browser.newContext({
           viewport: { width: 390, height: 844 },
           isMobile: true,
+          colorScheme: name === "atmosphere-dark" ? "dark" : "light",
           deviceScaleFactor: 1,
         });
         const page = await context.newPage();
@@ -424,7 +427,7 @@ export async function performance(
             if (window.metrics.readable !== null) return;
             // Selector lists use document order: a hidden mobile identity h1
             // must not replace the actual featured title in this measurement.
-            const title = document.querySelector('.lead-title') ||
+            const title = document.querySelector('[data-masthead-title]') ||
               document.querySelector('.article-head') || document.querySelector('#content h1');
             const clearTitle =
               title &&
@@ -520,7 +523,7 @@ export async function performance(
           cls: window.metrics.cls,
           shifts: window.metrics.shifts,
           cover: (() => {
-            const img=document.querySelector('.lead-media img');
+            const img=document.querySelector('.masthead-media img');
             if(!img)return null;
             const resource=performance.getEntriesByName(img.currentSrc).at(-1);
             return {url:img.currentSrc,complete:img.complete,naturalWidth:img.naturalWidth,responseEnd:resource?.responseEnd,transferSize:resource?.transferSize,encodedBodySize:resource?.encodedBodySize};
@@ -584,6 +587,9 @@ export async function performance(
               image += body.length;
           } catch {}
         }
+        const inlineSource = await page.evaluate(() => [...document.scripts].filter(s => !s.src && (!s.type || s.type === 'text/javascript' || s.type === 'module')).map(s => s.textContent).join('\n'));
+        const inlineJsGzip = gzipSync(inlineSource).length;
+        js += inlineJsGzip;
         report.performance.pop();
         report.performance.push({
           name,
@@ -596,6 +602,7 @@ export async function performance(
           restoreMs,
           readable,
           jsGzip: js,
+          inlineJsGzip,
           cssGzip: css,
           fontBytes: font,
           imageBytes: image,

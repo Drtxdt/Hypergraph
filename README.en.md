@@ -5,7 +5,7 @@ An original editorial Hexo theme with light/dark modes, one Endfield-inspired de
 Requires Node.js 22.12+ or 24 and Hexo 7.3 or 8. Install the delivered tarball in your Hexo site, set `theme: hypergraph`, remove other Markdown renderers, and run `hexo clean && hexo generate`. Assets are precompiled; Vite is only needed when developing the theme.
 
 ```sh
-npm install ./hexo-theme-hypergraph-2.1.0-beta.5.tgz
+npm install ./hexo-theme-hypergraph-2.1.0-beta.6.tgz
 npm uninstall hexo-renderer-marked hexo-renderer-markdown-it
 ```
 
@@ -26,11 +26,23 @@ Development: `npm ci`, `npm run typecheck`, `npm test`, `npm run build`. Theme s
 Run `npm run verify` for isolated public fixtures, browser tests, SQLite comments, and mobile performance. Install Chromium with `npx playwright install --with-deps chromium` outside Windows; Windows uses Edge by default. Set `HG_BROWSER=chromium` to select Chromium. `npm run verify:compat` checks Hexo 7.3/8 and root/subdirectory builds. Reports are in `.local/verification`; temporary sites are removed. No private blog is required.
 
 
+## Build an installable package from source
+
+```sh
+git clone https://github.com/Drtxdt/Hypergraph.git
+cd Hypergraph
+npm ci
+npm run build
+npm run pack:theme
+```
+
+Install the resulting `dist/hexo-theme-hypergraph-2.1.0-beta.6.tgz` in a fresh Hexo site. The consumer needs no Vite dependency. See [beta.6 configuration](docs/BETA6.en.md) and [three recipes](examples/recipes/README.md).
+
 ## 2.1 entrance motion
 
 `appearance.intro: session | always | off` defaults to `always`. The intro runs only with `appearance.motion: cinematic`; reduced motion, data saving, history restoration and deep anchors bypass it. `interaction.loading_bar` remains the separate navigation waiting indicator. Desktop navigation expands on hover or keyboard focus, without a pin button. Touch devices use the menu button.
 
 
-## beta.5
+## beta.6
 
-[Current installation, page data and tools guide](docs/BETA5.en.md). Default navigation now includes eight configurable destinations. Entrance runs alongside image loading: 480ms → 60% hold 600ms → 480ms → full sweep 240ms → fade 600ms. Historical release notes describe their own versions only.
+[Current installation, page data and tools guide](docs/BETA6.en.md). Default navigation now includes eight configurable destinations. Entrance runs alongside image loading: 480ms → 60% hold 600ms → 480ms → full sweep 240ms → fade 600ms. Historical release notes describe their own versions only.

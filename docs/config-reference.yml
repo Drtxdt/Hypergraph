@@ -1,13 +1,4 @@
-# Generated from config.schema.json; copy only the overrides you need.
-preset: endfield
 color_mode: auto
-music:
-  enable: false
-  src: /audio/bgm.mp3
-  title: Background music
-  playlist: []
-  volume: 0.7
-  endpoint: ''
 menu:
   - label: home
     url: /
@@ -46,16 +37,40 @@ home:
   description: ''
   featured: true
   sections:
-    - intro
+    - masthead
     - featured
     - posts
   excerpt_length: 160
   excerpt: auto
+  masthead:
+    enable: true
+    image:
+      src: ''
+      mobile: ''
+      dark: ''
+      mobile_dark: ''
+      alt: ''
+      caption: ''
+      fallback: ''
+      fit: cover
+      position: 50% 50%
+      mobile_position: 50% 50%
+    action:
+      label: ''
+      url: ''
+  topics: auto
 navigation: true
 search: true
 toc: true
 reading_mode: true
 math: katex
+music:
+  enable: false
+  src: ''
+  title: Background music
+  playlist: []
+  volume: 0.7
+  endpoint: ''
 comments:
   enable: false
   provider: waline
@@ -209,7 +224,18 @@ inject:
   head: []
   body: []
 background:
-  image: ''
+  mode: frame
+  image:
+    src: ''
+    mobile: ''
+    dark: ''
+    mobile_dark: ''
+    alt: ''
+    caption: ''
+    fallback: ''
+    fit: cover
+    position: 50% 50%
+    mobile_position: 50% 50%
   opacity: 0.12
 verification: []
 tools:
@@ -242,17 +268,11 @@ chat:
   button: false
   hide_on_scroll: false
 ads: []
+preset: endfield
 appearance:
   favicon: /hypergraph.svg
   avatar: ''
   author_status: ''
-  hero:
-    home: ''
-    archive: ''
-    category: ''
-    tag: ''
-    page: ''
-    height: 260
   fallback_image: ''
   radius: 0
   justify: false
@@ -272,7 +292,6 @@ appearance:
   error_message: ''
   error_image: ''
   show_cover: true
-  taxonomy_banners: {}
   motion: cinematic
   intro: always
   intro_scope: home
@@ -309,3 +328,18 @@ seo:
   twitter: ''
 navigation_exclude: []
 site_logo: ''
+page_banner:
+  enable: true
+  default:
+    src: ''
+    mobile: ''
+    dark: ''
+    mobile_dark: ''
+    alt: ''
+    caption: ''
+    fallback: ''
+    fit: cover
+    position: 50% 50%
+    mobile_position: 50% 50%
+  height: 260
+  overrides: {}

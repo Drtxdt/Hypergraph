@@ -8,6 +8,10 @@ import { chromium } from "playwright";
 import { serve } from "./verify/fixture.mjs";
 const root = path.resolve(".local/install-v21-" + Date.now());
 await fs.mkdir(root, { recursive: true });
+process.on('uncaughtException', async error => {
+  await fs.writeFile('.local/install-v21-report.json', JSON.stringify({passed:false,root,error:error.stack},null,2));
+  console.error(error);process.exit(1);
+});
 const npm =
   process.env.npm_execpath ||
   path.join(path.dirname(process.execPath), "node_modules/npm/bin/npm-cli.js");
@@ -35,7 +39,10 @@ const install = () =>
       : []),
   ]);
 const version = JSON.parse(await fs.readFile("package.json", "utf8")).version;
-const pack = path.resolve(`dist/hexo-theme-hypergraph-${version}.tgz`);
+const [tarball, expectedHash] = process.argv.slice(2);
+if (!tarball || !/^[a-f0-9]{64}$/i.test(expectedHash || '')) throw Error('Usage: node tools/verify-install-v21.mjs <tarball> <sha256>');
+const pack = path.resolve(tarball);
+assert.equal(crypto.createHash('sha256').update(await fs.readFile(pack)).digest('hex'), expectedHash.toLowerCase(), 'package SHA256 must match the supplied artifact');
 const pkg = JSON.parse(await fs.readFile("demo/package.json", "utf8"));
 pkg.dependencies["hexo-theme-hypergraph"] = "file:" + pack;
 await fs.cp("demo/source", path.join(root, "source"), { recursive: true });
@@ -62,6 +69,9 @@ const build = async () => {
   );
 };
 await build();
+const welcomePost = JSON.parse(await fs.readFile(path.join(root,'db.json'),'utf8')).models.Post.find(post => post.slug === 'welcome');
+const welcomeRoute = JSON.parse(await fs.readFile(path.join(root,'public/search.json'),'utf8')).find(post => post.title === welcomePost?.title)?.path;
+assert.ok(welcomeRoute, 'installer test uses the actual generated welcome route');
 assert.equal(installedPackage.version, version);
 for (const route of ['archives','gallery','essay','friends','tools','games','about'])
   await fs.access(path.join(root,'public',route,'index.html'));
@@ -120,7 +130,7 @@ try {
     server = await serve(root);
     const page = await browser.newPage();
     page.setDefaultTimeout(20000);
-    await page.goto(server.url + "2026/10/28/welcome/");
+    await page.goto(server.url + welcomeRoute);
     await page.getByText("Installed extension", { exact: true }).waitFor();
     assert.equal(await page.locator("[data-reading-note]").count(), 1);
     await page.close();
@@ -136,9 +146,13 @@ try {
   await build();
   server = await serve(root);
   const page = await browser.newPage();
+  await page.goto(server.url + 'tools/json/');
+  await page.locator('#utility-input').fill('{"installed":true}');
+  await page.locator('[data-operation="format"]').click();
+  await page.waitForFunction(() => document.querySelector('#utility-output').value.includes('installed'));
   const requests = [];
   page.on("request", (r) => requests.push(r.url()));
-  await page.goto(server.url + "2026/10/28/welcome/");
+  await page.goto(server.url + welcomeRoute);
   await page.waitForTimeout(300);
   assert.equal(await page.locator("[data-reading-note]").count(), 0);
   assert.ok(!requests.some((x) => x.includes("/extensions/reading-note.js")));

@@ -1,0 +1,20 @@
+home:
+  title: 沿途记录
+  description: 风景、作品与现场。
+  masthead:
+    image:
+      src: /images/landscape.jpg
+      position: 50% 50%
+      alt: 大峡谷风景
+      caption: Grand Canyon National Park / National Park Service
+  topics:
+    - title: 相册
+      description: 按项目浏览作品
+      url: /gallery/
+    - title: 全部记录
+      url: /archives/
+background:
+  mode: frame
+  image:
+    src: /images/record.svg
+  opacity: 0.12

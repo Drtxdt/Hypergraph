@@ -40,3 +40,6 @@ Desktop.ini
 
 # Deliberately tracked: source/assets, source/licenses, vendor,
 # package lockfiles, public fixtures and reviewed visual baselines.
+
+.agent
+.claude

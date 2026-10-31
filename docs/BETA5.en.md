@@ -1,3 +1,5 @@
+> Historical beta.5 release documentation. Current guide: [beta.6](BETA6.en.md).
+
 # beta.5: installation and configuration
 
 Use Node 22.12+ or 24 with Hexo 7.3 or 8. In your site's working copy:
