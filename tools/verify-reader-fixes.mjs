@@ -56,6 +56,18 @@ export async function checkReaderFixes(browser, sites, out, report) {
       await page.keyboard.press('ArrowDown');
       assert.equal(await page.locator('#search-input').inputValue(),'hello');
       await page.keyboard.press('Escape');
+      await page.goto(sites.main.url+'games/minesweeper/');
+      await page.locator('[data-new-game]:enabled').waitFor();
+      await page.locator('[data-new-game]').click();
+      await page.locator('h1').click();
+      await page.keyboard.press('ArrowDown');
+      assert.equal(await page.evaluate(()=>scrollY),0);
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight+2),'minesweeper fits viewport');
+      assert.equal(await page.evaluate(()=>!document.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowLeft',altKey:true,bubbles:true,cancelable:true}))),false,'browser modifiers remain available');
+      await page.locator('.parent-link').click();
+      await page.waitForURL('**/games/');
+      await page.locator('[data-game-app]').waitFor({state:'detached'});
+      assert.equal(await page.evaluate(()=>!document.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true,cancelable:true}))),false,'game keys are released on navigation');
     }
     report.readerFixes={passed:true,nestedAnchors:true,gameKeys:true,viewport:[360,390,768,1440]};
   } finally { await context.close(); }
