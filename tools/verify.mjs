@@ -1,3 +1,4 @@
+import { checkReaderFixes } from "./verify-reader-fixes.mjs";
 import { checkUiPolish, checkIntroCoverage } from "./verify-ui-polish.mjs";
 import { checkBeta4 } from "./verify-beta4.mjs";
 import { checkBeta5 } from "./verify-beta5.mjs";
@@ -172,6 +173,7 @@ try {
   }
   if (uiFailures.length) { report.uiFailures = uiFailures; throw Error(uiFailures.join("\n")); }
   await checkBeta4(browser, sites, out, report);
+  await checkReaderFixes(browser, sites, out, report);
   await checkBeta5(browser, sites, out, report);
   await checkBeta3(browser, sites, out, report);
   await checkBeta2(browser, sites, out, report);

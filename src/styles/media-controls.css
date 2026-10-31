@@ -81,3 +81,14 @@
 .lightbox button{position:absolute}
 .audio-controls input{height:44px;background-size:100% 4px;background-repeat:no-repeat;background-position:center}
 @media(max-width:1023px){.player [data-player-close]{position:absolute;width:44px;height:44px;min-height:44px}.player>span{min-height:32px;padding-right:44px}}
+
+/* Diagram tools share the compact square controls used throughout the reader. */
+[data-diagram="mermaid"] { border:1px solid var(--line); background:var(--paper); margin:20px 0 }
+.diagram-controls { display:flex; align-items:center; gap:6px; padding:8px; border-bottom:1px solid var(--line); background:var(--surface) }
+.diagram-controls .icon-button { width:44px; height:44px; padding:0; border:0 }
+.diagram-controls a.icon-button { margin-left:auto; border-bottom:0 }
+.diagram-scale { min-width:64px; padding:0 8px; font:500 13px/1 ui-monospace,monospace; border:0; background:transparent; color:var(--muted) }
+.diagram-controls button:disabled { opacity:.35; cursor:default }
+[data-diagram="mermaid"] > pre { margin:0; padding:20px; overflow:auto; background:transparent; border:0 }
+[data-diagram="mermaid"] > pre svg { display:block; height:auto }
+[data-diagram="mermaid"] > [role=status]:empty { display:none }

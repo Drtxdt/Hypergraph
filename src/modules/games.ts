@@ -210,9 +210,11 @@ export function mount(root: HTMLElement, signal: AbortSignal) {
     },
     { signal },
   );
-  board.addEventListener(
+  document.addEventListener(
     "keydown",
     (e) => {
+      const target = e.target as HTMLElement;
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || target.isContentEditable || document.querySelector("dialog[open]") || document.documentElement.classList.contains("panel-lock") || document.body.classList.contains("panel-lock") || target.closest("input,textarea,select,[contenteditable=true],.site-header,.player")) return;
       const direction = [
         "ArrowLeft",
         "ArrowUp",
@@ -242,7 +244,11 @@ export function mount(root: HTMLElement, signal: AbortSignal) {
   board.addEventListener(
     "pointerdown",
     (e) => {
-      if (kind === "2048") start = { x: e.clientX, y: e.clientY };
+      if (kind === "2048") {
+        board.focus({ preventScroll: true });
+        board.setPointerCapture(e.pointerId);
+        start = { x: e.clientX, y: e.clientY };
+      }
     },
     { signal },
   );
@@ -258,6 +264,7 @@ export function mount(root: HTMLElement, signal: AbortSignal) {
     },
     { signal },
   );
+  board.addEventListener("pointercancel", () => { start = undefined; }, { signal });
   const timer = setInterval(() => {
     const now = performance.now();
     if (

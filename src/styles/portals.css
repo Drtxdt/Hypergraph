@@ -211,7 +211,7 @@
 }
 .game-shell {
   max-width: 440px;
-  margin: 32px auto;
+  margin: 12px auto;
 }
 .game-board {
   display: grid;
@@ -233,15 +233,22 @@
     monospace;
   color: var(--ink);
 }
-.game-cell[data-value]:not([data-value="0"]) {
+.game-cell:not([data-value="0"]) {
   background: var(--signal);
   color: #171819;
 }
-.game-cell[data-value="2"],
-.game-cell[data-value="4"] {
-  background: var(--paper);
-  color: var(--ink);
-}
+/* Fixed, contrasting tile palette remains legible in both color modes. */
+.game-cell[data-value="2"] { background:#e8e9e3; color:#252922 }
+.game-cell[data-value="4"] { background:#d4ddbf; color:#252922 }
+.game-cell[data-value="8"] { background:#b5ce8c; color:#20291a }
+.game-cell[data-value="16"] { background:#90b15c; color:#18220f }
+.game-cell[data-value="32"] { background:#527546; color:#fff }
+.game-cell[data-value="64"] { background:#315e56; color:#fff }
+.game-cell[data-value="128"] { background:#244c65; color:#fff }
+.game-cell[data-value="256"] { background:#4d4681; color:#fff }
+.game-cell[data-value="512"] { background:#864568; color:#fff }
+.game-cell[data-value="1024"] { background:#a34432; color:#fff }
+.game-cell[data-value="2048"] { background:#fffa00; color:#171819 }
 .game-board[data-game="minesweeper"] {
   grid-template-columns: repeat(9, 1fr);
   gap: 3px;
@@ -320,3 +327,13 @@
 .portal-group .portal-grid {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
 }
+
+/* A compact play surface; small landscape screens and enlarged text may scroll. */
+main.game-page { min-height:0; padding-top:16px; padding-bottom:16px }
+.game-page .section-heading { margin:8px 0; padding-block:8px }
+.game-page .section-heading h1 { font-size:clamp(24px,4vw,36px); margin:0 }
+.game-page .game-shell { width:min(100%,440px,max(240px,calc(100svh - 370px - var(--player-space,0px)))) }
+.game-page .game-controls { margin:8px 0; gap:6px }
+.game-page .game-shell > p:last-child { font-size:13px; margin:8px 0; line-height:1.5 }
+body:has(main.game-page) > :is(.site-footer,.back-to-top) { display:none }
+.game-page .game-status { margin:4px 0 }
