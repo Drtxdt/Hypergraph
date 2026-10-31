@@ -13,6 +13,7 @@ export function mount(
 ) {
   if (config.fallback_image)
     root.querySelectorAll<HTMLImageElement>("img").forEach((img) => {
+      if (img.closest("[data-responsive-image]")) return;
       const fallback = () => {
         if (img.dataset.fallback) return;
         img.dataset.fallback = "true";
@@ -86,7 +87,7 @@ function mountMotion(
   const animations = new Set<Animation>();
   const animate = (element: Element, delay = 0) => {
     const animation = element.animate(
-      cinematic && element.matches(".lead-title,.lead-media")
+      cinematic && element.matches(".masthead-copy,.masthead-media")
         ? [{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0)" }]
         : [
             { opacity: 0.85, transform: "translateY(6px)" },
@@ -94,7 +95,7 @@ function mountMotion(
           ],
       {
         duration: cinematic
-          ? element.matches(".lead-media")
+          ? element.matches(".masthead-media")
             ? 420
             : 320
           : 180,
@@ -111,12 +112,13 @@ function mountMotion(
       document.querySelector("#hg-config")!.textContent!,
     );
     for (const [selector, delay] of [
-      [".lead-media", 0],
-      [".lead .section-kicker", 40],
-      [".lead-title", 80],
-      [".lead-link", 120],
+      [".masthead-media", 0],
+      [".masthead-copy > span", 40],
+      ["[data-masthead-title]", 80],
+      [".masthead-action", 120],
     ] as const) {
-      if (options.effects?.typewriter && selector === ".lead-title") continue;
+      if (options.effects?.typewriter && selector === "[data-masthead-title]")
+        continue;
       root
         .querySelectorAll(selector)
         .forEach((el) => animate(el, cinematic ? delay : 0));
@@ -127,7 +129,8 @@ function mountMotion(
       once: true,
       signal,
     });
-  else if (!(window as Window & { __hgIntroResult?: unknown }).__hgIntroResult) enter();
+  else if (!(window as Window & { __hgIntroResult?: unknown }).__hgIntroResult)
+    enter();
   const observer = new IntersectionObserver(
     (entries) =>
       entries.forEach((entry) => {
@@ -140,7 +143,13 @@ function mountMotion(
   );
   root.querySelectorAll(".entry").forEach((el) => observer.observe(el));
   const media = root.querySelector<HTMLElement>(".lead-media");
-  if (cinematic && !mobile && matchMedia("(pointer:fine)").matches && media && media.dataset.fit !== "contain") {
+  if (
+    cinematic &&
+    !mobile &&
+    matchMedia("(pointer:fine)").matches &&
+    media &&
+    media.dataset.fit !== "contain"
+  ) {
     const image = media.querySelector<HTMLElement>("img");
     media.addEventListener(
       "pointermove",

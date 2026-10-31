@@ -134,26 +134,6 @@ main {
   letter-spacing: 0.05em;
   color: var(--muted);
 }
-.lead {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  position: relative;
-  isolation: isolate;
-  border-bottom: 1px solid var(--ink);
-  margin-top: 36px;
-}
-.lead-copy {
-  grid-column: 1 / 8;
-  grid-row: 1;
-  z-index: 2;
-  align-self: end;
-  margin: 72px 0 0;
-  padding: 28px 36px 28px 0;
-  background: var(--paper);
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
 .section-kicker {
   display: flex;
   justify-content: space-between;
@@ -169,64 +149,6 @@ main {
   color: #171819;
   padding: 6px 10px;
 }
-.lead-title {
-  padding: 36px 0 32px;
-}
-.lead .lead-heading {
-  margin: 12px 0 28px;
-  font-family: system-ui, system-ui, sans-serif;
-  font-weight: 800;
-  font-size: clamp(36px, 4.2vw, 66px);
-  line-height: 1.22;
-  letter-spacing: -0.035em;
-  overflow-wrap: anywhere;
-}
-.lead .lead-heading a:hover {
-  text-decoration: none;
-}
-.lead .lead-heading a:hover {
-  box-shadow: 0 3px 0 var(--signal);
-}
-.lead p {
-  font-size: 15px;
-  color: var(--muted);
-  max-width: 38em;
-  margin: 0;
-  line-height: 1.9;
-}
-.lead-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: auto;
-  font-size: 13px;
-  border-top: 1px solid var(--line);
-  padding-top: 18px;
-}
-.lead-link > span:last-child {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  background: var(--ink);
-  color: var(--paper);
-  font-size: 24px;
-}
-.lead-media {
-  grid-column: 5 / -1;
-  grid-row: 1;
-  position: relative;
-  min-width: 0;
-  overflow: hidden;
-  background: var(--surface);
-}
-.lead-media img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  min-height: 480px;
-  object-fit: cover;
-}
 .media-coordinate {
   position: absolute;
   top: 18px;
@@ -240,27 +162,6 @@ main {
     600 10px system-ui,
     sans-serif;
   letter-spacing: 0.1em;
-}
-.lead.text-only {
-  display: block;
-}
-.text-only .lead-copy {
-  padding: 24px 0 28px;
-  margin: 0;
-}
-.text-only .lead-title {
-  display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
-  align-items: end;
-  gap: 0 64px;
-  padding: 36px 0;
-}
-.text-only .lead-title .categories {
-  grid-column: 1/-1;
-}
-.text-only .lead-title .lead-heading {
-  margin-bottom: 0;
-  max-width: 18em;
 }
 .record-section {
   margin-top: 64px;
@@ -588,16 +489,6 @@ html[data-motion="off"] .home-entry .entry-media img {
   main {
     padding: 0 32px;
   }
-  .lead-copy {
-    padding-right: 24px;
-    grid-column: 1 / 9;
-  }
-  .lead-title {
-    padding: 36px 0;
-  }
-  .lead-media img {
-    min-height: 400px;
-  }
   .reading-grid {
     display: flex;
     flex-direction: column;
@@ -653,42 +544,6 @@ html[data-motion="off"] .home-entry .entry-media img {
   }
   .page-coordinate > span:last-child {
     display: none;
-  }
-  .lead {
-    display: flex;
-    flex-direction: column;
-    margin-top: 24px;
-  }
-  .lead-copy {
-    margin: 0;
-    padding: 0 0 24px;
-    align-self: stretch;
-    width: 100%;
-  }
-  .lead-title {
-    padding: 28px 0;
-  }
-  .lead .lead-heading {
-    font-size: 34px;
-    margin-bottom: 22px;
-  }
-  .lead-media {
-    order: -1;
-    margin-bottom: 24px;
-  }
-  .lead-media img {
-    height: 240px;
-    min-height: 0;
-  }
-  .text-only .lead-title {
-    display: block;
-    padding: 28px 0;
-  }
-  .text-only .lead-title .lead-heading {
-    margin-bottom: 24px;
-  }
-  .text-only .lead-copy {
-    padding-top: 0;
   }
   .record-section {
     margin-top: 40px;
@@ -789,19 +644,6 @@ html[data-motion="off"] .home-entry .entry-media img {
   font-size: 14px;
   gap: 16px;
 }
-.lead-media img {
-  transition: transform 0.3s ease-out;
-}
-.lead-link > span:last-child {
-  transition:
-    transform 0.2s,
-    background-color 0.2s;
-}
-.lead-link:hover > span:last-child {
-  transform: translate(3px, -3px);
-  background: var(--signal);
-  color: #191919;
-}
 .home-body.with-sidebar {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 260px;
@@ -826,12 +668,7 @@ html[data-motion="off"] .home-entry .entry-media img {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .site-header,
-  .lead-media img,
-  .lead-link > span:last-child {
+  .site-header {
     transition: none;
-  }
-  .lead-link:hover > span:last-child {
-    transform: none;
   }
 }

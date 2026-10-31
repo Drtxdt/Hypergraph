@@ -101,7 +101,7 @@ export function mount(
     if (owner !== visit.id || controller.signal.aborted) return;
     document.documentElement.dataset.transition = "entering";
     const title = document.querySelector(
-      ".lead-title, .article-head, .archive-head, #content h1",
+      "[data-masthead-title], .article-head, .archive-head, #content h1",
     );
     const duration =
       mode === "subtle" ? 120 : fromHome && toArticle ? 180 : 160;

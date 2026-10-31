@@ -160,7 +160,7 @@ export function mount(options: Options, signal: AbortSignal) {
       if (document.hidden || reduced.matches || document.documentElement.dataset.transition || document.documentElement.classList.contains("intro-active")) return;
       titleAnimation?.cancel();
       titleAnimation = document
-        .querySelector(".home-introduction h1, .lead-heading")
+        .querySelector("[data-masthead-title]")
         ?.animate(
           [{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0 0 0)" }],
           { duration: 600, easing: "steps(12,end)" },

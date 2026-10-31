@@ -16,23 +16,27 @@ const paths = {
   url_decode: "M3 12h18M8 7l-5 5 5 5M21 5v14",
   base64_encode: "M3 3h18v18H3Zm3 9h12m-5-5 5 5-5 5",
   base64_decode: "M3 3h18v18H3Zm3 9h12m-7-5-5 5 5 5",
-  "2048": "M3 3h7v7H3Zm11 0h7v7h-7ZM3 14h7v7H3Zm11 0h7v7h-7Z",
-  minesweeper: "M12 1v4m0 14v4M1 12h4m14 0h4M4 4l3 3m10 10 3 3M4 20l3-3M17 7l3-3M12 5a7 7 0 1 0 0 14 7 7 0 0 0 0-14",
+  2048: "M3 3h7v7H3Zm11 0h7v7h-7ZM3 14h7v7H3Zm11 0h7v7h-7Z",
+  minesweeper:
+    "M12 1v4m0 14v4M1 12h4m14 0h4M4 4l3 3m10 10 3 3M4 20l3-3M17 7l3-3M12 5a7 7 0 1 0 0 14 7 7 0 0 0 0-14",
   note: "M5 3h14v18H5ZM9 8h6M9 12h6M9 16h4",
   tool: "m14 3 2 5 5 2-4 4-4-1-7 8-3-3 8-7-1-4Z",
   gamepad: "M7 6h10l4 11-3 3-4-4h-4l-4 4-3-3ZM5 11h6M8 8v6M16 10h1M18 13h1",
   copy: "M8 8h13v13H8ZM16 8V3H3v13h5",
   telegram: "M2 10 22 2l-5 20-6-7-4 3v-6ZM7 12 22 2M11 15 22 2",
   facebook: "M14 22V12h4l1-4h-5V6c0-2 1-3 4-3V0c-6-1-8 1-8 6v2H7v4h3v10",
-  reddit: "M8 13h.1M16 13h.1M8 17q4 3 8 0M12 8l2-6 5 1M3 10a2 2 0 1 0-2 4m20-4a2 2 0 1 1 2 4M12 8a10 7 0 1 0 0 14 10 7 0 1 0 0-14",
+  reddit:
+    "M8 13h.1M16 13h.1M8 17q4 3 8 0M12 8l2-6 5 1M3 10a2 2 0 1 0-2 4m20-4a2 2 0 1 1 2 4M12 8a10 7 0 1 0 0 14 10 7 0 1 0 0-14",
   linkedin: "M4 9v12M4 3v2M10 21V9m0 5c0-7 10-7 10 0v7",
 
   reading: "M3 4h7l2 2 2-2h7v16h-7l-2 2-2-2H3ZM12 6v16",
   share: "M12 16V3m-5 5 5-5 5 5M5 12H3v9h18v-9h-2",
   close: "m5 5 14 14M19 5 5 19",
   x: "M4 3h4l12 18h-4ZM20 3 4 21",
-  instagram: "M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4Zm5 5a4 4 0 1 0 0 8 4 4 0 0 0 0-8M17 6h1",
-  bilibili: "m7 2 3 4m7-4-3 4M5 6h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Zm3 5v4m8-4v4m-6 2 2 1 2-1",
+  instagram:
+    "M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4Zm5 5a4 4 0 1 0 0 8 4 4 0 0 0 0-8M17 6h1",
+  bilibili:
+    "m7 2 3 4m7-4-3 4M5 6h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Zm3 5v4m8-4v4m-6 2 2 1 2-1",
   email: "M3 5h18v14H3ZM3 5l9 8 9-8",
 
   menu: "M4 6h16M4 12h16M4 18h16",
@@ -63,7 +67,10 @@ hexo.extend.helper.register("hg_menu", function () {
     if (item.page) {
       const page = hexo.theme.config.pages[item.page];
       if (!page?.enable) return null;
-      return { ...item, url: require("../lib/page-path.cjs").pagePath(item.page, page) };
+      return {
+        ...item,
+        url: require("../lib/page-path.cjs").pagePath(item.page, page),
+      };
     }
     if (item.children) {
       const children = item.children.map(resolve).filter(Boolean);
@@ -72,7 +79,8 @@ hexo.extend.helper.register("hg_menu", function () {
     return item;
   };
   return hexo.theme.config.menu
-    .map(resolve).filter(Boolean)
+    .map(resolve)
+    .filter(Boolean)
     .map((item) => {
       const label = escape(this.hg_t(item.label));
       const icon = this.hg_icon(item.icon || "link");
@@ -122,14 +130,7 @@ hexo.extend.helper.register("hg_selection", function (page) {
 });
 hexo.extend.helper.register("hg_media", function (post, type = "post") {
   const cfg = hexo.theme.config.appearance;
-  const name = post.category || post.tag || "";
-  const url =
-    (cfg.show_cover &&
-      (post.cover ||
-        post.banner ||
-        cfg.taxonomy_banners[type + ":" + name] ||
-        cfg.hero[type])) ||
-    "";
+  const url = (cfg.show_cover && (post.cover || post.banner)) || "";
   const values = String(post.cover_position || "50% 50%").split(" ");
   const focus =
     values.length === 2 &&
@@ -140,16 +141,30 @@ hexo.extend.helper.register("hg_media", function (post, type = "post") {
     url: url ? this.hg_image(url) : "",
     has_image: !!url,
     position: focus,
-    height: cfg.hero.height,
+    height: 260,
     fit: post.cover_fit || cfg.cover_fit || "cover",
   };
 });
 
 hexo.extend.helper.register("hg_topics", function () {
-  return hexo.locals.get("categories").toArray().filter(c => c.length)
-    .sort((a,b) => b.length-a.length || a.name.localeCompare(b.name)).slice(0,2)
-    .map(c => ({ name:c.name, path:c.path, count:c.length,
-      latest:c.posts.sort('-date').toArray().find(p=>!p.password&&!p.hg_encrypted) }));
+  const topics = hexo.theme.config.home.topics;
+  if (Array.isArray(topics))
+    return topics.map((t) => ({ ...t, name: t.title, path: t.url }));
+  return hexo.locals
+    .get("categories")
+    .toArray()
+    .filter((c) => c.length)
+    .sort((a, b) => b.length - a.length || a.name.localeCompare(b.name))
+    .slice(0, 2)
+    .map((c) => ({
+      name: c.name,
+      path: c.path,
+      count: c.length,
+      latest: c.posts
+        .sort("-date")
+        .toArray()
+        .find((p) => !p.password && !p.hg_encrypted),
+    }));
 });
 hexo.extend.helper.register("hg_archive", function (page) {
   const all = hexo.locals
@@ -191,6 +206,9 @@ hexo.extend.helper.register("hg_archive", function (page) {
 
 hexo.extend.helper.register("hg_intro_bootstrap", function () {
   const boot = require("../lib/intro-bootstrap.cjs");
-  const args = JSON.stringify([hexo.theme.config.appearance.intro, "hypergraph:intro:" + this.url_for("/")]).replace(/</g,"\\u003c");
+  const args = JSON.stringify([
+    hexo.theme.config.appearance.intro,
+    "hypergraph:intro:" + this.url_for("/"),
+  ]).replace(/</g, "\\u003c");
   return "(" + boot.toString() + ")(..." + args + ");";
 });
