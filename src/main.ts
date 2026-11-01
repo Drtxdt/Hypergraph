@@ -137,6 +137,13 @@ async function mountPage(focus = false) {
   const version = ++epoch;
   const root = document.querySelector<HTMLElement>("#content")!;
   void mountAppearance(root, signal, focus);
+  if (appearance.laser_print && appearance.motion === "cinematic" && root.querySelector('.masthead-media,.masthead-artwork') && !matchMedia('(prefers-reduced-motion:reduce)').matches && !(navigator as Navigator & {connection?:{saveData?:boolean}}).connection?.saveData) {
+    const requested=performance.now();
+    void import('./modules/laser-print').then(module=>{
+      if(!signal.aborted && performance.now()-requested<200) module.mount(root,signal,focus);
+    });
+  }
+
   if (
     extras.adsense.enable ||
     extras.counters.enable ||

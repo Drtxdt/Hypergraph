@@ -5,6 +5,7 @@ export type Appearance = {
   captions: boolean;
   motion: "cinematic" | "subtle" | "off";
   cover_tint?: boolean;
+  laser_print?: boolean;
 };
 export function mount(
   root: HTMLElement,
@@ -87,7 +88,7 @@ function mountMotion(
   const animations = new Set<Animation>();
   const animate = (element: Element, delay = 0) => {
     const animation = element.animate(
-      cinematic && element.matches(".masthead-copy,.masthead-media")
+      cinematic && element.matches("[data-masthead-title]")
         ? [{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0)" }]
         : [
             { opacity: 0.85, transform: "translateY(6px)" },
@@ -117,6 +118,7 @@ function mountMotion(
       ["[data-masthead-title]", 80],
       [".masthead-action", 120],
     ] as const) {
+      if (options.appearance?.laser_print && cinematic && selector === ".masthead-media") continue;
       if (options.effects?.typewriter && selector === "[data-masthead-title]")
         continue;
       root

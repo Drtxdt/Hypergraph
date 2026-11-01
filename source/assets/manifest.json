@@ -859,6 +859,7 @@
       "src/modules/dogeplayer.ts",
       "src/modules/content-controls.ts",
       "src/modules/media.ts",
+      "src/modules/laser-print.ts",
       "src/modules/ads-counters.ts",
       "src/modules/utilities.ts",
       "src/modules/games.ts",
@@ -901,7 +902,7 @@
     "isDynamicEntry": true
   },
   "src/modules/appearance.ts": {
-    "file": "chunk-appearance-BUbaMs2O.js",
+    "file": "chunk-appearance-BfByt09y.js",
     "name": "appearance",
     "src": "src/modules/appearance.ts",
     "isDynamicEntry": true
@@ -1019,6 +1020,12 @@
     "src": "src/modules/intro.ts",
     "isDynamicEntry": true
   },
+  "src/modules/laser-print.ts": {
+    "file": "chunk-laser-print-PkEzjAX5.js",
+    "name": "laser-print",
+    "src": "src/modules/laser-print.ts",
+    "isDynamicEntry": true
+  },
   "src/modules/media.ts": {
     "file": "chunk-media-DS2aWSN5.js",
     "name": "media",
@@ -1097,7 +1104,7 @@
     "isEntry": true
   },
   "src/modules/transitions.ts": {
-    "file": "chunk-transitions-WUhy1Z_d.js",
+    "file": "chunk-transitions-Dk0pmJWw.js",
     "name": "transitions",
     "src": "src/modules/transitions.ts",
     "isDynamicEntry": true
