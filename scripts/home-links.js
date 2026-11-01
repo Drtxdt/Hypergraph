@@ -1,4 +1,5 @@
 "use strict";
+const { siteLink } = require("../lib/site-link.cjs");
 hexo.extend.filter.register("after_generate", async function () {
   const home = hexo.theme.config.home;
   const links = [
@@ -7,7 +8,7 @@ hexo.extend.filter.register("after_generate", async function () {
   ].filter(Boolean);
   const routes = new Set(hexo.route.list());
   for (const link of links) {
-    const parsed = new URL(link, hexo.config.url);
+    const parsed = new URL(siteLink(link, hexo.config), hexo.config.url);
     if (parsed.origin !== new URL(hexo.config.url).origin) continue;
     const root = hexo.config.root || "/";
     let pathname = decodeURIComponent(parsed.pathname);

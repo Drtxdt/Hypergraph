@@ -1,6 +1,7 @@
 "use strict";
 const { pagePath } = require("../lib/page-path.cjs");
 const { types, normalize } = require("../lib/collections.cjs");
+const { siteLink } = require("../lib/site-link.cjs");
 hexo.extend.helper.register("hg_page_path", (type) =>
   pagePath(type, hexo.theme.config.pages?.[type]),
 );
@@ -16,7 +17,7 @@ hexo.extend.helper.register("hg_link", function (url) {
   } catch {
     return "#";
   }
-  return this.url_for(value);
+  return siteLink(value, hexo.config);
 });
 hexo.extend.generator.register("hypergraph-collections", (locals) => {
   const cfg = hexo.theme.config.pages,

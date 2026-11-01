@@ -58,9 +58,12 @@ comments: true
 
 ```yaml
 gallery:
-  - title: 山间记录
-    image: /images/mountain.jpg
-    description: 某个清晨。
+  albums:
+    - slug: mountains
+      title: 山间记录
+      photos:
+        - image: /images/mountain.jpg
+          caption: 某个清晨。
 music:
   - title: 环境音乐
     audio: /audio/sample.wav

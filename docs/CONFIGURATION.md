@@ -41,17 +41,20 @@ post:
   reward: []
 ```
 
-完整字段与默认值见根目录 `config.schema.json`。`fonts` 分为 `body`、`display`、`code`；`colors.accent` 使用六位十六进制颜色。`background.image` 为图片地址，`opacity` 为 0–1；建议先测试明暗模式的文字对比度。
+完整字段与默认值见根目录 `config.schema.json`。`fonts` 分为 `body`、`display`、`code`；`colors.accent` 使用六位十六进制颜色。`background.image` 为 `{src: /images/background.jpg}` 图片对象，`opacity` 为 0–1；建议先测试明暗模式的文字对比度。
 
 文章 front-matter 支持 `cover`、`summary`、`series`、`math_engine`、`comments`。`math_engine` 可以覆盖全站公式引擎，一篇文章只使用一个引擎。`password` 开启 AES-GCM 加密，`abstract` 是明确公开的手写摘要；密码和正文不要放进标题、标签、分类或摘要。静态加密仍要求使用足够强的密码。加密文章不进入全文搜索或 RSS，并默认关闭评论。
 
-专用页面通过 `pages.<type>.enable` 开启，类型为 `about`、`friends`、`gallery`、`essay`、`equipment`、`music`、`room`、`fcircle`。每类支持 `title`、`description`、`path`。内容保存在站点 `source/_data/hypergraph.yml` 的同名数组里，每项支持 `title`、`description`、`image`、`url`、`date`、`audio`、`status`。朋友圈可配置 `endpoint` 获取远程聚合；服务失败不会影响其他页面。
+专用页面通过 `pages.<type>.enable` 开启，类型为 `about`、`friends`、`gallery`、`essay`、`equipment`、`music`、`room`、`fcircle`。每类支持 `title`、`description`、`path`。内容保存在站点 `source/_data/hypergraph.yml`；about、friends、gallery 分别使用结构化对象（见 BETA6.md），其他集合使用数组，每项支持 `title`、`description`、`image`、`url`、`date`、`audio`、`status`。朋友圈可配置 `endpoint` 获取远程聚合；服务失败不会影响其他页面。
 
 ```yaml
 friends:
-  - title: Hexo
-    description: 快速、简洁且高效的博客框架。
-    url: https://hexo.io/
+  groups:
+    - title: 文档
+      items:
+        - title: Hexo
+          description: 快速、简洁且高效的博客框架。
+          url: https://hexo.io/
 equipment:
   - title: 随身笔记本
     description: 记录随时出现的想法。
