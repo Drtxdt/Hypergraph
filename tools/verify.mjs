@@ -128,28 +128,9 @@ try {
     },
   };
   const sites = {};
-  for (const [name, options] of Object.entries(variants).sort(([a],[b]) => a === "main" ? -1 : b === "main" ? 1 : 0)) {
-    const base = path.join(temp, name);
-    await generate(base, options);
-    const server = await serve(base, options.root);
-    servers.push(server);
-    sites[name] = { base, ...server };
-    console.log("Prepared " + name);
-    if (name === "main") {
-      // Establish the real service prerequisite before copying every fixture.
-      waline = await startWaline(path.join(temp, "waline"), new URL(server.url).origin);
-      report.walineStartupMs = waline.startupMs;
-      console.log("Waline SQLite ready in " + Math.round(waline.startupMs) + " ms");
-    }
-  }
-  for (const file of await files(path.join(sites.main.base, "public")))
-    if (/\.(html|json|xml|txt)(\.gz)?$/.test(file)) {
-      const bytes = await fs.readFile(file);
-      const data = (file.endsWith('.gz') ? gunzipSync(bytes) : bytes).toString('utf8');
-      if (/PRIVATE_CANARY_|SECRET_CODE_7329|fixture-password-7329/.test(data))
-        throw Error("Private data leaked into " + file);
-    }
-  report.checks.push("encrypted-output-scan");
+  let sampled = false;
+  const startBrowser = async () => {
+    if (browser) return;
   browser = await chromium.launch({
     headless: true,
     ...(process.env.HG_BROWSER === "chromium"
@@ -177,6 +158,37 @@ try {
       }).trim().length > 0,
   };
   await run(["tools/verify-navigation-v21.mjs"]);
+  };
+  for (const [name, options] of Object.entries(variants).sort(([a],[b]) => (["main","content","noCover","atmosphere"].indexOf(a) < 0 ? 99 : ["main","content","noCover","atmosphere"].indexOf(a)) - (["main","content","noCover","atmosphere"].indexOf(b) < 0 ? 99 : ["main","content","noCover","atmosphere"].indexOf(b)))) {
+    const base = path.join(temp, name);
+    await generate(base, options);
+    const server = await serve(base, options.root);
+    servers.push(server);
+    sites[name] = { base, ...server };
+    console.log("Prepared " + name);
+    if (name === "main") {
+      // Establish the real service prerequisite before copying every fixture.
+      waline = await startWaline(path.join(temp, "waline"), new URL(server.url).origin);
+      report.walineStartupMs = waline.startupMs;
+      console.log("Waline SQLite ready in " + Math.round(waline.startupMs) + " ms");
+    }
+    if (!sampled && ["main","content","noCover","atmosphere"].every(key => sites[key])) {
+      await startBrowser();
+      console.log("Starting controlled performance before the remaining browser checks");
+      await performance(browser, sites, report);
+      sampled = true;
+      console.log("All 42 performance samples passed");
+    }
+  }
+  for (const file of await files(path.join(sites.main.base, "public")))
+    if (/\.(html|json|xml|txt)(\.gz)?$/.test(file)) {
+      const bytes = await fs.readFile(file);
+      const data = (file.endsWith('.gz') ? gunzipSync(bytes) : bytes).toString('utf8');
+      if (/PRIVATE_CANARY_|SECRET_CODE_7329|fixture-password-7329/.test(data))
+        throw Error("Private data leaked into " + file);
+    }
+  report.checks.push("encrypted-output-scan");
+  await startBrowser();
   await checkBeta6(browser, sites, out, report);
   await checkBeta7(browser, sites, out, report);
   await checkRecipes(browser, sites, out, report);
@@ -202,8 +214,7 @@ try {
   console.log(
     "Integrations, appearance, extensions and comments passed; starting isolated performance sampling",
   );
-  await performance(browser, sites, report);
-  console.log("Performance checks passed");
+  if (!sampled) throw Error("Performance samples missing");
   report.assets = {};
   for (const file of [
     "source/assets/main.js",
