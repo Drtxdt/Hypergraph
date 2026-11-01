@@ -162,7 +162,8 @@ export async function checkBrowser(browser, sites, report, out) {
   await page.locator("[data-search]").click({ position: { x: 32, y: 22 } });
   assert.equal(
     await page.locator("#content").evaluate((el) => el.inert),
-    false,
+    true,
+    "search retains the menu background inertness until it closes",
   );
   await page.keyboard.press("Escape");
   await page.locator("#search-dialog").waitFor({ state: "hidden" });
