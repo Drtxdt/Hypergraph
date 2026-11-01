@@ -89,9 +89,20 @@ await fs.mkdir(directory, { recursive: true });
   }
   const noScript = await browser.newContext({ javaScriptEnabled: false });
   const page = await noScript.newPage();
-  await page.goto(site.url);
-  assert.equal(await page.locator('.player audio[controls]').isVisible(), true);
-  await noScript.close();
+  const pending = new Set();
+  page.on('request', request => pending.add(request.url()));
+  page.on('requestfinished', request => pending.delete(request.url()));
+  page.on('requestfailed', request => pending.delete(request.url()));
+  try {
+    await page.goto(site.url);
+    assert.equal(await page.locator('.player audio[controls]').isVisible(), true);
+  } catch (error) {
+    await fs.writeFile(path.join(directory, 'noscript-failure.json'), JSON.stringify({url:site.url,pending:[...pending],error:error.stack},null,2));
+    await page.screenshot({path:path.join(directory,'noscript-failure.png')}).catch(()=>{});
+    throw error;
+  } finally {
+    await noScript.close();
+  }
 report.uiPolish = { passed: true, widths: [1440, 390] };
 }
 export async function checkIntroCoverage(browser, site, directory, report = {}) {
