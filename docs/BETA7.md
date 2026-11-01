@@ -24,3 +24,5 @@ home:
 构建期生成固定地形和流线；资源同源且带内容散列。运行期仅对同源自定义装饰读取透明度；跨域素材和摄影主图使用边缘扫描。SVG 作为图片加载，不注入其源码。
 
 开发验证：`npm run verify:fast` → `npm run verify` → `npm run pack:theme`。安装验证使用 `npm run verify:package -- <tarball绝对路径> <SHA-256>`，在仓库外临时站消费同一个包。截图是候选证据，不自动替换此前批准的基线。
+
+性能与托管：生成站点同时输出 HTML 的 `.gz` 文件，内容与原页面完全相同（加密页面仅压缩其公开加密输出）。nginx 可启用 `gzip_static on; gzip_vary on;`，CDN 可使用等价压缩；必须正确返回 `Content-Encoding: gzip`。普通 HTML 始终保留；不支持压缩的主机仍能阅读，但不代表满足本报告的压缩网络条件。

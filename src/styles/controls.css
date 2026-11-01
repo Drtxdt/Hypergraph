@@ -107,3 +107,8 @@ html[data-motion="off"] .share-platforms[open] .share-platform-list > * { animat
 @media(prefers-reduced-motion:reduce) {
   .share-platforms[open] .share-platform-list > * { animation:none; }
 }
+
+/* Search remains in the shared accessible panel layer, without relaying a long
+   inert article through native modal state on every menu handoff. */
+.search-backdrop{position:fixed;inset:0;z-index:1000;background:var(--paper)}
+#search-dialog{position:fixed;inset:0;margin:auto;z-index:1001}

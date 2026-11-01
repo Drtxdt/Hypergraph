@@ -1,0 +1,20 @@
+const {test} = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const {Readable} = require('node:stream');
+const {gunzipSync} = require('node:zlib');
+test('generated HTML gzip preserves exact public bytes, updates and excludes other assets', async () => {
+  let filter;
+  const routes = new Map([['index.html',Buffer.from('<h1>记录</h1>')],['assets/icon.svg',Buffer.from('<svg/>')],['private/index.html',Buffer.from('<div data-cipher="encrypted">公开摘要</div>')]]);
+  const hexo = {extend:{filter:{register:(name,callback)=>{assert.equal(name,'after_generate');filter=callback;}}},route:{list:()=>[...routes.keys()],get:name=>Readable.from([routes.get(name)]),set:(name,data)=>routes.set(name,data)}};
+  vm.runInNewContext(fs.readFileSync('scripts/compression.js','utf8'),{hexo,require,Buffer});
+  await filter();
+  assert.deepEqual(gunzipSync(routes.get('index.html.gz')),routes.get('index.html'));
+  assert.deepEqual(gunzipSync(routes.get('private/index.html.gz')),routes.get('private/index.html'));
+  assert.equal(routes.has('assets/icon.svg.gz'),false);
+  routes.set('index.html',Buffer.from('<h1>Updated</h1>'));
+  await filter();
+  assert.deepEqual(gunzipSync(routes.get('index.html.gz')),routes.get('index.html'));
+  assert.equal(routes.has('index.html.gz.gz'),false);
+});

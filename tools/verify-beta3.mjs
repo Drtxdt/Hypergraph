@@ -99,6 +99,14 @@ export async function checkBeta3(browser, sites, out, report) {
       "covered page must keep its exact height",
     );
     await page.locator("[data-search]").click({ position: { x: 32, y: 22 } });
+    assert.equal(await page.locator('#search-dialog').getAttribute('aria-modal'), 'true');
+    assert.equal(await page.locator('#content').evaluate(e=>e.inert), true);
+    assert.equal(await page.locator('.site-header').evaluate(e=>e.inert), true);
+    assert.equal(await page.locator('#search-input').evaluate(e=>e===document.activeElement), true);
+    await page.keyboard.press('Tab');
+    assert.equal(await page.locator('#search-dialog [data-close]').evaluate(e=>e===document.activeElement), true);
+    await page.keyboard.press('Shift+Tab');
+    assert.equal(await page.locator('#search-input').evaluate(e=>e===document.activeElement), true);
     await page.keyboard.press("Escape");
     await page.locator("#search-dialog").waitFor({ state: "hidden" });
     assert.equal(
@@ -107,6 +115,10 @@ export async function checkBeta3(browser, sites, out, report) {
         .evaluate((e) => getComputedStyle(e).contentVisibility),
       "visible",
     );
+    assert.equal(await page.locator('#content').evaluate(e=>e.inert), false);
+    assert.equal(await page.locator('.site-header').evaluate(e=>e.inert), false);
+    assert.equal(await page.locator('.search-backdrop').count(), 0);
+    assert.equal(await page.locator('[data-menu-toggle]').evaluate(e=>e===document.activeElement), true);
     assert.ok(
       await page.locator(".prose").evaluate((e) => {
         const range = document.createRange();

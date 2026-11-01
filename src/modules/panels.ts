@@ -5,6 +5,7 @@ type Panel = {
 };
 let active: Panel | undefined;
 let finishClosing: (() => void) | undefined;
+let transferShell = false;
 // Modal backdrops cover the page without discarding its long-document layout.
 // Inertness is handled by the native dialog or the mobile shell below.
 export function dismissPanels(restore = false) {
@@ -57,8 +58,54 @@ export function activatePanel(
 export function releasePanel(element: HTMLElement) {
   if (active?.element === element) dismissPanels(true);
 }
+// Search shares the menu's inert subtree instead of asking a native modal to
+// invalidate every descendant of a long article a second time.
+function openSearch(dialog: HTMLDialogElement) {
+  const origin = document.activeElement as HTMLElement;
+  const owned = new Set<HTMLElement>();
+  const backdrop = document.createElement("div");
+  backdrop.className = "search-backdrop";
+  backdrop.setAttribute("aria-hidden", "true");
+  let finished = false;
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    if (finishClosing === finish) finishClosing = undefined;
+    dialog.close();
+    dialog.removeAttribute("aria-modal");
+    backdrop.remove();
+    for (const element of owned) element.inert = false;
+    document.body.classList.remove("panel-lock");
+  };
+  transferShell = true;
+  try {
+    activatePanel(dialog, (animate) => {
+      if (!animate || document.hidden || document.documentElement.dataset.motion === "off" || matchMedia("(prefers-reduced-motion:reduce)").matches) { finish(); return; }
+      return new Promise<void>(resolve => {
+        const animation = dialog.animate([{opacity:1,transform:"translateY(0)"},{opacity:0,transform:"translateY(-6px)"}],{duration:100,easing:"ease-out",fill:"forwards"});
+        let completed = false;
+        const done = () => { if(completed)return;completed=true;if(finishClosing===done)finishClosing=undefined;finish(); animation.cancel(); resolve(); };
+        finishClosing = done;
+        void animation.finished.then(done, done);
+      });
+    }, origin);
+  } finally { transferShell = false; }
+  document.querySelectorAll<HTMLElement>(".site-header,#content,.site-footer,.player,.back-to-top").forEach(element => {
+    if (!element.inert || element.hasAttribute("data-shell-inert")) {
+      owned.add(element);
+      element.inert = true;
+      delete element.dataset.shellInert;
+    }
+  });
+  document.body.classList.add("panel-lock");
+  document.body.append(backdrop);
+  dialog.setAttribute("aria-modal", "true");
+  dialog.addEventListener("close", () => { if(dialog.open)return;finish(); releasePanel(dialog); }, {once:true});
+  dialog.show();
+}
 export function openModal(dialog: HTMLDialogElement) {
   if (dialog.open) return;
+  if (dialog.id === "search-dialog") { openSearch(dialog); return; }
   activatePanel(dialog, (animate) => {
     if (!dialog.open) return;
     if (
@@ -118,6 +165,7 @@ export function mountShell(signal: AbortSignal) {
     header.classList.remove("rail-open");
     menu.setAttribute("aria-expanded", "false");
     rail.setAttribute("aria-expanded", "false");
+    if (transferShell) return;
     document
       .querySelectorAll<HTMLElement>("[data-shell-inert]")
       .forEach((el) => {

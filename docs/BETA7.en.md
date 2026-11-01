@@ -18,3 +18,5 @@ Choose `terrain` or `flow`, scope `site` or `home`. A custom SVG/transparent PNG
 The 840ms local reveal overlaps the full-screen reveal. Text remains ordinary readable DOM. History restoration, theme changes, late modules/images, reduced motion and data saving preserve the finished static image. Subtle/off do not request the print module. Cross-origin artwork and photographs use an edge scan without reading pixels; SVG source is never injected.
 
 Run `npm run verify:fast`, then `npm run verify`. Build a package with `npm run pack:theme`, and pass that exact tarball path and SHA-256 to `npm run verify:package -- <path> <sha256>`. Installation runs outside the repository. New screenshots remain candidates rather than automatically replacing approved baselines.
+
+Hosting: generation also emits byte-equivalent HTML `.gz` sidecars, including only the public encrypted output for protected pages. Enable `gzip_static on; gzip_vary on;` with nginx, or equivalent CDN compression, and send `Content-Encoding: gzip`. Original HTML remains usable without compression; performance results apply to the documented negotiated-compression conditions.

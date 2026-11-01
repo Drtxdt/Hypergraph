@@ -27,7 +27,7 @@ const report = {
   version: JSON.parse(await fs.readFile("package.json", "utf8")).version,
   date: new Date().toISOString(),
   passed: false,
-  conditions: { cpu: 4, latency: 150, downloadMbps: 1.6, viewport: "390x844", compression: "Shipped gzip sidecars (main JS/CSS and contour SVG) negotiated with Accept-Encoding; other resources uncompressed" },
+  conditions: { cpu: 4, latency: 150, downloadMbps: 1.6, viewport: "390x844", compression: "Generated HTML and shipped asset gzip sidecars (main JS/CSS and contour SVG) negotiated with Accept-Encoding; other resources uncompressed" },
   checks: [],
   buildMode: process.argv.includes("--skip-build") ? "diagnostic-skip" : "full",
 };
