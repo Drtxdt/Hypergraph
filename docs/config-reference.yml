@@ -1,4 +1,13 @@
+# Generated from config.schema.json; copy only the overrides you need.
+preset: endfield
 color_mode: auto
+music:
+  enable: false
+  src: /audio/bgm.mp3
+  title: Background music
+  playlist: []
+  volume: 0.7
+  endpoint: ''
 menu:
   - label: home
     url: /
@@ -58,19 +67,25 @@ home:
     action:
       label: ''
       url: ''
+    artwork:
+      enable: true
+      image:
+        src: ''
+        mobile: ''
+        dark: ''
+        mobile_dark: ''
+        alt: ''
+        caption: ''
+        fallback: ''
+        fit: cover
+        position: 50% 50%
+        mobile_position: 50% 50%
   topics: auto
 navigation: true
 search: true
 toc: true
 reading_mode: true
 math: katex
-music:
-  enable: false
-  src: ''
-  title: Background music
-  playlist: []
-  volume: 0.7
-  endpoint: ''
 comments:
   enable: false
   provider: waline
@@ -268,7 +283,6 @@ chat:
   button: false
   hide_on_scroll: false
 ads: []
-preset: endfield
 appearance:
   favicon: /hypergraph.svg
   avatar: ''
@@ -296,6 +310,12 @@ appearance:
   intro: always
   intro_scope: home
   cover_fit: cover
+  contour:
+    enable: true
+    style: terrain
+    opacity: 0.18
+    scope: site
+  laser_print: true
 interaction:
   translate: false
   spacing: false

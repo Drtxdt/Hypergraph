@@ -1,12 +1,13 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import os from "node:os";
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import yaml from "js-yaml";
 import crypto from "node:crypto";
 import { chromium } from "playwright";
 import { serve } from "./verify/fixture.mjs";
-const root = path.resolve(".local/install-v21-" + Date.now());
+const root = await fs.mkdtemp(path.join(os.tmpdir(), "hypergraph-install-"));
 await fs.mkdir(root, { recursive: true });
 process.on('uncaughtException', async error => {
   await fs.writeFile('.local/install-v21-report.json', JSON.stringify({passed:false,root,error:error.stack},null,2));

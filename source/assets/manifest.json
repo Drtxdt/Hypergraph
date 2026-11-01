@@ -1021,7 +1021,7 @@
     "isDynamicEntry": true
   },
   "src/modules/laser-print.ts": {
-    "file": "chunk-laser-print-PkEzjAX5.js",
+    "file": "chunk-laser-print-k4HMB7Ba.js",
     "name": "laser-print",
     "src": "src/modules/laser-print.ts",
     "isDynamicEntry": true
@@ -1078,7 +1078,7 @@
     ]
   },
   "src/modules/search.ts": {
-    "file": "chunk-search-BsB0me-V.js",
+    "file": "chunk-search-d2vXcK4_.js",
     "name": "search",
     "src": "src/modules/search.ts",
     "isDynamicEntry": true,

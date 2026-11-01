@@ -90,8 +90,10 @@ export async function checkBeta3(browser, sites, out, report) {
       .evaluate((e) => ({
         height: e.getBoundingClientRect().height,
         visibility: getComputedStyle(e).contentVisibility,
+        inert: e.inert,
       }));
-    assert.equal(covered.visibility, "hidden");
+    assert.equal(covered.visibility, "visible", "opening a panel must retain long-document layout");
+    assert.equal(covered.inert, true, "covered content must remain unavailable to interaction");
     assert.ok(
       Math.abs(covered.height - before) < 2,
       "covered page must keep its exact height",

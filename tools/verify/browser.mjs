@@ -346,6 +346,7 @@ export async function performance(
   sites,
   report,
   visits = ["first", "subsequent"],
+  names = null,
 ) {
   report.performance = [];
   const failures=[];
@@ -360,7 +361,7 @@ export async function performance(
         ["atmosphere-dark", sites.atmosphere.url, sites.atmosphere],
         ["long", sites.main.url + route(sites.main, "long"), sites.main],
         ["standalone", sites.main.url + "standalone/", sites.main],
-      ]) {
+      ].filter(([name])=>!names||names.includes(name))) {
         const context = await browser.newContext({
           viewport: { width: 390, height: 844 },
           isMobile: true,
@@ -429,10 +430,14 @@ export async function performance(
             // must not replace the actual featured title in this measurement.
             const title = document.querySelector('[data-masthead-title]') ||
               document.querySelector('.article-head') || document.querySelector('#content h1');
-            const clearTitle =
-              title &&
-              Number(getComputedStyle(title).opacity) >= 0.99 &&
-              getComputedStyle(title).clipPath === "none";
+            const visibleChain = element => {
+              for(let node=element;node;node=node.parentElement){
+                const style=getComputedStyle(node);
+                if(Number(style.opacity)<.99 || style.visibility==='hidden' || style.display==='none' || (style.clipPath!=='none' && style.clipPath!=='inset(0px)'))return false;
+              }
+              return !!element?.getBoundingClientRect().height;
+            };
+            const clearTitle = title && visibleChain(title);
             if (
               window.metrics.readable === null &&
               document.readyState !== "loading" &&
@@ -606,6 +611,8 @@ export async function performance(
           cssGzip: css,
           fontBytes: font,
           imageBytes: image,
+          imageTransferBytes: await page.evaluate(()=>performance.getEntriesByType('resource').filter(e=>/\.(svg|png|jpg|webp)(\?|$)/.test(e.name)).reduce((sum,e)=>sum+e.transferSize,0)),
+          laser: await page.evaluate(()=>{const el=document.querySelector('.masthead-media,.masthead-artwork');return el?{state:el.dataset.laserState,start:el.dataset.laserStarted,end:el.dataset.laserEnded}:null}),
         });
         await fs.writeFile(path.resolve('.local/verification/performance-partial.json'), JSON.stringify(report.performance, null, 2));
         gate(

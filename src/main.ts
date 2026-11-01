@@ -60,7 +60,11 @@ if (extras.music.enable)
 const appearance: import("./modules/appearance").Appearance = JSON.parse(
   document.querySelector("#hg-config")!.textContent!,
 ).appearance;
-async function mountAppearance(root: HTMLElement, signal: AbortSignal, transition = false) {
+async function mountAppearance(
+  root: HTMLElement,
+  signal: AbortSignal,
+  transition = false,
+) {
   if (signal.aborted) return;
   if (
     appearance.fallback_image ||
@@ -69,12 +73,21 @@ async function mountAppearance(root: HTMLElement, signal: AbortSignal, transitio
     appearance.cover_tint
   ) {
     const module = await import("./modules/appearance");
-    if (!signal.aborted) module.mount(root, transition ? { ...appearance, motion: "off" } : appearance, signal);
+    if (!signal.aborted)
+      module.mount(
+        root,
+        transition ? { ...appearance, motion: "off" } : appearance,
+        signal,
+      );
   }
 }
 let pageController = new AbortController();
 if (document.documentElement.classList.contains("intro-active"))
-  void import("./modules/intro").then(m => m.mount(globalController.signal)).catch(() => (window as Window & { __hgIntroFinish?: () => void }).__hgIntroFinish?.());
+  void import("./modules/intro")
+    .then((m) => m.mount(globalController.signal))
+    .catch(() =>
+      (window as Window & { __hgIntroFinish?: () => void }).__hgIntroFinish?.(),
+    );
 
 let epoch = 0;
 async function mountUnlocked(root: HTMLElement, signal: AbortSignal) {
@@ -137,11 +150,30 @@ async function mountPage(focus = false) {
   const version = ++epoch;
   const root = document.querySelector<HTMLElement>("#content")!;
   void mountAppearance(root, signal, focus);
-  if (appearance.laser_print && appearance.motion === "cinematic" && root.querySelector('.masthead-media,.masthead-artwork') && !matchMedia('(prefers-reduced-motion:reduce)').matches && !(navigator as Navigator & {connection?:{saveData?:boolean}}).connection?.saveData) {
-    const requested=performance.now();
-    void import('./modules/laser-print').then(module=>{
-      if(!signal.aborted && performance.now()-requested<200) module.mount(root,signal,focus);
-    });
+  if (
+    appearance.laser_print &&
+    appearance.motion === "cinematic" &&
+    root.querySelector(".masthead-media,.masthead-artwork") &&
+    !matchMedia("(prefers-reduced-motion:reduce)").matches &&
+    !(navigator as Navigator & { connection?: { saveData?: boolean } })
+      .connection?.saveData
+  ) {
+    const requested = performance.now();
+    void import("./modules/laser-print")
+      .then((module) => {
+        if (!signal.aborted && performance.now() - requested < 200)
+          module.mount(root, signal, focus);
+        else if (!signal.aborted)
+          root.querySelector<HTMLElement>(
+            ".masthead-media,.masthead-artwork",
+          )!.dataset.laserState = "module-late";
+      })
+      .catch(() => {
+        if (!signal.aborted)
+          root.querySelector<HTMLElement>(
+            ".masthead-media,.masthead-artwork",
+          )!.dataset.laserState = "module-error";
+      });
   }
 
   if (
@@ -159,12 +191,12 @@ async function mountPage(focus = false) {
   if (focus) {
     root.focus({ preventScroll: true });
   }
-  if (root.querySelector('[data-utility]')) {
-    const module = await import('./modules/utilities');
+  if (root.querySelector("[data-utility]")) {
+    const module = await import("./modules/utilities");
     if (!signal.aborted) module.mount(root, signal);
   }
-  if (root.querySelector('[data-game-app]')) {
-    const module = await import('./modules/games');
+  if (root.querySelector("[data-game-app]")) {
+    const module = await import("./modules/games");
     if (!signal.aborted) module.mount(root, signal);
   }
   if (root.querySelector(".prose")) {
@@ -271,91 +303,99 @@ if (config.search)
     m.mount(config.root, globalController.signal, config.external_search),
   );
 if (config.navigation) {
-  void Promise.all([import("swup"), import("@swup/head-plugin"), import("./modules/transitions")]).then(
-    ([{ default: Swup }, { default: HeadPlugin }, transitions]) => {
-      const swup = new Swup({
-        containers: ["#content"],
-        animationSelector: false,
-        timeout: 8000,
-        ignoreVisit: (url) =>
-          extras.navigation_exclude.some((prefix: string) =>
-            new URL(url, location.href).pathname.startsWith(
-              config.root + prefix.replace(/^\//, ""),
-            ),
+  void Promise.all([
+    import("swup"),
+    import("@swup/head-plugin"),
+    import("./modules/transitions"),
+  ]).then(([{ default: Swup }, { default: HeadPlugin }, transitions]) => {
+    const swup = new Swup({
+      containers: ["#content"],
+      animationSelector: false,
+      timeout: 8000,
+      ignoreVisit: (url) =>
+        extras.navigation_exclude.some((prefix: string) =>
+          new URL(url, location.href).pathname.startsWith(
+            config.root + prefix.replace(/^\//, ""),
           ),
-        plugins: [new HeadPlugin({ persistAssets: true, awaitAssets: true })],
-      });
-      transitions.mount(swup, appearance.motion, globalController.signal);
-      swup.hooks.replace("fetch:request", async (_visit, { url, options }) => {
-        const response = await fetch(url, options);
-        if (!response.ok) throw Error("Navigation HTTP " + response.status);
-        return response;
-      });
-      swup.hooks.before("content:replace", () => {
-        pageController.abort();
-        epoch++;
-      });
-      swup.hooks.on("page:view", () => mountPage(true));
-      const error = document.querySelector<HTMLElement>("#navigation-error")!;
-      let failedUrl = "";
-      let latestVisit: number | undefined;
-      swup.hooks.on("visit:start", visit => { latestVisit = visit.id; });
-      const fail = (visit: { id?: number; to: { url: string }; from: { url: string } }) => {
-        if (visit.id !== latestVisit) return;
-        failedUrl = visit.to.url;
-        error.hidden = false;
-        swup.classes.clear();
-        history.replaceState(history.state, "", visit.from.url);
-        swup.location.href = new URL(visit.from.url, location.origin).href;
-      };
-      swup.hooks.replace("page:load", async (visit, { options }) => {
-        try {
-          const cached = visit.cache.read
-            ? swup.cache.get(visit.to.url)
-            : undefined;
-          const page = cached || (await swup.fetchPage(visit.to.url, options));
-          if (
-            !new DOMParser()
-              .parseFromString(page.html, "text/html")
-              .querySelector("#content")
-          )
-            throw Error("Missing page container");
-          return page;
-        } catch {
-          fail(visit);
-          (visit as typeof visit & { abort: () => void }).abort();
-          return {
-            url: visit.from.url,
-            html: document.documentElement.outerHTML,
-          };
-        }
-      });
-      swup.hooks.replace("visit:fail", fail);
-      swup.hooks.on("visit:start", () => {
-        error.hidden = true;
-      });
-      if (extras.interaction.loading_bar) {
-        swup.hooks.on("visit:start", () =>
-          document.documentElement.classList.add("is-navigating"),
-        );
-        for (const hook of ["visit:end", "visit:abort"] as const)
-          swup.hooks.on(hook, () =>
-            document.documentElement.classList.remove("is-navigating"),
-          );
+        ),
+      plugins: [new HeadPlugin({ persistAssets: true, awaitAssets: true })],
+    });
+    transitions.mount(swup, appearance.motion, globalController.signal);
+    swup.hooks.replace("fetch:request", async (_visit, { url, options }) => {
+      const response = await fetch(url, options);
+      if (!response.ok) throw Error("Navigation HTTP " + response.status);
+      return response;
+    });
+    swup.hooks.before("content:replace", () => {
+      pageController.abort();
+      epoch++;
+    });
+    swup.hooks.on("page:view", () => mountPage(true));
+    const error = document.querySelector<HTMLElement>("#navigation-error")!;
+    let failedUrl = "";
+    let latestVisit: number | undefined;
+    swup.hooks.on("visit:start", (visit) => {
+      latestVisit = visit.id;
+    });
+    const fail = (visit: {
+      id?: number;
+      to: { url: string };
+      from: { url: string };
+    }) => {
+      if (visit.id !== latestVisit) return;
+      failedUrl = visit.to.url;
+      error.hidden = false;
+      swup.classes.clear();
+      history.replaceState(history.state, "", visit.from.url);
+      swup.location.href = new URL(visit.from.url, location.origin).href;
+    };
+    swup.hooks.replace("page:load", async (visit, { options }) => {
+      try {
+        const cached = visit.cache.read
+          ? swup.cache.get(visit.to.url)
+          : undefined;
+        const page = cached || (await swup.fetchPage(visit.to.url, options));
+        if (
+          !new DOMParser()
+            .parseFromString(page.html, "text/html")
+            .querySelector("#content")
+        )
+          throw Error("Missing page container");
+        return page;
+      } catch {
+        fail(visit);
+        (visit as typeof visit & { abort: () => void }).abort();
+        return {
+          url: visit.from.url,
+          html: document.documentElement.outerHTML,
+        };
       }
-      error.querySelector("button")?.addEventListener("click", () => {
-        if (failedUrl) void swup.navigate(failedUrl);
-      });
-      Object.assign(window, {
-        __hypergraph: {
-          swup,
-          get pageEpoch() {
-            return epoch;
-          },
+    });
+    swup.hooks.replace("visit:fail", fail);
+    swup.hooks.on("visit:start", () => {
+      error.hidden = true;
+    });
+    if (extras.interaction.loading_bar) {
+      swup.hooks.on("visit:start", () =>
+        document.documentElement.classList.add("is-navigating"),
+      );
+      for (const hook of ["visit:end", "visit:abort"] as const)
+        swup.hooks.on(hook, () =>
+          document.documentElement.classList.remove("is-navigating"),
+        );
+    }
+    error.querySelector("button")?.addEventListener("click", () => {
+      if (failedUrl) void swup.navigate(failedUrl);
+    });
+    Object.assign(window, {
+      __hypergraph: {
+        swup,
+        get pageEpoch() {
+          return epoch;
         },
-      });
-    },
-  );
+      },
+    });
+  });
 }
 
 mountShell(globalController.signal);

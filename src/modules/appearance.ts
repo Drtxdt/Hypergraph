@@ -6,6 +6,12 @@ export type Appearance = {
   motion: "cinematic" | "subtle" | "off";
   cover_tint?: boolean;
   laser_print?: boolean;
+  contour?: {
+    enable: boolean;
+    style: "terrain" | "flow";
+    opacity: number;
+    scope: "site" | "home";
+  };
 };
 export function mount(
   root: HTMLElement,
@@ -118,7 +124,12 @@ function mountMotion(
       ["[data-masthead-title]", 80],
       [".masthead-action", 120],
     ] as const) {
-      if (options.appearance?.laser_print && cinematic && selector === ".masthead-media") continue;
+      if (
+        options.appearance?.laser_print &&
+        cinematic &&
+        selector === ".masthead-media"
+      )
+        continue;
       if (options.effects?.typewriter && selector === "[data-masthead-title]")
         continue;
       root

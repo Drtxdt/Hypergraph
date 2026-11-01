@@ -5,23 +5,8 @@ type Panel = {
 };
 let active: Panel | undefined;
 let finishClosing: (() => void) | undefined;
-// The covered page keeps its exact geometry, but need not repaint thousands of
-// lines while a full-screen menu or search dialog makes it unavailable.
-function reservePageGeometry() {
-  if (
-    document.body.classList.contains("panel-lock") ||
-    document.querySelector("#search-dialog[open]")
-  )
-    return;
-  const content = document.querySelector<HTMLElement>("#content");
-  if (!content) return;
-  const style = getComputedStyle(content);
-  const height =
-    content.clientHeight -
-    parseFloat(style.paddingTop) -
-    parseFloat(style.paddingBottom);
-  content.style.setProperty("--covered-page-height", `${height}px`);
-}
+// Modal backdrops cover the page without discarding its long-document layout.
+// Inertness is handled by the native dialog or the mobile shell below.
 export function dismissPanels(restore = false) {
   const previous = active;
   active = undefined;
@@ -42,13 +27,13 @@ export function dismissPanels(restore = false) {
         target.getClientRects().length &&
         getComputedStyle(target).visibility !== "hidden"
       )
-        target.focus();
+        target.focus({ preventScroll: true });
       else {
         const menu = document.querySelector<HTMLElement>("[data-menu-toggle]");
         (menu?.getClientRects().length
           ? menu
           : document.querySelector<HTMLElement>(".brand")
-        )?.focus();
+        )?.focus({ preventScroll: true });
       }
     }
   };
@@ -74,7 +59,6 @@ export function releasePanel(element: HTMLElement) {
 }
 export function openModal(dialog: HTMLDialogElement) {
   if (dialog.open) return;
-  reservePageGeometry();
   activatePanel(dialog, (animate) => {
     if (!dialog.open) return;
     if (
@@ -109,6 +93,9 @@ export function openModal(dialog: HTMLDialogElement) {
     });
   });
   dialog.addEventListener("close", () => releasePanel(dialog), { once: true });
+  // The trigger may be inside a menu that has just closed. Avoid native
+  // scroll restoration to that hidden control; our panel manager restores it.
+  (document.activeElement as HTMLElement | null)?.blur();
   dialog.showModal();
 }
 export function mountShell(signal: AbortSignal) {
@@ -146,7 +133,6 @@ export function mountShell(signal: AbortSignal) {
     )
       return;
     clearLeave();
-    if (mq.matches) reservePageGeometry();
     if (active?.element !== nav) activatePanel(nav, close, trigger);
     suppressAuto = false;
     trigger.setAttribute("aria-expanded", "true");
@@ -161,7 +147,10 @@ export function mountShell(signal: AbortSignal) {
             el.dataset.shellInert = "";
           }
         });
-      nav.querySelector<HTMLElement>("a,summary")?.focus();
+      nav.scrollTop = 0;
+      nav
+        .querySelector<HTMLElement>("a,summary")
+        ?.focus({ preventScroll: true });
     } else header.classList.add("rail-open");
   };
   const maybeClose = () => {

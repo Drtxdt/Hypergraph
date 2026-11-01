@@ -5,7 +5,7 @@ An original editorial Hexo theme with light/dark modes, one Endfield-inspired de
 Requires Node.js 22.12+ or 24 and Hexo 7.3 or 8. Install the delivered tarball in your Hexo site, set `theme: hypergraph`, remove other Markdown renderers, and run `hexo clean && hexo generate`. Assets are precompiled; Vite is only needed when developing the theme.
 
 ```sh
-npm install ./hexo-theme-hypergraph-2.1.0-beta.6.tgz
+npm install ./hexo-theme-hypergraph-2.1.0-beta.7.tgz
 npm uninstall hexo-renderer-marked hexo-renderer-markdown-it
 ```
 
@@ -15,7 +15,7 @@ The theme includes its own Markdown-it renderer, server-rendered syntax highligh
 
 Local search, archive/category/tag pages, reading mode, code copying, diagrams, charts, ABC notation, image galleries, collections, comments, share links, rewards, analytics, chat, AI-summary endpoints, feeds, and PWA installation are configurable. Optional modules load only when used. Music starts on visitor interaction and stays alive during enhanced navigation. Network failures preserve the current page and expose Retry.
 
-Create collection data in `source/_data/hypergraph.yml`, keyed by `about`, `friends`, `gallery`, `essay`, `equipment`, `music`, `room`, or `fcircle`. Enable each collection through `pages.<type>.enable`. Items accept title, description, image, URL, date, audio, and status. `pages.fcircle.endpoint` can provide an array, an `items` array, or an `article_data` array.
+Create collection data in `source/_data/hypergraph.yml`, keyed by `about`, `friends`, `gallery`, `essay`, `equipment`, `music`, `room`, or `fcircle`. Enable each collection through `pages.<type>.enable`. About, friends and gallery require structured objects documented in docs/BETA6.en.md; other collections accept arrays with title, description, image, URL, date, audio and status. `pages.fcircle.endpoint` can provide an array, an `items` array, or an `article_data` array.
 
 Waline is the default comment adapter and supports anonymous visitors. Configure a public `comments.server` URL; credentials belong on the server. `deploy/waline` provides the Vercel/PostgreSQL deployment template. Other adapters and their parameters are listed in `docs/SERVICES.md`. Third-party accounts and production endpoints must be configured and tested by the site owner.
 
@@ -36,7 +36,7 @@ npm run build
 npm run pack:theme
 ```
 
-Install the resulting `dist/hexo-theme-hypergraph-2.1.0-beta.6.tgz` in a fresh Hexo site. The consumer needs no Vite dependency. See [beta.6 configuration](docs/BETA6.en.md) and [three recipes](examples/recipes/README.md).
+Install the resulting `dist/hexo-theme-hypergraph-2.1.0-beta.7.tgz` in a fresh Hexo site. The consumer needs no Vite dependency. See [beta.6 configuration](docs/BETA6.en.md) and [three recipes](examples/recipes/README.md).
 
 ## 2.1 entrance motion
 
@@ -46,3 +46,5 @@ Install the resulting `dist/hexo-theme-hypergraph-2.1.0-beta.6.tgz` in a fresh H
 ## beta.6
 
 [Current installation, page data and tools guide](docs/BETA6.en.md). Default navigation now includes eight configurable destinations. Entrance runs alongside image loading: 480ms → 60% hold 600ms → 480ms → full sweep 240ms → fade 600ms. Historical release notes describe their own versions only.
+
+[beta.7 contours and print / 等高线与打印](docs/BETA7.md) · [English](docs/BETA7.en.md)

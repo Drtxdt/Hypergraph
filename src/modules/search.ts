@@ -161,7 +161,7 @@ export function mount(
     "click",
     () => {
       openModal(dialog);
-      input.focus();
+      input.focus({ preventScroll: true });
       if (!input.value.trim())
         status.textContent = t("输入关键词 / Type to search");
     },

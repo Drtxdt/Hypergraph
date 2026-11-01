@@ -10,8 +10,8 @@ const field = (x, y) =>
 const terrain = [];
 const W = 1200,
   H = 600,
-  nx = 100,
-  ny = 50;
+  nx = 80,
+  ny = 40;
 for (let level = -0.5, index = 0; level < 2; level += 0.105, index++) {
   const segments = [];
   for (let y = 0; y < ny; y++)
@@ -68,11 +68,11 @@ const points = [];
 for (let layer = 0; layer < 3; layer++)
   for (let y = 0; y < 40; y++)
     for (let x = 0; x < 40; x++) {
-      if (x > 11 && x < 28 && y > 11 && y < 28) continue;
+      if (x > 8 && x < 31 && y > 8 && y < 31) continue;
       if ((x + y) % 2) continue;
       points.push([
-        600 + (x - y) * 6 + layer * 26,
-        120 + (x + y) * 3 + layer * 65,
+        600 + (x - y) * 6 + layer * 18,
+        120 + (x + y) * 3 + layer * 40,
       ]);
     }
 await fs.mkdir("src/generated", { recursive: true });
@@ -83,22 +83,29 @@ await fs.writeFile(
     ";\n",
 );
 const artwork = svg(
-  points.map(
-    ([x, y]) =>
-      `<circle cx="${x}" cy="${y}" r="2" fill="#74797a" stroke="none"/>`,
-  ),
+  points
+    .filter((_, i) => i % 2 === 0)
+    .map(
+      ([x, y]) =>
+        `<circle cx="${x}" cy="${y}" r="2" fill="#74797a" stroke="none"/>`,
+    ),
 );
 const manifest = {};
 let total = 0;
 await fs.mkdir("source/assets", { recursive: true });
 for (const [key, body] of Object.entries({
   terrain: svg(terrain),
+  terrainMobile: svg(terrain.filter((_, i) => i % 2 === 0)),
   flow: svg(flow),
+  flowMobile: svg(flow.filter((_, i) => i % 2 === 0)),
   artwork,
 })) {
   const name = `${key}-${createHash("sha256").update(body).digest("hex").slice(0, 12)}.svg`;
   await fs.writeFile("source/assets/" + name, body);
-  await fs.writeFile("source/assets/" + name + ".gz", gzipSync(body,{level:9}));
+  await fs.writeFile(
+    "source/assets/" + name + ".gz",
+    gzipSync(body, { level: 9 }),
+  );
   manifest[key] = name;
   total += gzipSync(body).length;
 }

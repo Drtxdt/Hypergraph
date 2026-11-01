@@ -88,7 +88,7 @@ hexo.extend.helper.register("hg_artwork", function () {
       { ...masthead.artwork.image, fit: "contain" },
       "masthead-artwork",
       true,
-    );
+    ).replace('<figure ', '<figure aria-hidden="true" ');
   return `<figure class="masthead-artwork builtin-artwork" aria-hidden="true"><img src="${this.url_for("/assets/" + contours().artwork)}" width="1200" height="600" alt=""></figure>`;
 });
 hexo.extend.helper.register("hg_contour", function (page) {
@@ -99,5 +99,5 @@ hexo.extend.helper.register("hg_contour", function (page) {
     (cfg.scope === "home" && !this.is_home())
   )
     return "";
-  return `<div class="contour-layer ${this.is_home() ? "contour-home" : "contour-band"}" aria-hidden="true" style="--contour-opacity:${cfg.opacity};--contour-image:url('${this.url_for("/assets/" + contours()[cfg.style])}')"></div>`;
+  return `<div class="contour-layer ${this.is_home() ? "contour-home" : "contour-band"}" aria-hidden="true" style="--contour-opacity:${cfg.opacity};--contour-image:url('${this.url_for("/assets/" + contours()[cfg.style])}');--contour-mobile-image:url('${this.url_for("/assets/" + contours()[cfg.style+"Mobile"])}')"></div>`;
 });

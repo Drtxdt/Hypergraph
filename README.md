@@ -12,7 +12,7 @@ npm run build
 npm run pack:theme
 ```
 
-输出为 `dist/hexo-theme-hypergraph-2.1.0-beta.6.tgz`。以下安装命令使用此文件的实际绝对路径；不需要预先存在的发布包。新站可先运行 `npx hexo-cli init my-blog`，进入站点后安装主题。主题消费者不需要 Vite。
+输出为 `dist/hexo-theme-hypergraph-2.1.0-beta.7.tgz`。以下安装命令使用此文件的实际绝对路径；不需要预先存在的发布包。新站可先运行 `npx hexo-cli init my-blog`，进入站点后安装主题。主题消费者不需要 Vite。
 
 [beta.6 字段迁移](docs/BETA6-MIGRATION.md) · [三套成品配方](examples/recipes/README.md)
 
@@ -21,7 +21,7 @@ npm run pack:theme
 在 Hexo 站点目录安装交付的主题包，然后设置站点 `_config.yml` 的 `theme: hypergraph`。Node.js 要求 22.12+ 或 24，Hexo 支持 7.3 与 8。
 
 ```sh
-npm install ./hexo-theme-hypergraph-2.1.0-beta.6.tgz
+npm install ./hexo-theme-hypergraph-2.1.0-beta.7.tgz
 npm uninstall hexo-renderer-marked hexo-renderer-markdown-it
 npx hexo clean
 npx hexo generate
@@ -68,3 +68,5 @@ comments:
 ## beta.6
 
 [Current installation, page data and tools guide](docs/BETA6-MIGRATION.md). Default navigation now includes eight configurable destinations. Entrance runs alongside image loading: 480ms → 60% hold 600ms → 480ms → full sweep 240ms → fade 600ms. Historical release notes describe their own versions only.
+
+[beta.7 contours and print / 等高线与打印](docs/BETA7.md) · [English](docs/BETA7.en.md)

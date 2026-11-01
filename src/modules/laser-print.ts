@@ -14,10 +14,15 @@ export function mount(
     finished = false,
     raf = 0,
     canvas: HTMLCanvasElement | undefined;
-  const stop = () => {
+  target.dataset.laserState = "waiting";
+  const stop = (reason: unknown = "cancelled") => {
+    if (finished) return;
+    target.dataset.laserState =
+      typeof reason === "string" ? reason : "cancelled";
+    target.dataset.laserEnded = String(performance.now());
     finished = true;
     cancelAnimationFrame(raf);
-    canvas?.remove();
+    if(canvas){canvas.width=0;canvas.height=0;canvas.remove();canvas=undefined;}
     target.style.removeProperty("clip-path");
     observer.disconnect();
     mutation.disconnect();
@@ -31,8 +36,8 @@ export function mount(
     attributes: true,
     attributeFilter: ["data-mode"],
   });
-  const cleanup = () => {
-    stop();
+  const cleanup = (reason?: unknown) => {
+    stop(reason);
     observer.disconnect();
     mutation.disconnect();
   };
@@ -45,12 +50,19 @@ export function mount(
     { signal },
   );
   target.addEventListener("hypergraph:media-change", stop, { signal });
+  window.addEventListener("resize", stop, { signal });
+  matchMedia("(prefers-color-scheme:dark)").addEventListener("change", stop, {
+    signal,
+  });
+  document.addEventListener("hypergraph:intro-end",()=>{if(!started)stop("intro-ended-before-reveal");},{once:true,signal});
   const start = () => {
     if (started || finished || signal.aborted || document.hidden) return;
     started = true;
+    const painted=performance.getEntriesByType('paint').find(entry=>entry.name==='first-contentful-paint');
+    if(!navigation && !document.documentElement.classList.contains('intro-active') && painted && performance.now()-painted.startTime>200){stop('already-visible');return;}
     const img = target.querySelector<HTMLImageElement>("img");
     if (!img?.complete || !img.naturalWidth || target.hidden) {
-      stop();
+      stop("media-not-ready");
       return;
     }
     const rect = target.getBoundingClientRect();
@@ -96,17 +108,38 @@ export function mount(
     ) {
       try {
         const sample = document.createElement("canvas");
-        const imageRect=img.getBoundingClientRect();
-        sample.width=120;
-        sample.height=Math.max(1,Math.min(240,Math.round(120*imageRect.height/imageRect.width)));
-        const sc=sample.getContext("2d",{willReadFrequently:true})!;
-        const scale=Math.min(sample.width/img.naturalWidth,sample.height/img.naturalHeight);
-        const iw=img.naturalWidth*scale,ih=img.naturalHeight*scale;
-        sc.drawImage(img,(sample.width-iw)/2,(sample.height-ih)/2,iw,ih);
-        const pixels=sc.getImageData(0,0,sample.width,sample.height).data;
-        for(let y=0;y<sample.height;y++)for(let x=0;x<sample.width;x++)
-          if(pixels[(y*sample.width+x)*4+3]>40)
-            points.push([imageRect.left-rect.left+x/sample.width*imageRect.width,imageRect.top-rect.top+y/sample.height*imageRect.height]);
+        const imageRect = img.getBoundingClientRect();
+        sample.width = 120;
+        sample.height = Math.max(
+          1,
+          Math.min(240, Math.round((120 * imageRect.height) / imageRect.width)),
+        );
+        const sc = sample.getContext("2d", { willReadFrequently: true })!;
+        const scale = Math.min(
+          sample.width / img.naturalWidth,
+          sample.height / img.naturalHeight,
+        );
+        const iw = img.naturalWidth * scale,
+          ih = img.naturalHeight * scale;
+        sc.drawImage(
+          img,
+          (sample.width - iw) / 2,
+          (sample.height - ih) / 2,
+          iw,
+          ih,
+        );
+        const pixels = sc.getImageData(0, 0, sample.width, sample.height).data;
+        for (let y = 0; y < sample.height; y++)
+          for (let x = 0; x < sample.width; x++)
+            if (pixels[(y * sample.width + x) * 4 + 3] > 40)
+              points.push([
+                imageRect.left -
+                  rect.left +
+                  (x / sample.width) * imageRect.width,
+                imageRect.top -
+                  rect.top +
+                  (y / sample.height) * imageRect.height,
+              ]);
       } catch {
         /* Edge scan preserves cross-origin and malformed artwork. */
       }
@@ -114,7 +147,10 @@ export function mount(
     const limit = mobile ? 900 : 1800,
       stride = Math.max(1, Math.ceil(points.length / limit));
     const sampled = points.filter((_, i) => i % stride === 0);
+    canvas.dataset.targetPoints = String(sampled.length);
     const begin = performance.now();
+    target.dataset.laserState = "running";
+    target.dataset.laserStarted = String(begin);
     const draw = (now: number) => {
       if (finished || signal.aborted) return;
       const p = Math.min(1, (now - begin) / 840),
@@ -128,7 +164,7 @@ export function mount(
       ctx.lineWidth = 1;
       let count = 0;
       for (const [x, y] of sampled) {
-        if (Math.abs(y - front) > 18 || count++ >= (mobile ? 300 : 600))
+        if (Math.abs(y - front) > 18 || count++ >= (mobile ? 250 : 500))
           continue;
         ctx.fillRect(x, y, 2, 2);
         if (count % 5 === 0) {
@@ -146,7 +182,7 @@ export function mount(
       }
       canvas!.dataset.progress = String(p);
       if (p < 1) raf = requestAnimationFrame(draw);
-      else cleanup();
+      else cleanup("complete");
     };
     raf = requestAnimationFrame(draw);
   };
@@ -160,7 +196,7 @@ export function mount(
   const nav = performance.getEntriesByType("navigation")[0] as
     PerformanceNavigationTiming | undefined;
   if (nav?.type === "back_forward" || location.hash) {
-    cleanup();
+    cleanup("history-or-anchor");
     return;
   }
   if (document.querySelector("[data-intro]:not([hidden])"))
@@ -169,5 +205,5 @@ export function mount(
       signal,
     });
   else if (!w.__hgIntroResult) start();
-  else cleanup();
+  else cleanup("intro-already-ended");
 }

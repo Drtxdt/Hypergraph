@@ -74,6 +74,7 @@
     height: 100%;
   }
   .contour-layer {
+    background-image: var(--contour-mobile-image);
     background-size: auto 450px;
     background-position: 65% top;
     mask-image: linear-gradient(90deg, transparent, #000);

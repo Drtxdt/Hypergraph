@@ -1,3 +1,5 @@
+import {checkRecipes} from "./verify-recipes.mjs";
+import {checkBeta7} from "./verify-beta7.mjs";
 import {checkBeta6} from "./verify-beta6.mjs";
 import { checkReaderFixes } from "./verify-reader-fixes.mjs";
 import { checkUiPolish, checkIntroCoverage } from "./verify-ui-polish.mjs";
@@ -25,7 +27,7 @@ const report = {
   version: JSON.parse(await fs.readFile("package.json", "utf8")).version,
   date: new Date().toISOString(),
   passed: false,
-  conditions: { cpu: 4, latency: 150, downloadMbps: 1.6, viewport: "390x844", compression: "Shipped main.css.gz/main.js.gz sidecars negotiated with Accept-Encoding; other resources uncompressed" },
+  conditions: { cpu: 4, latency: 150, downloadMbps: 1.6, viewport: "390x844", compression: "Shipped gzip sidecars (main JS/CSS and contour SVG) negotiated with Accept-Encoding; other resources uncompressed" },
   checks: [],
   buildMode: process.argv.includes("--skip-build") ? "diagnostic-skip" : "full",
 };
@@ -71,6 +73,11 @@ try {
     ]);
   }
   const variants = {
+    noImages: {theme:{appearance:{show_cover:false},home:{masthead:{image:{src:"/images/record.svg"},artwork:{image:{src:"/images/print-mark.svg"}}}}}},
+    decorationOff: {theme:{appearance:{contour:{enable:false},laser_print:false},home:{masthead:{artwork:{enable:false}}}}},
+    customArtwork: {theme:{appearance:{intro:"off",contour:{style:"flow"}},home:{masthead:{artwork:{image:{src:"/images/print-mark.svg",mobile:"/images/print-mark.png"}}}}}},
+    laser: {theme:{appearance:{intro:"off"}}},
+    anchor: {root:"/blog/",theme:{home:{masthead:{action:{url:"#latest"}}}}},
     main: {theme:{home:{masthead:{image:{src:"/images/record.svg"}}}}},
     beta5: { defaultMenu:true, theme:{pages:{about:{enable:true,path:'profile/'}}}, data:{
       about:{profile:{name:'记录者',bio:'写作、观察与小型项目。'},projects:[{title:'公开示例',description:'一个可持续维护的记录空间。',url:'/archives/'}],timeline:[{date:'2026',title:'开始记录'}],interests:['设计','技术'],posts:['field-study']},
@@ -161,13 +168,15 @@ try {
         encoding: "utf8",
       }).trim().length > 0,
   };
-  await run(["tools/verify-navigation-v21.mjs"]);
-  await checkBeta6(browser, sites, out, report);
   // Fail early on the real service prerequisite, before expensive UI sampling.
   // Keep the same startup timeout and SQLite backend; do not retry it silently.
   waline = await startWaline(path.join(temp, "waline"), new URL(sites.main.url).origin);
   report.walineStartupMs = waline.startupMs;
   console.log("Waline SQLite ready in " + Math.round(waline.startupMs) + " ms");
+  await run(["tools/verify-navigation-v21.mjs"]);
+  await checkBeta6(browser, sites, out, report);
+  await checkBeta7(browser, sites, out, report);
+  await checkRecipes(browser, sites, out, report);
   await checkBrowser(browser, sites, report, out);
   console.log("Browser functional and visual checks passed");
   const uiFailures = [];

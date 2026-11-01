@@ -13,3 +13,7 @@ background:
   image:
     src: /images/record.svg
   opacity: 0.12
+
+appearance:
+  contour:
+    style: flow

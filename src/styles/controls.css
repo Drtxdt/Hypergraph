@@ -83,9 +83,6 @@
 
 .site-header nav a[aria-current=page]{font-weight:650;background:transparent}
 
-/* Only inaccessible content beneath full-screen panels skips painting. */
-.panel-lock #content,body:has(#search-dialog[open]) #content{content-visibility:hidden;contain-intrinsic-block-size:var(--covered-page-height)}
-@media print{.panel-lock #content,body:has(#search-dialog[open]) #content{content-visibility:visible;contain-intrinsic-block-size:none}}
 
 /* Native disclosure feedback also works before optional action modules load.
    Own the hidden state so Chromium does not freeze completed child animations
