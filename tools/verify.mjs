@@ -13,6 +13,7 @@ import path from "node:path";
 import { spawn, execFileSync } from "node:child_process";
 import os from "node:os";
 import crypto from "node:crypto";
+import {gunzipSync} from "node:zlib";
 import { chromium } from "playwright";
 import { generate, serve, files } from "./verify/fixture.mjs";
 import { checkAdvanced } from "./verify/advanced.mjs";
@@ -127,17 +128,24 @@ try {
     },
   };
   const sites = {};
-  for (const [name, options] of Object.entries(variants)) {
+  for (const [name, options] of Object.entries(variants).sort(([a],[b]) => a === "main" ? -1 : b === "main" ? 1 : 0)) {
     const base = path.join(temp, name);
     await generate(base, options);
     const server = await serve(base, options.root);
     servers.push(server);
     sites[name] = { base, ...server };
     console.log("Prepared " + name);
+    if (name === "main") {
+      // Establish the real service prerequisite before copying every fixture.
+      waline = await startWaline(path.join(temp, "waline"), new URL(server.url).origin);
+      report.walineStartupMs = waline.startupMs;
+      console.log("Waline SQLite ready in " + Math.round(waline.startupMs) + " ms");
+    }
   }
   for (const file of await files(path.join(sites.main.base, "public")))
-    if (/\.(html|json|xml|txt)$/.test(file)) {
-      const data = await fs.readFile(file, "utf8");
+    if (/\.(html|json|xml|txt)(\.gz)?$/.test(file)) {
+      const bytes = await fs.readFile(file);
+      const data = (file.endsWith('.gz') ? gunzipSync(bytes) : bytes).toString('utf8');
       if (/PRIVATE_CANARY_|SECRET_CODE_7329|fixture-password-7329/.test(data))
         throw Error("Private data leaked into " + file);
     }
@@ -168,11 +176,6 @@ try {
         encoding: "utf8",
       }).trim().length > 0,
   };
-  // Fail early on the real service prerequisite, before expensive UI sampling.
-  // Keep the same startup timeout and SQLite backend; do not retry it silently.
-  waline = await startWaline(path.join(temp, "waline"), new URL(sites.main.url).origin);
-  report.walineStartupMs = waline.startupMs;
-  console.log("Waline SQLite ready in " + Math.round(waline.startupMs) + " ms");
   await run(["tools/verify-navigation-v21.mjs"]);
   await checkBeta6(browser, sites, out, report);
   await checkBeta7(browser, sites, out, report);
