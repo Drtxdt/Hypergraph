@@ -298,6 +298,21 @@
                   "default": ""
                 }
               }
+            },
+            "artwork": {
+              "type": "object",
+              "default": {},
+              "additionalProperties": false,
+              "properties": {
+                "enable": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "image": {
+                  "$ref": "#/$defs/responsiveImage",
+                  "default": {}
+                }
+              }
             }
           }
         },
@@ -1753,6 +1768,41 @@
             "contain"
           ],
           "default": "cover"
+        },
+        "contour": {
+          "type": "object",
+          "default": {},
+          "additionalProperties": false,
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "default": true
+            },
+            "style": {
+              "enum": [
+                "terrain",
+                "flow"
+              ],
+              "default": "terrain"
+            },
+            "opacity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.18
+            },
+            "scope": {
+              "enum": [
+                "site",
+                "home"
+              ],
+              "default": "site"
+            }
+          }
+        },
+        "laser_print": {
+          "type": "boolean",
+          "default": true
         }
       }
     },

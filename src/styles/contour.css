@@ -1,0 +1,88 @@
+/* Static contour surfaces never intercept content or change document height. */
+#content {
+  position: relative;
+  isolation: isolate;
+}
+.contour-layer {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 220px;
+  pointer-events: none;
+  z-index: -1;
+  background-image: var(--contour-image);
+  background-size: cover;
+  background-position: center;
+  opacity: var(--contour-opacity);
+  mask-image:
+    linear-gradient(90deg, transparent, #000 52%, #000 90%, transparent),
+    linear-gradient(#000 70%, transparent);
+  mask-composite: intersect;
+}
+.contour-home {
+  height: min(640px, 70vh);
+}
+.site-masthead {
+  position: relative;
+}
+.site-masthead:has(.masthead-artwork):not(:has(.masthead-media)) {
+  grid-template-columns: 5fr 7fr;
+}
+.masthead-artwork {
+  position: relative;
+  margin: 0;
+  align-self: stretch;
+  min-width: 0;
+  pointer-events: none;
+}
+.masthead-artwork > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  position: absolute;
+  inset: 0;
+}
+.masthead-artwork.responsive-media picture {
+  aspect-ratio: 2;
+  object-fit: contain;
+}
+.masthead-artwork.responsive-media img {
+  object-fit: contain;
+}
+.masthead-artwork.responsive-media::before {
+  display: none;
+}
+[data-laser-canvas] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+@media (max-width: 1023px) {
+  .site-masthead:has(.masthead-artwork):not(:has(.masthead-media)) {
+    grid-template-columns: 1fr;
+  }
+  .masthead-artwork {
+    position: absolute;
+    inset: 0 0 0 45%;
+    opacity: 0.22;
+    z-index: -1;
+    overflow: hidden;
+  }
+  .masthead-artwork.responsive-media picture {
+    height: 100%;
+  }
+  .contour-layer {
+    background-size: auto 450px;
+    background-position: 65% top;
+    mask-image: linear-gradient(90deg, transparent, #000);
+  }
+}
+@media print {
+  .contour-layer,
+  .masthead-artwork,
+  [data-laser-canvas] {
+    display: none !important;
+  }
+}

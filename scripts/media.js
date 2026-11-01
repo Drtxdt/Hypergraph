@@ -74,3 +74,30 @@ hexo.extend.helper.register("hg_masthead_action", function () {
     ? "/" + archive
     : "";
 });
+const contours = () => require("../source/assets/contours.json");
+hexo.extend.helper.register("hg_artwork", function () {
+  const cfg = hexo.theme.config,
+    masthead = cfg.home.masthead;
+  if (
+    !masthead.artwork.enable ||
+    (cfg.appearance.show_cover && masthead.image.src)
+  )
+    return "";
+  if (masthead.artwork.image.src && cfg.appearance.show_cover)
+    return this.hg_picture(
+      { ...masthead.artwork.image, fit: "contain" },
+      "masthead-artwork",
+      true,
+    );
+  return `<figure class="masthead-artwork builtin-artwork" aria-hidden="true"><img src="${this.url_for("/assets/" + contours().artwork)}" width="1200" height="600" alt=""></figure>`;
+});
+hexo.extend.helper.register("hg_contour", function (page) {
+  const cfg = hexo.theme.config.appearance.contour;
+  if (
+    !cfg.enable ||
+    page.layout === "utility" ||
+    (cfg.scope === "home" && !this.is_home())
+  )
+    return "";
+  return `<div class="contour-layer ${this.is_home() ? "contour-home" : "contour-band"}" aria-hidden="true" style="--contour-opacity:${cfg.opacity};--contour-image:url('${this.url_for("/assets/" + contours()[cfg.style])}')"></div>`;
+});

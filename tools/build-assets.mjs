@@ -8,6 +8,7 @@ await fs.copyFile(
   "node_modules/@fontsource/archivo/files/archivo-latin-800-normal.woff2",
   "src/fonts/archivo-latin-800-normal.woff2",
 );
+await import("./build-contours.mjs?assets");
 const { build } = await import("vite");
 await build();
 // Ship the exact compressed critical assets used by the static-host benchmark.
@@ -42,3 +43,5 @@ await fs.copyFile(
   "vendor/valine-source-v1.5.3.zip",
   "source/licenses/valine-source-v1.5.3.zip",
 );
+
+await import("./build-contours.mjs");

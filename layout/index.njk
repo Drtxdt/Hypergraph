@@ -9,7 +9,7 @@
 {% if config.author and config.author != config.title %}<span>{{ config.author }}</span>{% endif %}{% if hg().appearance.author_status %}<small>{{ hg().appearance.author_status }}</small>{% endif %}
 {% if masthead_action %}<a class="masthead-action" href="{{ hg_link(masthead_action) }}">{{ masthead.action.label or hg_t('archives') }} {{ hg_icon('arrow') | safe }}</a>{% endif %}
 <div class="home-topics">{% for topic in hg_topics() %}<article><a class="topic-title" href="{{ hg_link(topic.path) }}">{{ topic.name }}{% if topic.count %}<small>{{ topic.count }}</small>{% endif %}</a>{% if topic.description %}<p>{{ topic.description }}</p>{% endif %}{% if topic.latest %}<a class="topic-latest" href="{{ url_for(topic.latest.path) }}">{{ topic.latest.title }} ↗</a>{% endif %}{{ hg_picture(topic.image, 'topic-image') | safe }}</article>{% endfor %}</div></div>
-{{ hg_picture(masthead.image, 'masthead-media', true) | safe }}
+{{ hg_picture(masthead.image, 'masthead-media', true) | safe }}{{ hg_artwork() | safe }}
 </section>{% endif %}
 {% if section == 'featured' and selection.lead %}{% set post = selection.lead %}{% set media = hg_media(post, "home") %}
 <section class="lead {% if media.has_image %}has-image{% else %}text-only{% endif %}" data-fit="{{ media.fit }}" aria-label="{{ hg_t('featured') }}">
