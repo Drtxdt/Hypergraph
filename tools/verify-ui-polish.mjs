@@ -68,6 +68,8 @@ await fs.mkdir(directory, { recursive: true });
     await page.goto(site.url + 'gallery/');
     await page.locator('.album-card').first().click();
     await page.locator('.photo-grid').waitFor();
+    // DOM replacement precedes async page enhancement; test the mounted UI.
+    await page.locator('#content[data-lightbox-mounted]').waitFor();
     await page.locator('.collection-gallery img,.gallery img,.prose img').first().click();
     await page.waitForSelector('.lightbox[open]');
     assert.equal(await page.locator('.lightbox .image-close svg').count(), 1);
