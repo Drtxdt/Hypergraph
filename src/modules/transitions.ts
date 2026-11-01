@@ -100,6 +100,8 @@ export function mount(
   swup.hooks.replace("animation:in:await", async (visit) => {
     if (owner !== visit.id || controller.signal.aborted) return;
     document.documentElement.dataset.transition = "entering";
+    const content = document.querySelector<HTMLElement>("#content");
+    if (content) content.dataset.homeEntered = String(performance.now());
     document.dispatchEvent(new Event("hypergraph:home-enter"));
     const title = document.querySelector(
       "[data-masthead-title], .article-head, .archive-head, #content h1",

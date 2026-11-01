@@ -123,6 +123,14 @@ export async function checkBeta7(browser, sites, out, report) {
           () => document.documentElement.scrollWidth <= innerWidth,
         ),
       );
+      const media = await page.locator('.masthead-artwork').evaluate(el => {
+        const host = el.getBoundingClientRect(), picture = el.querySelector('picture').getBoundingClientRect();
+        return {height: host.height, width: host.width, pictureHeight: picture.height, pictureWidth: picture.width, background: getComputedStyle(el.querySelector('picture')).backgroundColor};
+      });
+      assert.ok(media.height > 0 && media.width > 0);
+      assert.ok(Math.abs(media.height - media.pictureHeight) <= 1);
+      assert.ok(Math.abs(media.width - media.pictureWidth) <= 1);
+      assert.equal(media.background, 'rgba(0, 0, 0, 0)');
       await page.screenshot({ path: path.join(dir, `custom-${width}.png`) });
     } finally {
       await custom.close();
@@ -177,6 +185,8 @@ export async function checkBeta7(browser, sites, out, report) {
     await page.locator('.lead-heading a').click();
     await page.waitForFunction(()=>document.querySelector('[data-page-kind="post"]'));
     await page.waitForFunction(()=>!document.documentElement.dataset.transition);
+    await page.mouse.move(30, 100);
+    await page.waitForFunction(() => document.querySelector('.site-header').classList.contains('rail-open'));
     await page.locator('#site-nav a').first().click();
     await page.waitForFunction(()=>document.querySelector('[data-laser-canvas]'));
     await page.waitForFunction(()=>!document.querySelector('[data-laser-canvas]'));

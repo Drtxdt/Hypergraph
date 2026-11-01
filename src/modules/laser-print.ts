@@ -187,6 +187,13 @@ export function mount(
     raf = requestAnimationFrame(draw);
   };
   if (navigation) {
+    // Dynamic import may settle just after the synchronous Swup entry hook.
+    // Read its page-local timestamp so this visit neither misses nor replays it.
+    if (root.dataset.homeEntered) {
+      if (performance.now() - Number(root.dataset.homeEntered) < 200) start();
+      else cleanup("entry-already-visible");
+      return;
+    }
     document.addEventListener("hypergraph:home-enter", start, {
       once: true,
       signal,

@@ -42,7 +42,11 @@
   inset: 0;
 }
 .masthead-artwork.responsive-media picture {
-  aspect-ratio: 2;
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  aspect-ratio: auto;
+  background: transparent;
   object-fit: contain;
 }
 .masthead-artwork.responsive-media img {
