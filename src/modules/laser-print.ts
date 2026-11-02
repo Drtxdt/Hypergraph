@@ -50,6 +50,7 @@ export function mount(
       canvas.height = 0;
       canvas.remove();
     }
+    delete target!.dataset.printPending;
     media?.style.removeProperty("clip-path");
     target!.classList.remove("print-prepared");
     target!.dataset.laserState = reason;
@@ -238,14 +239,15 @@ export function mount(
     canvas.dataset.bounds = JSON.stringify(bounds);
     // Only concealed decorative content may be prepared for a true reveal.
     if (
-      intro &&
-      getComputedStyle(intro).opacity === "1" &&
+      ((intro && getComputedStyle(intro).opacity === "1") ||
+        (navigation && target!.dataset.printPending === "true")) &&
       target!.classList.contains("masthead-artwork") &&
       media
     ) {
       media.style.clipPath = "inset(100% 0 0)";
       target!.classList.add("print-prepared");
     }
+    delete target!.dataset.printPending;
     prepared = true;
     target!.dataset.laserState = "prepared";
   }

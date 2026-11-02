@@ -111,6 +111,39 @@ try {
     { ...sites.custom, wordmarkUrl: sites.wordmark.url },
     out,
   );
+  // Start on an article/archive so the print chunk is cold on return home.
+  for (const delay of [0, 80, 400]) {
+    const navContext = await browser.newContext();
+    const navPage = await navContext.newPage();
+    navPage.setDefaultTimeout(15000);
+    await navPage.route("**/chunk-laser-print-*.js", async route => {
+      await new Promise(resolve => setTimeout(resolve, delay));
+      await route.continue();
+    });
+    await navPage.goto(sites.wordmark.url + "archives/");
+    await navPage.waitForFunction(() => window.__hypergraph?.swup);
+    await navPage.evaluate(() => {
+      window.printFlashes = [];
+      window.watchPrint = true;
+      const frame = () => {
+        const target = document.querySelector(".masthead-artwork");
+        const media = target?.querySelector(".site-wordmark");
+        if (media && !["complete", "entry-already-visible"].includes(target.dataset.laserState) &&
+            (document.querySelector("#content").dataset.printWindow !== "closed" || ["prepared", "running"].includes(target.dataset.laserState)) &&
+            getComputedStyle(media).visibility !== "hidden" && getComputedStyle(media).clipPath === "none")
+          window.printFlashes.push(target.dataset.laserState || "unprepared");
+        if (window.watchPrint) requestAnimationFrame(frame);
+      };
+      requestAnimationFrame(frame);
+    });
+    await navPage.evaluate(url => window.__hypergraph.swup.navigate(url), sites.wordmark.url);
+    await navPage.waitForFunction(() => ["complete", "entry-already-visible"].includes(document.querySelector(".masthead-artwork")?.dataset.laserState));
+    assert.equal(await navPage.locator(".masthead-artwork").getAttribute("data-laser-state"), delay === 400 ? "entry-already-visible" : "complete");
+    assert.deepEqual(await navPage.evaluate(() => {window.watchPrint=false;return window.printFlashes;}), [], `Return-home flash with ${delay}ms module delay`);
+    assert.equal(await navPage.locator("[data-print-pending]").count(), 0);
+    assert.equal(await navPage.locator("[data-laser-canvas]").count(), 0);
+    await navContext.close();
+  }
   const context = await browser.newContext({
     viewport: { width: 1440, height: 900 },
     recordVideo: { dir: path.join(out, "videos") },

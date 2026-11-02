@@ -18,6 +18,9 @@ export function mount(
     running.clear();
     mask?.remove();
     mask = undefined;
+    document.querySelectorAll<HTMLElement>("[data-print-pending]").forEach((el) => {
+      delete el.dataset.printPending;
+    });
     delete document.documentElement.dataset.transition;
   };
   const animate = async (
@@ -75,6 +78,11 @@ export function mount(
           ? "static"
           : "normal";
       content.dataset.printWindow = "open";
+      const config = JSON.parse(document.querySelector("#hg-config")!.textContent!);
+      if (content.dataset.printVisit === "normal" && mode === "cinematic" && config.appearance?.laser_print) {
+        const artwork = content.querySelector<HTMLElement>(".masthead-artwork");
+        if (artwork) artwork.dataset.printPending = "true";
+      }
     }
   });
   swup.hooks.replace("animation:out:await", async (visit) => {

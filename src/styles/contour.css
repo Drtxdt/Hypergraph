@@ -249,3 +249,6 @@ body:has(#content[data-background-active="false"]) .environment {
   }
   .showcase-variants { display: none; }
 }
+
+[data-print-pending] > picture,
+[data-print-pending] > .site-wordmark { visibility: hidden; }

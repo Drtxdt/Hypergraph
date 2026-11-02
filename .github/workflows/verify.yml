@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        run: [primary, independent]
+        run: [functional, performance]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,7 +35,7 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y fonts-noto-cjk
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: npm run verify:browser
+      - run: npm run verify:browser -- --${{ matrix.run }}-only
         env:
           HG_BROWSER: chromium
       - uses: actions/upload-artifact@v4
@@ -43,8 +43,12 @@ jobs:
         with:
           name: public-verification-${{ matrix.run }}
           path: |
-            .local/verification
-            .local/beta8
+            .local/verification/**/*.json
+            .local/verification/**/*.png
+            .local/verification/**/*.webm
+            .local/beta8/*.json
+            .local/beta8/*.png
+            .local/beta8/videos
   compatibility:
     runs-on: ubuntu-latest
     strategy:

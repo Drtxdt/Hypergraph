@@ -61,6 +61,9 @@ export async function checkAdvanced(browser, sites, report) {
         (flag === "fallback_image" ? "/missing.png" : "/images/field.svg") +
         '" alt="Caption fixture">',
     );
+    // Cover tint needs an explicit cover now that article openings default to text.
+    if (flag === "cover_tint")
+      body = body.replace('<div class="reading-grid', '<figure class="article-cover"><img src="/images/field.svg" alt=""></figure><div class="reading-grid');
     await p.route("**/flag-test/", (r) =>
       r.fulfill({ contentType: "text/html", body }),
     );

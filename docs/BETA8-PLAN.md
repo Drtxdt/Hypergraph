@@ -84,3 +84,11 @@ Validation: `npm run verify:fast` (34 tests), full `node tools/verify.mjs` inclu
 ## Follow-up: text-first article openings
 
 Article covers now default to `none`; the portrait example no longer forces a compact cover. Homepage/list thumbnails and images inside the article body remain unchanged. Explicit cover configuration remains available.
+
+## Follow-up: CI failure and return-home print race
+
+- Both failed jobs in run 41438548573 timed out at `checkAdvanced` waiting for cover tint after article covers defaulted to none. The independent flag fixture now supplies an explicit cover; normal articles still start with text.
+- Swup marks decorative artwork pending synchronously during content replacement. Sampling transfers this state to the media clip before showing the print; late imports, errors and cancelled visits release it to static content. New frame observations cover cold return-home imports at 0/80/400ms.
+- CI splits the former duplicated complete browser runs into functional and performance jobs. All 42 performance samples and existing functional checks remain; performance builds only its four fixtures and does not start the unrelated comment server. Evidence uploads omit generated fixture sites and retain reports, screenshots and videos.
+
+Local validation: 34 unit tests/typecheck and the complete functional suite passed, including the previously failing independent appearance flags, three return-home frame probes, 30 navigation cycles, and nine motion flows. Reviewed desktop/mobile light/dark article openings and updated their baselines. Performance remains a separate required CI job with all original thresholds.

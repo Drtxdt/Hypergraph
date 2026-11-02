@@ -28,6 +28,7 @@ const report = {
   version: JSON.parse(await fs.readFile("package.json", "utf8")).version,
   date: new Date().toISOString(),
   passed: false,
+  suite: process.argv.includes("--performance-only") ? "performance" : process.argv.includes("--functional-only") ? "functional" : "full",
   conditions: { cpu: 4, latency: 150, downloadMbps: 1.6, viewport: "390x844", compression: "Generated HTML and shipped asset gzip sidecars (main JS/CSS and contour SVG) negotiated with Accept-Encoding; other resources uncompressed" },
   checks: [],
   buildMode: process.argv.includes("--skip-build") ? "diagnostic-skip" : "full",
@@ -128,7 +129,9 @@ try {
     },
   };
   const sites = {};
-  let sampled = false;
+  const performanceOnly = process.argv.includes("--performance-only");
+  const functionalOnly = process.argv.includes("--functional-only");
+  let sampled = functionalOnly;
   const startBrowser = async () => {
     if (browser) return;
   browser = await chromium.launch({
@@ -160,13 +163,14 @@ try {
   await run(["tools/verify-navigation-v21.mjs"]);
   };
   for (const [name, options] of Object.entries(variants).sort(([a],[b]) => (["main","content","noCover","atmosphere"].indexOf(a) < 0 ? 99 : ["main","content","noCover","atmosphere"].indexOf(a)) - (["main","content","noCover","atmosphere"].indexOf(b) < 0 ? 99 : ["main","content","noCover","atmosphere"].indexOf(b)))) {
+    if (performanceOnly && !["main", "content", "noCover", "atmosphere"].includes(name)) continue;
     const base = path.join(temp, name);
     await generate(base, options);
     const server = await serve(base, options.root);
     servers.push(server);
     sites[name] = { base, ...server };
     console.log("Prepared " + name);
-    if (name === "main") {
+    if (name === "main" && !performanceOnly) {
       // Establish the real service prerequisite before copying every fixture.
       waline = await startWaline(path.join(temp, "waline"), new URL(server.url).origin);
       report.walineStartupMs = waline.startupMs;
@@ -180,6 +184,7 @@ try {
       console.log("All 42 performance samples passed");
     }
   }
+  if (!performanceOnly) {
   for (const file of await files(path.join(sites.main.base, "public")))
     if (/\.(html|json|xml|txt)(\.gz)?$/.test(file)) {
       const bytes = await fs.readFile(file);
@@ -213,7 +218,7 @@ try {
   await waline.close();
   waline = undefined;
   console.log(
-    "Integrations, appearance, extensions and comments passed; starting isolated performance sampling",
+    "Integrations, appearance, extensions and comments passed",
   );
   if (!sampled) throw Error("Performance samples missing");
   report.assets = {};
@@ -240,6 +245,7 @@ try {
     const hash = crypto.createHash('sha256').update(await fs.readFile(pack)).digest('hex');
     await run(['tools/verify-install-v21.mjs',pack,hash]);
     report.package = {path:pack,sha256:hash,passed:true};
+  }
   }
   report.passed = true;
 } catch (error) {

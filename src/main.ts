@@ -175,10 +175,12 @@ async function mountPage(focus = false) {
           );
       })
       .catch(() => {
-        if (!signal.aborted)
+        if (!signal.aborted) {
+          root.querySelector<HTMLElement>(".masthead-artwork")?.removeAttribute("data-print-pending");
           root.querySelector<HTMLElement>(
             ".masthead-media,.masthead-artwork",
           )!.dataset.laserState = "module-error";
+        }
       });
   }
 

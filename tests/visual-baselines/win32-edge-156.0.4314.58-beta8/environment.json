@@ -8,13 +8,13 @@
     "arch": "x64",
     "os": "10.0.26200",
     "font": "System sans-serif; system monospace for code",
-    "gitCommit": "2294039ace1ae0e6a813ba54ef5496cb74dae275",
+    "gitCommit": "d9d341284510f91a90cff803f018b021446295f4",
     "dirty": true
   },
   "fonts": null,
   "assets": {
-    "source/assets/main.js": "4ee041f26a9b14200b51ec4ce8f5ba1be5d07c44f4936f20eac433ce70fc21e8",
-    "source/assets/main.css": "01bd1587afbc9bd714b97ee57d53819af35a1998032122e094c373c334ceb64a"
+    "source/assets/main.js": "59527e16c0f6b8396ccbac10b40c90cc285ea41136e47144d253ebde7d7b0507",
+    "source/assets/main.css": "9f088a68b59368390899c3833445f9743b0aba20d66034176c29c5a6c5a5b3a1"
   },
-  "review": "Reviewed 2026-11-02 follow-up: twelve static views, 1600ms controlled print frames, and desktop/mobile light/dark public long-form pages; softer terrain and reading edges."
+  "review": "Reviewed 2026-11-02 follow-up: twelve static views, 1600ms controlled print frames, and desktop/mobile light/dark public long-form pages; softer terrain and reading edges. Article views updated after reviewing text-first openings; other compositions unchanged."
 }
