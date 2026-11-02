@@ -99,7 +99,10 @@ export async function checkBeta7(browser, sites, out, report) {
       await page.waitForFunction(
         () => document.querySelector(".masthead-artwork img")?.naturalWidth > 0,
       );
-      await page.waitForTimeout(900);
+      await page.waitForFunction(() => {
+        const state = document.querySelector(".masthead-artwork")?.getAttribute("data-laser-state");
+        return state && !["waiting", "prepared", "running"].includes(state);
+      });
       assert.equal(await page.locator("[data-laser-canvas]").count(), 0);
       assert.equal(
         await page

@@ -89,29 +89,8 @@ for (const [suffix, override] of variants) {
     override,
   );
   themeConfig.home.title = override.home?.title || "记录与连接";
-  themeConfig.menu = [
-    { label: "默认字标", url: baseUrl.href, icon: "home" },
-    { label: "归档", url: "/archives/", icon: "archive" },
-    { label: "影像", url: "/gallery/", icon: "image" },
-    {
-      label: "摄影示例",
-      url: new URL("examples/photography/", baseUrl).href,
-      icon: "image",
-    },
-    {
-      label: "自定义标识",
-      url: new URL("examples/mark/", baseUrl).href,
-      icon: "grid",
-    },
-    {
-      label: "源码",
-      url: "https://github.com/Drtxdt/Hypergraph",
-      icon: "link",
-    },
-  ];
   themeConfig.navigation_exclude = ["examples/"];
   themeConfig.comments = { enable: false };
-  themeConfig.music = { enable: false };
   await fs.writeFile(
     path.join(base, "_config.hypergraph.yml"),
     yaml.dump(themeConfig),
@@ -138,6 +117,14 @@ for (const [suffix, override] of variants) {
   for (const file of await files(path.join(base, "public")))
     if (file.endsWith(".html")) {
       let html = await fs.readFile(file, "utf8");
+      // Demo variants belong in the page, preserving the normal site navigation.
+      const demoLinks = [
+        [baseUrl.href, "默认字标"],
+        [new URL("examples/photography/", baseUrl).href, "摄影示例"],
+        [new URL("examples/mark/", baseUrl).href, "自定义标识"],
+      ];
+      html = html.replace('<div class="home-topics">',
+        `<nav class="showcase-variants" aria-label="演示切换">${demoLinks.map(([url, label]) => `<a href="${url}"${url === new URL(suffix, baseUrl).href ? ' aria-current="page"' : ''}>${label}</a>`).join("")}</nav><div class="home-topics">`);
       for (const link of [
         baseUrl.href,
         new URL("examples/photography/", baseUrl).href,

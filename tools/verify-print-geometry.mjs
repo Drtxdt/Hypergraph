@@ -84,7 +84,7 @@ export async function checkAlignment(browser, site, out) {
         assert.ok(actual.pixels <= 1500000);
         assert.ok(actual.dpr <= 2);
         assert.ok(actual.points <= (width < 1024 ? 900 : 1800));
-        await page.clock.runFor(700);
+        await page.clock.runFor(1400);
         assert.equal(await page.locator("[data-laser-canvas]").count(), 0);
         if (position === "100% 100%")
           await page.screenshot({
@@ -135,7 +135,7 @@ export async function checkAlignment(browser, site, out) {
       }),
       true,
     );
-    await page.clock.runFor(700);
+    await page.clock.runFor(1400);
     await page.close();
   }
 }

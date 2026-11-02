@@ -51,6 +51,8 @@ body:has(#content[data-background-active="false"]) .environment {
 .article-end,
 .standalone-page {
   background: var(--paper);
+  /* Keep text fully opaque; feather only the surrounding paper into terrain. */
+  box-shadow: 0 0 48px 24px var(--paper);
 }
 .site-wordmark {
   display: block;
@@ -157,7 +159,9 @@ body:has(#content[data-background-active="false"]) .environment {
   margin: 16px 0 16px auto;
   background: var(--ink);
   opacity: var(--contour-opacity);
-  mask: var(--contour-band-image) center/cover no-repeat;
+  mask: var(--contour-band-image) center/cover no-repeat,
+    linear-gradient(90deg, transparent, #000 22%, #000 72%, transparent);
+  mask-composite: intersect;
   pointer-events: none;
 }
 @media print {
@@ -169,13 +173,16 @@ body:has(#content[data-background-active="false"]) .environment {
 
 .contour-layer::before {
   mask-image:
-    var(--contour-image), linear-gradient(110deg, transparent 4%, #000 55%);
+    var(--contour-image),
+    linear-gradient(110deg, transparent 4%, #000 55%),
+    linear-gradient(180deg, #000 30%, #0009 64%, transparent 100%);
   mask-composite: intersect;
 }
 .contour-layer::after {
   mask-image:
     var(--contour-lower-image),
-    linear-gradient(90deg, #000 15%, transparent 95%);
+    linear-gradient(90deg, #000 15%, transparent 95%),
+    linear-gradient(180deg, #000 25%, #0009 62%, transparent 100%);
   mask-composite: intersect;
 }
 .masthead-copy,
@@ -187,7 +194,9 @@ body:has(#content[data-background-active="false"]) .environment {
 @media (max-width: 1023px) {
   .contour-layer::before {
     mask-image:
-      var(--contour-mobile-image), linear-gradient(90deg, transparent, #000 75%);
+      var(--contour-mobile-image),
+      linear-gradient(90deg, transparent, #000 75%),
+      linear-gradient(180deg, #000 25%, #0008 60%, transparent);
   }
   .masthead-copy {
     background: linear-gradient(90deg, var(--paper) 65%, transparent);
@@ -201,4 +210,42 @@ body:has(#content[data-background-active="false"]) .environment {
     min-height: 96px;
     max-height: none;
   }
+}
+
+/* Paper halos soften the reading edge without fading text or capturing input. */
+.article-metadata {
+  box-shadow: 0 0 32px 12px var(--paper);
+}
+.showcase-variants {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 8px 20px;
+  margin-top: 20px;
+  font-size: 12px;
+}
+.showcase-variants a {
+  padding-block: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.showcase-variants [aria-current="page"] {
+  border-color: var(--ink);
+}
+@media (max-width: 1023px) {
+  .article-head,
+  .article .reading-grid,
+  .article-end,
+  .standalone-page {
+    box-shadow: 0 0 28px 12px var(--paper);
+  }
+}
+@media print {
+  .article-head,
+  .article .reading-grid,
+  .article-end,
+  .article-metadata,
+  .standalone-page {
+    box-shadow: none;
+  }
+  .showcase-variants { display: none; }
 }

@@ -265,7 +265,7 @@ export function mount(
     target!.dataset.laserStarted = String(begin);
     function draw(now: number) {
       if (finished) return;
-      const p = Math.min(1, (now - begin) / 840),
+      const p = Math.min(1, (now - begin) / 1600),
         scan = Math.max(0, Math.min(1, (p - 0.12) / 0.7)),
         front = bounds.y + bounds.height * (1 - scan);
       canvas!.dataset.progress = String(p);

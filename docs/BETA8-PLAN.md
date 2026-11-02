@@ -72,3 +72,11 @@ The first main release (`fe0ac0c`) passed all eight CI/build/deployment jobs. Li
 The follow-up preloads the entry module and its static dependency graph in the document head. Eligible homepages also preload the print chunk; reduced motion, save-data, disabled decoration, anchors and history retain their guards. A regression delays every JavaScript request by 900ms to verify parallel preparation. A real-network diagnostic with the revised head confirmed print start around 2400ms and completion around 3240ms; arrivals beyond the entrance budget continue to use the specified static fallback.
 
 Follow-up evidence: all 42 controlled performance samples passed with maxima of first readable 2420ms, LCP 2224ms, CLS 0.04335 and interaction 112ms. The delayed-request regression and its real-time recording passed; Node/Hexo/root and timezone matrices passed again. Final acceptance and deployed source identity are recorded by the report and main workflow links above.
+
+## Follow-up: slower print and softer reading edges
+
+- User feedback supersedes the original 840ms local timeline: printing now takes 1600ms; the entrance and preparation window remain unchanged. Controlled-clock frames use 400ms quarters.
+- Public showcase retains the original demo navigation and music control. Variant links move into the homepage content instead of replacing the left rail.
+- Both fixed terrain crops fade at their inward vertical edges; chapter bands fade at their ends. Opaque reading surfaces have broad paper-colored feathering outside their bounds, preserving text contrast and selection. Mobile uses a narrower halo.
+
+Validation: `npm run verify:fast` (34 tests), full `node tools/verify.mjs` including exact-package installation, the beta.8 controlled-clock/lifecycle/30-navigation suite, and public showcase routes/search/assets passed. All 42 performance samples passed: maximum readable 2415.1ms, LCP 2212ms, interaction 56ms, CLS below 0.1. Twelve static baseline images and the public homepage/third-screen reading views at 1440px and 390px in both themes were reviewed. Local Waline cold dependency loading initially exceeded its startup budget; warming the unchanged dependencies restored startup to 1273ms and the full suite passed without relaxing limits.

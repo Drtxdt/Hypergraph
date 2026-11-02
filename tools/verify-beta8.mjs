@@ -78,7 +78,7 @@ try {
         );
         assert.equal(await page.locator("[data-laser-canvas]").count(), 0);
         await page.clock.runFor(2400);
-        for (const [index, advance] of [0, 210, 210, 210, 210, 32].entries()) {
+        for (const [index, advance] of [0, 400, 400, 400, 400, 32].entries()) {
           await page.clock.runFor(advance);
           if (index === 4) await page.clock.runFor(32);
           if (index < 5)
@@ -95,6 +95,7 @@ try {
           .evaluate((e) => ({ ...e.dataset }));
         assert.equal(state.laserState, "complete");
         assert.ok(Number(state.laserStarted) >= 2400);
+        assert.ok(Number(state.laserEnded) - Number(state.laserStarted) >= 1600);
         assert.equal(
           await page.evaluate(
             () => document.documentElement.scrollWidth > innerWidth,
@@ -284,7 +285,7 @@ try {
     false,
   );
   await bg.goto(sites.background.url);
-  await bg.waitForTimeout(3400);
+  await bg.waitForFunction(() => document.querySelector(".masthead-artwork")?.getAttribute("data-laser-state") === "complete");
   await bg.screenshot({ path: path.join(out, "background-home.png") });
   await bg.close();
   await fs.writeFile(

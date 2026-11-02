@@ -4,7 +4,7 @@ The homepage heading still reads `home.title`. The independent wordmark reads th
 
 `appearance.contour` retains `enable`, `style`, `opacity`, and `scope`. Terrain stays in a fixed shell outside page navigation: two corners on desktop and one on mobile. Reading surfaces protect text and code. There is no scroll animation or new particle configuration.
 
-The existing entrance lasts about 2400ms, including the pause at 60%, yellow sweep, and fade. The subsequent 840ms print passes through incident rays, deposition, residue, and a stable result. Photographs keep their base image. Decorative reveals are prepared only while the entrance fully conceals them; late resources remain static.
+The existing entrance lasts about 2400ms, including the pause at 60%, yellow sweep, and fade. The subsequent 1600ms print passes through incident rays, deposition, residue, and a stable result. Photographs keep their base image. Decorative reveals are prepared only while the entrance fully conceals them; late resources remain static.
 
 Reduced motion, data saving, disabled motion, history restoration, skipped entrances, and resource failures retain static content. Without JavaScript, the image or wordmark remains readable. Font, viewport, image candidate, and theme changes end an active print. User SVG files remain images and are never injected as DOM markup.
 
