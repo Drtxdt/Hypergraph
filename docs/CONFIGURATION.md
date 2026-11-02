@@ -100,7 +100,7 @@ menu:
 
 `appearance.intro: session | always | off` defaults to `always`. The intro runs only with `appearance.motion: cinematic`; reduced motion, data saving, history restoration and deep anchors bypass it. `interaction.loading_bar` remains the separate navigation waiting indicator. Desktop navigation expands on hover or keyboard focus; touch devices use the menu button. There is no desktop pin control.
 
-`post.cover_mode: compact | feature | none` defaults to compact and supports per-post overrides. `appearance.intro_scope: home | all` defaults to the first homepage. See BETA6-MIGRATION.md for the current parallel entrance timeline.
+`post.cover_mode: compact | feature | none` defaults to none (text-first article opening) and supports per-post overrides. `appearance.intro_scope: home | all` defaults to the first homepage. See BETA6-MIGRATION.md for the current parallel entrance timeline.
 
 ## beta.6 页面与导航
 

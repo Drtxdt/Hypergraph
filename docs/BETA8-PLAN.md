@@ -80,3 +80,7 @@ Follow-up evidence: all 42 controlled performance samples passed with maxima of 
 - Both fixed terrain crops fade at their inward vertical edges; chapter bands fade at their ends. Opaque reading surfaces have broad paper-colored feathering outside their bounds, preserving text contrast and selection. Mobile uses a narrower halo.
 
 Validation: `npm run verify:fast` (34 tests), full `node tools/verify.mjs` including exact-package installation, the beta.8 controlled-clock/lifecycle/30-navigation suite, and public showcase routes/search/assets passed. All 42 performance samples passed: maximum readable 2415.1ms, LCP 2212ms, interaction 56ms, CLS below 0.1. Twelve static baseline images and the public homepage/third-screen reading views at 1440px and 390px in both themes were reviewed. Local Waline cold dependency loading initially exceeded its startup budget; warming the unchanged dependencies restored startup to 1273ms and the full suite passed without relaxing limits.
+
+## Follow-up: text-first article openings
+
+Article covers now default to `none`; the portrait example no longer forces a compact cover. Homepage/list thumbnails and images inside the article body remain unchanged. Explicit cover configuration remains available.

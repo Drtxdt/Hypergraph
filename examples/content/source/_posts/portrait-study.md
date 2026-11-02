@@ -3,7 +3,6 @@ title: 一张竖幅肖像的封面适配
 date: 2026-10-02 10:00:00
 cover: /images/portrait.jpg
 cover_position: 50% 25%
-cover_mode: compact
 categories: [摄影]
 ---
 ## 焦点与完整图片
