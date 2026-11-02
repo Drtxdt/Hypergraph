@@ -113,3 +113,7 @@ html[data-mode="dark"] .prose figure.highlight,
     white-space: pre-wrap;
   }
 }
+
+/* Long articles should not restyle off-screen toolbar descendants on mode changes. */
+.code-toolbar { content-visibility: auto; contain-intrinsic-size: auto 44px; }
+@media print { .code-toolbar { content-visibility: visible; contain-intrinsic-size: none; } }

@@ -3,23 +3,69 @@
   position: relative;
   isolation: isolate;
 }
+body {
+  isolation: isolate;
+}
+.site-environment {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.site-environment .environment {
+  position: absolute;
+  z-index: 0;
+}
 .contour-layer {
   position: absolute;
-  inset: 0 0 auto;
-  height: 220px;
+  inset: 0;
   pointer-events: none;
-  z-index: -1;
-  background-image: var(--contour-image);
-  background-size: cover;
-  background-position: center;
   opacity: var(--contour-opacity);
-  mask-image:
-    linear-gradient(90deg, transparent, #000 52%, #000 90%, transparent),
-    linear-gradient(#000 70%, transparent);
-  mask-composite: intersect;
 }
-.contour-home {
-  height: min(640px, 70vh);
+.contour-layer::before,
+.contour-layer::after {
+  content: "";
+  position: absolute;
+  width: min(65vw, 850px);
+  height: 70vh;
+  background: var(--ink);
+  mask: var(--contour-image) center / cover no-repeat;
+}
+.contour-layer::before {
+  right: -13%;
+  top: -12%;
+}
+.contour-layer::after {
+  left: -16%;
+  bottom: -16%;
+  mask-image: var(--contour-lower-image);
+  transform: rotate(175deg);
+}
+body:has(#content[data-contour-active="false"]) .contour-layer,
+body:has(#content[data-background-active="false"]) .environment {
+  display: none;
+}
+.article-head,
+.article .reading-grid,
+.article-end,
+.standalone-page {
+  background: var(--paper);
+}
+.site-wordmark {
+  display: block;
+  font:
+    800 clamp(36px, 5vw, 80px)/1.15 system-ui,
+    sans-serif;
+  overflow-wrap: anywhere;
+  color: var(--ink);
+  letter-spacing: normal;
+}
+.wordmark-artwork {
+  display: flex;
+  align-items: center;
+  padding: 24px;
+  border-block: 1px solid var(--line);
 }
 .site-masthead {
   position: relative;
@@ -68,20 +114,25 @@
     grid-template-columns: 1fr;
   }
   .masthead-artwork {
-    position: absolute;
-    inset: 0 0 0 45%;
-    opacity: 0.22;
-    z-index: -1;
-    overflow: hidden;
+    position: relative;
+    min-height: 120px;
+    max-height: 180px;
   }
   .masthead-artwork.responsive-media picture {
     height: 100%;
   }
-  .contour-layer {
-    background-image: var(--contour-mobile-image);
-    background-size: auto 450px;
-    background-position: 65% top;
-    mask-image: linear-gradient(90deg, transparent, #000);
+  .contour-layer::after {
+    display: none;
+  }
+  .contour-layer::before {
+    width: 80vw;
+    height: 55vh;
+    right: -38%;
+    top: -8%;
+    mask-image: var(--contour-mobile-image);
+  }
+  .site-wordmark {
+    font-size: clamp(28px, 8vw, 44px);
   }
 }
 @media print {
@@ -89,5 +140,65 @@
   .masthead-artwork,
   [data-laser-canvas] {
     display: none !important;
+  }
+}
+
+.print-prepared::after {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border-bottom: 1px solid var(--line);
+  pointer-events: none;
+}
+
+.chapter-terrain {
+  height: 28px;
+  width: min(320px, 65%);
+  margin: 16px 0 16px auto;
+  background: var(--ink);
+  opacity: var(--contour-opacity);
+  mask: var(--contour-band-image) center/cover no-repeat;
+  pointer-events: none;
+}
+@media print {
+  .site-environment,
+  .chapter-terrain {
+    display: none !important;
+  }
+}
+
+.contour-layer::before {
+  mask-image:
+    var(--contour-image), linear-gradient(110deg, transparent 4%, #000 55%);
+  mask-composite: intersect;
+}
+.contour-layer::after {
+  mask-image:
+    var(--contour-lower-image),
+    linear-gradient(90deg, #000 15%, transparent 95%);
+  mask-composite: intersect;
+}
+.masthead-copy,
+.lead-copy,
+.record-section,
+.article-metadata {
+  background: var(--paper);
+}
+@media (max-width: 1023px) {
+  .contour-layer::before {
+    mask-image:
+      var(--contour-mobile-image), linear-gradient(90deg, transparent, #000 75%);
+  }
+  .masthead-copy {
+    background: linear-gradient(90deg, var(--paper) 65%, transparent);
+  }
+  .chapter-terrain {
+    height: 18px;
+    margin-block: 8px;
+  }
+  .wordmark-artwork {
+    padding: 16px;
+    min-height: 96px;
+    max-height: none;
   }
 }

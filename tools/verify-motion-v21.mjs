@@ -43,7 +43,7 @@ export async function checkMotionV21(browser, sites, out, report = {}) {
    await visibleOnce(page);
    if(await page.locator('[data-intro]').isVisible())await page.screenshot({path:path.join(dir,`intro-${width}.png`)});
    await ended(page);
-   await page.waitForFunction(()=>document.querySelector('#content').getAnimations({subtree:true}).every(a=>a.playState==='finished'));
+   await page.waitForFunction(()=>!document.querySelector('[data-laser-canvas]')&&document.querySelector('#content').getAnimations({subtree:true}).every(a=>a.playState==='finished'));
    await page.screenshot({path:path.join(dir,`home-${width}-light.png`)});
    const evidence=await page.evaluate(()=>window.introEvidence);
    const frames=await page.evaluate(()=>window.introFrames);
@@ -63,12 +63,12 @@ export async function checkMotionV21(browser, sites, out, report = {}) {
    }
    await page.locator('.lead-link').click();
    await page.waitForURL('**/field-study/');
-   await page.waitForFunction(()=>document.querySelector('.article-head')&&document.querySelector('#content').getAnimations({subtree:true}).every(a=>a.playState==='finished'));
+   await page.waitForFunction(()=>document.querySelector('.article-head')&&!document.querySelector('[data-laser-canvas]')&&document.querySelector('#content').getAnimations({subtree:true}).every(a=>a.playState==='finished'));
    await page.screenshot({path:path.join(dir,`article-${width}-light.png`)});
    for(const [name,site] of [['home',sites.main],['no-cover',sites.noCover]]) {
     await page.goto(site.url,{waitUntil:'domcontentloaded'});await ended(page);
     await page.evaluate(()=>document.documentElement.dataset.mode='dark');
-    await page.waitForFunction(()=>document.querySelector('#content').getAnimations({subtree:true}).every(a=>a.playState==='finished'));
+    await page.waitForFunction(()=>!document.querySelector('[data-laser-canvas]')&&document.querySelector('#content').getAnimations({subtree:true}).every(a=>a.playState==='finished'));
     await page.waitForTimeout(300); // Allow color transitions to reach the screenshot's named final state.
     await page.screenshot({path:path.join(dir,`${name}-${width}-dark.png`)});
     if(name==='no-cover') assert.equal(await page.locator('.lead-media img').count(),0);

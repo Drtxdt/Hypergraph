@@ -62,10 +62,12 @@ export async function checkBrowser(browser, sites, report, out) {
           assert.equal(await page.locator(".entry").count(), 0);
         if (view === "empty")
           assert.equal(await page.locator(".empty-state").count(), 1);
-        if (width === 390 || width === 1440)
+        if (width === 390 || width === 1440) {
+          await page.waitForFunction(() => !document.querySelector("[data-laser-canvas]"));
           await page.screenshot({
             path: path.join(out, `${view}-${width}-${mode}.png`),
           });
+        }
         if (width === 1440 && mode === "light" && view === "home") {
           const client = await context.newCDPSession(page);
           await client.send("DOM.enable");
@@ -511,6 +513,7 @@ export async function performance(
           await page.waitForFunction(() => window.metrics.readable !== null);
         } catch (error) {
           const prefix=path.resolve('.local/verification', `performance-failure-${name}-${visit}-${run+1}`);
+          await page.waitForFunction(() => !document.querySelector("[data-laser-canvas]"));
           await page.screenshot({path:prefix+'.png'});
           await fs.writeFile(prefix+'.json', JSON.stringify(await page.evaluate(()=>({metrics:window.metrics,intro:window.__hgIntroResult,headings:[...document.querySelectorAll('.lead-title,.article-head,#content h1')].map(el=>({text:el.textContent,opacity:getComputedStyle(el).opacity,clip:getComputedStyle(el).clipPath,rect:el.getBoundingClientRect().toJSON()}))})),null,2));
           throw error;

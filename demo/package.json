@@ -2,7 +2,7 @@
   "name": "hypergraph-demo",
   "private": true,
   "scripts": {
-    "build": "hexo clean && hexo generate",
+    "build": "node ../tools/build-showcase.mjs",
     "serve": "hexo server"
   },
   "hexo": {
@@ -14,8 +14,7 @@
     "hexo-generator-category": "^2.0.0",
     "hexo-generator-index": "^4.0.0",
     "hexo-generator-tag": "^2.0.0",
-    "hexo-server": "^3.0.0",
-    "hexo-theme-hypergraph": "file:../dist/hexo-theme-hypergraph-2.0.0.tgz"
+    "hexo-server": "^3.0.0"
   },
   "overrides": {
     "markdown-it": "^14.3.3",

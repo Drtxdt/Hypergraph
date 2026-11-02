@@ -1,5 +1,7 @@
 # Hypergraph
 
+[Live demo / 在线演示](https://drtxdt.github.io/Hypergraph/) · [beta.8](docs/BETA8.md)
+
 原创 Hexo 主题：纸白与深炭灰、局部信号黄、清晰的内容层级。采用统一的终末地启发式构图，提供完整明暗模式、结构化配置和 npm 扩展接口。
 
 ## 从源码制作安装包
@@ -12,7 +14,7 @@ npm run build
 npm run pack:theme
 ```
 
-输出为 `dist/hexo-theme-hypergraph-2.1.0-beta.7.tgz`。以下安装命令使用此文件的实际绝对路径；不需要预先存在的发布包。新站可先运行 `npx hexo-cli init my-blog`，进入站点后安装主题。主题消费者不需要 Vite。
+输出为 `dist/hexo-theme-hypergraph-2.1.0-beta.8.tgz`。以下安装命令使用此文件的实际绝对路径；不需要预先存在的发布包。新站可先运行 `npx hexo-cli init my-blog`，进入站点后安装主题。主题消费者不需要 Vite。
 
 [beta.6 字段迁移](docs/BETA6-MIGRATION.md) · [三套成品配方](examples/recipes/README.md)
 
@@ -21,7 +23,7 @@ npm run pack:theme
 在 Hexo 站点目录安装交付的主题包，然后设置站点 `_config.yml` 的 `theme: hypergraph`。Node.js 要求 22.12+ 或 24，Hexo 支持 7.3 与 8。
 
 ```sh
-npm install ./hexo-theme-hypergraph-2.1.0-beta.7.tgz
+npm install ./hexo-theme-hypergraph-2.1.0-beta.8.tgz
 npm uninstall hexo-renderer-marked hexo-renderer-markdown-it
 npx hexo clean
 npx hexo generate

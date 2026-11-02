@@ -1,0 +1,20 @@
+{
+  "version": "2.1.0-beta.8",
+  "browser": "156.0.4314.58",
+  "environment": {
+    "timezone": "UTC",
+    "node": "v24.18.0",
+    "platform": "win32",
+    "arch": "x64",
+    "os": "10.0.26200",
+    "font": "System sans-serif; system monospace for code",
+    "gitCommit": "cf0d1fcecc34421966b7e60b7a4eb715868dca50",
+    "dirty": true
+  },
+  "fonts": null,
+  "assets": {
+    "source/assets/main.js": "7e6dccf7d9ed96bdec0a1662719e126ff6cb4920a1bded18e92881cdf41f7299",
+    "source/assets/main.css": "f88591c8bb23b3511eda9f2ecb6de8defbe06aff5482d60badc21fae97743804"
+  },
+  "review": "beta.8 baseline: all twelve static views reviewed, plus 60 controlled print frames and real-time entrance/print recording. New browser/version baseline; historical images retained."
+}

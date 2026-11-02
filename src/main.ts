@@ -158,15 +158,21 @@ async function mountPage(focus = false) {
     !(navigator as Navigator & { connection?: { saveData?: boolean } })
       .connection?.saveData
   ) {
-    const requested = performance.now();
+    let entryOpen = true;
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        entryOpen = false;
+      }),
+    );
     void import("./modules/laser-print")
       .then((module) => {
-        if (!signal.aborted && performance.now() - requested < 200)
-          module.mount(root, signal, focus);
-        else if (!signal.aborted)
-          root.querySelector<HTMLElement>(
-            ".masthead-media,.masthead-artwork",
-          )!.dataset.laserState = "module-late";
+        if (!signal.aborted)
+          module.mount(
+            root,
+            signal,
+            focus,
+            focus ? root.dataset.printWindow !== "closed" : entryOpen,
+          );
       })
       .catch(() => {
         if (!signal.aborted)

@@ -1,6 +1,6 @@
 {
   "name": "hexo-theme-hypergraph",
-  "version": "2.1.0-beta.7",
+  "version": "2.1.0-beta.8",
   "description": "An editorial Hexo theme",
   "engines": {
     "node": ">=22.12"
@@ -16,7 +16,8 @@
     "verify:fast": "npm run typecheck && npm test",
     "verify:browser": "node tools/verify.mjs --browser-only",
     "verify:package": "node tools/verify-install-v21.mjs",
-    "pack:theme": "node tools/package-release.mjs"
+    "pack:theme": "node tools/package-release.mjs",
+    "build:showcase": "node tools/build-showcase.mjs"
   },
   "devDependencies": {
     "@fontsource/archivo": "^5.3.0",

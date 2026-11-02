@@ -147,12 +147,12 @@
   height: 100%;
   aspect-ratio: auto;
 }
-main:has(.environment) > :not(.environment) {
+body:has(#content[data-background-active="true"]) main > :is(.site-masthead,.lead,.home-body,.article,.standalone-page,.archive-head,.archive-month) {
   background-color: var(--paper);
 }
-main:has(.environment) .site-masthead,
-main:has(.environment) .home-body,
-main:has(.environment) .lead {
+body:has(#content[data-background-active="true"]) main .site-masthead,
+body:has(#content[data-background-active="true"]) main .home-body,
+body:has(#content[data-background-active="true"]) main .lead {
   padding-inline: 24px;
 }
 #search-dialog,
@@ -195,9 +195,9 @@ main:has(.environment) .lead {
   .lead .lead-heading {
     font-size: 24px;
   }
-  main:has(.environment) .site-masthead,
-  main:has(.environment) .home-body,
-  main:has(.environment) .lead {
+  body:has(#content[data-background-active="true"]) main .site-masthead,
+  body:has(#content[data-background-active="true"]) main .home-body,
+  body:has(#content[data-background-active="true"]) main .lead {
     padding-inline: 12px;
   }
 }

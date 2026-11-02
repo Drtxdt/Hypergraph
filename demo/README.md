@@ -1,17 +1,21 @@
-# 运行演示站
+# 运行与发布演示站
 
-解压完整交付包后，在本目录执行：
+在仓库根目录执行：
 
 ```sh
 npm ci
 npm run build
-npm run serve
+npm run pack:theme
+npm run build:showcase
+node tools/serve.mjs .local/showcase/public 4190 /Hypergraph
 ```
 
-浏览器打开命令输出的本地地址（默认 `http://localhost:4000`）。主题依赖来自相邻 `dist/hexo-theme-hypergraph-2.0.0.tgz`，请保留解压后的目录结构。要求 Node.js 22.12+ 或 24。
+统一构建入口自动读取当前版本，使用 `dist/` 中对应安装包。公开输出位于 `.local/showcase/public`，包括默认字标、摄影和自定义标识三个示例。自定义发布地址作为第二个参数传入：
 
-`public/` 已包含生成的静态站，可交给普通 HTTP 静态服务器预览；不要直接双击 HTML 使用 file 协议浏览。公开样例和八类个人空间数据均在 `source/`，没有真实博客文章或加密测试私文。音乐使用随演示提供的原创短提示音。
+```sh
+node tools/build-showcase.mjs dist/hexo-theme-hypergraph-2.1.0-beta.8.tgz https://drtxdt.github.io/Hypergraph/
+```
 
-修改 `_config.hypergraph.yml` 可调整唯一官方外观 `endfield` 的动效、内容顺序与服务模块。评论默认关闭；接入自己的 Waline 服务地址后启用，部署说明见上级 `docs/COMMENTS.md`。
+本地浏览需要按发布子目录提供服务，或构建时使用 `http://localhost:4190/`。公开内容来自 `demo/source` 和公开素材示例，评论默认关闭。它不读取个人博客、测试私文或迁移备份。
 
-从 Git 克隆开发仓库时，`dist/`、演示站 `public/` 和缓存不纳入版本控制。先在仓库根目录运行 `npm ci`、`npm run build`、`node tools/package-release.mjs`，再进入 `demo/` 执行 `npm ci` 和 `npm run build`。完整交付 ZIP 已包含安装包和静态演示，无需这一步准备。
+GitHub Actions 在所有验证任务通过后，消费安装测试使用的同一份主题包，构建并发布 Pages。`build.json` 记录包散列、提交与发布地址。

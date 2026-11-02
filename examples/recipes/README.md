@@ -1,4 +1,4 @@
-# beta.7 配方
+# beta.8 配方
 
 将任一 YAML 内容合并到站点根目录 `_config.hypergraph.yml`。这些是同一套组件的配置示例，不是额外预设。数组整体替换。
 
@@ -26,4 +26,4 @@
 
 摄影配方同时复制 `photography-featured.md` 到 `source/_posts/`，用独立的肖像记录作为精选；主视觉横图与精选素材不重复。文章明确标注公共示例，不虚构站长经历。
 
-等高线选择 `appearance.contour.style`，浓度 `appearance.contour.opacity`；自定义透明字标使用 `home.masthead.artwork.image`。完整接口见 `docs/BETA7.md`。
+等高线选择 `appearance.contour.style`，浓度 `appearance.contour.opacity`；自定义透明字标使用 `home.masthead.artwork.image`。完整接口见 `docs/BETA8.md`。

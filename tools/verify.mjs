@@ -77,7 +77,7 @@ try {
     noImages: {theme:{appearance:{show_cover:false},home:{masthead:{image:{src:"/images/record.svg"},artwork:{image:{src:"/images/print-mark.svg"}}}}}},
     decorationOff: {theme:{appearance:{contour:{enable:false},laser_print:false},home:{masthead:{artwork:{enable:false}}}}},
     customArtwork: {theme:{appearance:{intro:"off",contour:{style:"flow"}},home:{masthead:{artwork:{image:{src:"/images/print-mark.svg",mobile:"/images/print-mark.png"}}}}}},
-    laser: {theme:{appearance:{intro:"off"}}},
+    laser: {theme:{appearance:{intro:"always"}}},
     anchor: {root:"/blog/",theme:{home:{masthead:{action:{url:"#latest"}}}}},
     main: {theme:{home:{masthead:{image:{src:"/images/record.svg"}}}}},
     beta5: { defaultMenu:true, theme:{pages:{about:{enable:true,path:'profile/'}}}, data:{
@@ -191,6 +191,7 @@ try {
   await startBrowser();
   await checkBeta6(browser, sites, out, report);
   await checkBeta7(browser, sites, out, report);
+  await run(["tools/verify-beta8.mjs"]);
   await checkRecipes(browser, sites, out, report);
   await checkBrowser(browser, sites, report, out);
   console.log("Browser functional and visual checks passed");

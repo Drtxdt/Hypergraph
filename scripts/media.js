@@ -51,13 +51,8 @@ hexo.extend.helper.register("hg_page_banner", function (page) {
 });
 hexo.extend.helper.register("hg_background", function () {
   const cfg = hexo.theme.config.background;
-  if (
-    !cfg.image?.src ||
-    cfg.mode === "paper" ||
-    (cfg.mode === "home" && !this.is_home())
-  )
-    return "";
-  return `<div class="environment" aria-hidden="true" style="opacity:${cfg.opacity}">${this.hg_picture(cfg.image, "environment-media", false, true)}</div>`;
+  if (!cfg.image?.src || cfg.mode === "paper") return "";
+  return `<div class="environment" aria-hidden="true" style="opacity:${cfg.opacity}">${this.hg_picture(cfg.image, "environment-media", false, true).replace(/<noscript>[\s\S]*?<\/noscript>/, cfg.mode === "home" && !this.is_home() ? "" : "$&")}</div>`;
 });
 hexo.extend.helper.register(
   "hg_image_bootstrap",
@@ -88,16 +83,40 @@ hexo.extend.helper.register("hg_artwork", function () {
       { ...masthead.artwork.image, fit: "contain" },
       "masthead-artwork",
       true,
-    ).replace('<figure ', '<figure aria-hidden="true" ');
-  return `<figure class="masthead-artwork builtin-artwork" aria-hidden="true"><img src="${this.url_for("/assets/" + contours().artwork)}" width="1200" height="600" alt=""></figure>`;
+    ).replace("<figure ", '<figure aria-hidden="true" ');
+  if (cfg.site_logo && cfg.appearance.show_cover)
+    return this.hg_picture(
+      { src: cfg.site_logo, fit: "contain" },
+      "masthead-artwork",
+      true,
+    ).replace("<figure ", '<figure aria-hidden="true" ');
+  return `<figure class="masthead-artwork wordmark-artwork" aria-hidden="true"><span class="site-wordmark">${escape(hexo.config.title || "Hypergraph")}</span></figure>`;
 });
 hexo.extend.helper.register("hg_contour", function (page) {
   const cfg = hexo.theme.config.appearance.contour;
-  if (
-    !cfg.enable ||
-    page.layout === "utility" ||
-    (cfg.scope === "home" && !this.is_home())
-  )
-    return "";
-  return `<div class="contour-layer ${this.is_home() ? "contour-home" : "contour-band"}" aria-hidden="true" style="--contour-opacity:${cfg.opacity};--contour-image:url('${this.url_for("/assets/" + contours()[cfg.style])}');--contour-mobile-image:url('${this.url_for("/assets/" + contours()[cfg.style+"Mobile"])}')"></div>`;
+  if (!cfg.enable) return "";
+  return `<div class="contour-layer ${this.is_home() ? "contour-home" : "contour-band"}" aria-hidden="true" style="--contour-opacity:${cfg.opacity};--contour-image:url('${this.url_for("/assets/" + contours()[cfg.style])}');--contour-lower-image:url('${this.url_for("/assets/" + contours()[cfg.style + "Lower"])}');--contour-band-image:url('${this.url_for("/assets/" + contours()[cfg.style + "Band"])}');--contour-mobile-image:url('${this.url_for("/assets/" + contours()[cfg.style + "Mobile"])}')"></div>`;
+});
+
+hexo.extend.helper.register("hg_contour_active", function (page) {
+  const cfg = hexo.theme.config.appearance.contour;
+  return String(
+    cfg.enable &&
+      page.layout !== "utility" &&
+      (cfg.scope === "site" || this.is_home()),
+  );
+});
+hexo.extend.helper.register("hg_background_active", function () {
+  const cfg = hexo.theme.config.background;
+  return String(
+    !!cfg.image?.src &&
+      cfg.mode !== "paper" &&
+      (cfg.mode !== "home" || this.is_home()),
+  );
+});
+
+hexo.extend.helper.register("hg_contour_band", function (page) {
+  if (this.hg_contour_active(page) !== "true") return "";
+  const cfg = hexo.theme.config.appearance.contour;
+  return `<div class="chapter-terrain" aria-hidden="true" style="--contour-band-image:url('${this.url_for("/assets/" + contours()[cfg.style + "Band"])}');--contour-opacity:${cfg.opacity}"></div>`;
 });

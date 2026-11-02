@@ -197,7 +197,7 @@ export async function checkBeta7(browser, sites, out, report) {
   try {
     const page = await plain.newPage();
     await page.goto(sites.laser.url);
-    assert.equal(await page.locator(".builtin-artwork img").count(), 1);
+    assert.equal(await page.locator(".site-wordmark").count(), 1);
     assert.equal(await page.locator(".contour-layer").count(), 1);
     assert.equal(await page.locator("[data-laser-canvas]").count(), 0);
   } finally {
@@ -222,7 +222,7 @@ export async function checkBeta7(browser, sites, out, report) {
     await page.goto(sites.noImages.url);
     await page.waitForTimeout(500);
     assert.equal(await page.locator(".masthead-media").count(), 0);
-    assert.equal(await page.locator(".builtin-artwork img").count(), 1);
+    assert.equal(await page.locator(".site-wordmark").count(), 1);
     assert.equal(
       requests.some((x) => /record\.svg|print-mark\.svg/.test(x)),
       false,
@@ -241,7 +241,7 @@ export async function checkBeta7(browser, sites, out, report) {
       requests.some((x) => x.includes("laser-print")),
       false,
     );
-    assert.equal(await page.locator(".builtin-artwork img").count(), 1);
+    assert.equal(await page.locator(".site-wordmark").count(), 1);
   } finally {
     await reduced.close();
   }

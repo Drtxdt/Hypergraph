@@ -37,7 +37,7 @@ export async function checkRecipes(browser, sites, out, report) {
           try {
             const page = await context.newPage();
             await page.goto(server.url);
-            await page.waitForTimeout(2700);
+            await page.waitForFunction(() => !document.documentElement.classList.contains("intro-active") && !document.querySelector("[data-laser-canvas]"));
             assert.ok(
               await page.evaluate(
                 () => document.documentElement.scrollWidth <= innerWidth,
@@ -48,6 +48,7 @@ export async function checkRecipes(browser, sites, out, report) {
               dir,
               `${name}-${width}-${colorScheme}.png`,
             );
+            await page.waitForFunction(() => !document.querySelector("[data-laser-canvas]"));
             await page.screenshot({ path: screenshot });
             if (width === 390) {
               await page.evaluate(() => {

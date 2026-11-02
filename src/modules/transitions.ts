@@ -49,7 +49,9 @@ export function mount(
     clear();
     controller = new AbortController();
     owner = visit.id;
-    fromHome = document.querySelector("#content")?.getAttribute("data-page-kind") === "home";
+    fromHome =
+      document.querySelector("#content")?.getAttribute("data-page-kind") ===
+      "home";
     visit.animation.wait = true;
     const saveData = (
       navigator as Navigator & { connection?: { saveData?: boolean } }
@@ -64,6 +66,16 @@ export function mount(
       visit.from.url === visit.to.url
     )
       visit.animation.animate = false;
+  });
+  swup.hooks.on("content:replace", (visit) => {
+    const content = document.querySelector<HTMLElement>("#content");
+    if (content) {
+      content.dataset.printVisit =
+        visit.history.popstate || visit.to.hash || !visit.animation.animate
+          ? "static"
+          : "normal";
+      content.dataset.printWindow = "open";
+    }
   });
   swup.hooks.replace("animation:out:await", async (visit) => {
     if (owner !== visit.id || controller.signal.aborted) return;
@@ -131,6 +143,7 @@ export function mount(
       if (mask === exitingMask) mask = undefined;
     }
     await entering;
+    if (content) content.dataset.printWindow = "closed";
     if (owner === visit.id) clear();
   });
   for (const hook of ["visit:abort", "visit:end", "visit:fail"] as const)

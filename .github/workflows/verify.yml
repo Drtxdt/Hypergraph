@@ -42,7 +42,9 @@ jobs:
         if: always()
         with:
           name: public-verification-${{ matrix.run }}
-          path: .local/verification
+          path: |
+            .local/verification
+            .local/beta8
   compatibility:
     runs-on: ubuntu-latest
     strategy:
@@ -89,3 +91,49 @@ jobs:
             .local/install-v21-report.json
             .local/package-inventory.json
             dist/*.tgz
+  showcase:
+    needs: [fast, public-verification, compatibility, package-install]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: package-install
+          path: .local/verified-package
+      - uses: actions/configure-pages@v5
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        id: pages
+      - name: Build public showcase from the verified package
+        env:
+          PAGES_BASE_URL: ${{ steps.pages.outputs.base_url }}
+        run: |
+          PACKAGE="$(find .local/verified-package -name '*.tgz' -print -quit)"
+          node tools/build-showcase.mjs "$PACKAGE" "${PAGES_BASE_URL:-https://drtxdt.github.io/Hypergraph/}"
+      - run: npx playwright install --with-deps chromium
+      - run: node tools/verify-showcase.mjs
+        env:
+          HG_BROWSER: chromium
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: .local/showcase/public
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: showcase
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment
