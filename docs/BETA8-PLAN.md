@@ -64,3 +64,11 @@ The exact source/deployment commit, installed package SHA256 and actual URL are 
 Local evidence: `.local/verification/report.json`, `.local/beta8/report.json`, `.local/compat-v2/report.json`, `.local/timezone-verification/report.json`, `.local/install-v21-report.json`, and `.local/showcase/public/build.json`.
 
 Release continuation: push the validated main commit, wait for the gated Pages deployment, then smoke-test the actual URL, all three entries, article deep links, search and resources. For subsequent maintenance, preserve these gates and create a new reviewed baseline only when the intended visual design or browser changes.
+
+## Public cold-load follow-up
+
+The first main release (`fe0ac0c`) passed all eight CI/build/deployment jobs. Live cold-load verification exposed a network waterfall: the entry module, its static helper and then the print chunk could arrive after the entrance. The page correctly retained static content, but ordinary first visits should prepare earlier.
+
+The follow-up preloads the entry module and its static dependency graph in the document head. Eligible homepages also preload the print chunk; reduced motion, save-data, disabled decoration, anchors and history retain their guards. A regression delays every JavaScript request by 900ms to verify parallel preparation. A real-network diagnostic with the revised head confirmed print start around 2400ms and completion around 3240ms; arrivals beyond the entrance budget continue to use the specified static fallback.
+
+Follow-up evidence: all 42 controlled performance samples passed with maxima of first readable 2420ms, LCP 2224ms, CLS 0.04335 and interaction 112ms. The delayed-request regression and its real-time recording passed; Node/Hexo/root and timezone matrices passed again. Final acceptance and deployed source identity are recorded by the report and main workflow links above.

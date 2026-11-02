@@ -173,6 +173,7 @@ try {
   );
   await context.close();
   for (const name of [
+    "request-chain",
     "late-before-end",
     "late-after-end",
     "skip",
@@ -183,8 +184,17 @@ try {
     const context = await browser.newContext({
       reducedMotion: name === "reduced" ? "reduce" : "no-preference",
       javaScriptEnabled: name !== "no-js",
+      recordVideo:
+        name === "request-chain" || name.startsWith("late")
+          ? { dir: path.join(out, "videos", name) }
+          : undefined,
     });
     const page = await context.newPage();
+    if (name === "request-chain")
+      await page.route("**/*.js", async (route) => {
+        await new Promise((r) => setTimeout(r, 900));
+        await route.continue();
+      });
     if (name.startsWith("late"))
       await page.route("**/chunk-laser-print-*.js", async (r) => {
         await new Promise((resolve) =>
@@ -203,7 +213,7 @@ try {
     await page.waitForTimeout(4000);
     assert.equal(await page.locator("[data-laser-canvas]").count(), 0);
     assert.equal(await page.locator(".site-wordmark").isVisible(), true);
-    if (name === "late-before-end")
+    if (name === "late-before-end" || name === "request-chain")
       assert.equal(
         await page
           .locator(".masthead-artwork")
