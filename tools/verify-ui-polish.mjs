@@ -46,6 +46,10 @@ await fs.mkdir(directory, { recursive: true });
     }
     await page.locator('.audio-controls button').first().click();
     await page.waitForFunction(() => !document.querySelector('.player audio').paused);
+    if (width < 1024) {
+      await page.locator('.player-mini').waitFor({state:'visible'});
+      await page.locator('.player-expand').click();
+    }
     await page.locator('.audio-controls button').last().click();
     assert.equal(await page.locator('.player audio').evaluate(el => el.muted), true);
     await page.locator('.audio-volume input').fill('0.35');

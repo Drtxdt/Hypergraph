@@ -17,6 +17,7 @@
 .archive-month .entry time{font-variant-numeric:tabular-nums;color:var(--muted)}
 .archive-index a[aria-current],.toc a[aria-current=location]{background:var(--ink);color:var(--paper);transition:none;text-decoration:none}
 .toc a[aria-current=location]::before{background:transparent}
+.toc a{transition:none}
 .archive-index a[aria-current],.toc a[aria-current=location]{position:relative;isolation:isolate}
 .archive-index a[aria-current]::after,.toc a[aria-current=location]::after{content:"";position:absolute;inset:0 0 0 auto;width:48px;z-index:-1;pointer-events:none;background:currentColor;opacity:.16;mask:var(--contour-selection-image) right center/auto 100% no-repeat}
 #search-dialog li[data-search-current]{background:var(--ink);color:var(--paper);box-shadow:inset 3px 0 var(--signal)}

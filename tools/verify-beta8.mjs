@@ -112,6 +112,21 @@ try {
     out,
   );
   // Start on an article/archive so the print chunk is cold on return home.
+  {
+    const page = await browser.newPage();
+    const time = new Date("2026-11-02T00:00:00Z");
+    await page.clock.install({time});
+    await page.clock.pauseAt(time);
+    await page.goto(sites.wordmark.url, {waitUntil:"domcontentloaded"});
+    await poll(page, () => document.querySelector('.masthead-artwork')?.dataset.laserState === 'prepared');
+    await page.locator('.masthead-artwork').evaluate(el => el.style.transform = 'translateY(200vh)');
+    await page.clock.runFor(2400);
+    assert.equal(await page.locator('.masthead-artwork').getAttribute('data-laser-state'),'offscreen');
+    assert.equal(await page.locator('[data-laser-canvas]').count(),0);
+    assert.equal(await page.locator('.site-wordmark').evaluate(el=>el.style.clipPath),'');
+    await page.close();
+    results.push({name:'offscreen-before-intro-end',passed:true});
+  }
   for (const delay of [0, 80, 400]) {
     const navContext = await browser.newContext();
     const navPage = await navContext.newPage();

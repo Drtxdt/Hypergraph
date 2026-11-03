@@ -50,6 +50,9 @@ jobs:
         run: |
           node tools/visual-report.mjs
           echo 'Visual evidence is in public-verification-functional/verification/visual-report.html. Review expected changes before accepting a baseline.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Compare reviewed Linux baseline
+        if: matrix.run == 'functional' && hashFiles('tests/visual-baselines/linux-chromium-beta9/environment.json') != ''
+        run: node tools/verify-visual-baseline.mjs tests/visual-baselines/linux-chromium-beta9 .local/verification
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -1,0 +1,17 @@
+{
+  "version": "2.1.0-beta.9",
+  "browser": "156.0.8078.80",
+  "environment": {
+    "timezone": "UTC",
+    "node": "v24.22.1",
+    "platform": "linux",
+    "arch": "x64",
+    "os": "7.0.0-1017-azure",
+    "font": "System sans-serif; system monospace for code",
+    "gitCommit": "1fbeefc5497e5e88a67a8759ea6a32441a784423",
+    "dirty": true
+  },
+  "fontHash": "e49505b86599b6f9eda6f0f49474554367e1a1fdba4167c4b03117f41676b899  -",
+  "review": "Reviewed 2026-11-03: 36 Linux static views and 60 controlled print frames from run 41585333217. Accepted compact merged branding, high-contrast featured surfaces, terrain and protected archive/reading surfaces. Only static completion frames are baselined. A transient third-screen TOC color found during review is corrected separately; that frame is not accepted.",
+  "sourceRun": "https://github.com/Drtxdt/Hypergraph/actions/runs/41585333217"
+}

@@ -28,3 +28,7 @@ Baseline: main 3d2766d. Approved 2026-11-03.
 - First local full runs hit cold Waline initialization timeouts; isolated SQLite startup subsequently passed and functional verification progressed. No service or performance gate was weakened.
 - A concurrent local performance run had three interaction samples above 200ms. An isolated repeat is running; it must pass before release.
 - Fixed Playwright 1.64.1 Linux image, CJK font fingerprint, visual evidence gallery and explicit baseline/actual/diff generation added. Linux baseline review and final deployment remain pending.
+- Follow-up 1fbeefc removed redundant whole-article shadows and broad dynamic menu selectors. All six focused long-article samples passed (maximum interaction 184ms); CI run 41585333217 passed all 42 performance samples, fast checks, both compatibility jobs and the exact-package installation job.
+- Updated the legacy mobile audio verification to expand the mini player before checking mute, volume and seek. Both 1440px and 390px UI-polish suites passed, including no-JS audio controls.
+- Reviewed 36 Linux layout screenshots and 60 print frames from run 41585333217. Accepted twenty static baseline views; caught and removed the previous TOC item's color transition that briefly made its text unreadable after scrolling. The transient third-screen frame was not accepted as a baseline.
+- Final print regression passed, including moving a prepared target offscreen before intro-end: no Canvas starts and the static wordmark is restored.

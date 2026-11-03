@@ -259,8 +259,8 @@ export function mount(
     }
     const current = target!.getBoundingClientRect();
     if (signal.aborted || document.hidden || !target!.isConnected ||
-        current.bottom <= 0 || current.top >= innerHeight ||
-        current.right <= 0 || current.left >= innerWidth) {
+        current.top + bounds.y + bounds.height <= 0 || current.top + bounds.y >= innerHeight ||
+        current.left + bounds.x + bounds.width <= 0 || current.left + bounds.x >= innerWidth) {
       stop("offscreen");
       return;
     }
@@ -302,7 +302,7 @@ export function mount(
         ctx!.fillStyle = band;
         ctx!.fillRect(bounds.x, Math.max(bounds.y, front - width), bounds.width, Math.min(bounds.y + bounds.height, front + width) - Math.max(bounds.y, front - width));
       }
-      const active = points.filter(([, y]) => Math.abs(y - front) < 14);
+      const active = points.filter(([, y]) => Math.abs(y - front) < Math.min(8, Math.max(3, bounds.height * .06)));
       const dots = points.length
         ? active
         : Array.from({ length: innerWidth < 1024 ? 36 : 72 }, (_, i): Point => [
