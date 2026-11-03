@@ -57,6 +57,7 @@ try {
     ]);
     await run(["tools/build-assets.mjs"]);
   }
+  if (!process.argv.includes("--performance-only")) {
   try {
     await fs.access("deploy/waline/node_modules/@waline/vercel/package.json");
   } catch {
@@ -74,6 +75,7 @@ try {
       "--no-audit",
       "--no-fund",
     ]);
+  }
   }
   const variants = {
     noImages: {theme:{appearance:{show_cover:false},home:{masthead:{image:{src:"/images/record.svg"},artwork:{image:{src:"/images/print-mark.svg"}}}}}},

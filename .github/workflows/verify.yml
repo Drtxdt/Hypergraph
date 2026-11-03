@@ -34,7 +34,7 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-      - run: apt-get update && apt-get install -y fonts-noto-cjk
+      - run: apt-get update && apt-get install -y fonts-noto-cjk build-essential
       - run: npm ci
       - name: Verify browser image and record fonts
         run: |

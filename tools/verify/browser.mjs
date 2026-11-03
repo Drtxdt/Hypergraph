@@ -173,7 +173,7 @@ export async function checkBrowser(browser, sites, report, out) {
   await page.locator("[data-player-toggle]").click();
   await page.locator("[data-player-close]").click();
   assert.ok(await page.evaluate(() => !window.savedAudio.paused));
-  assert.equal(await page.locator(".player").isVisible(), false);
+  assert.equal(await page.locator(".player-mini").isVisible(), true, "playing audio retains its compact mobile controls");
   await navigate(long);
   await page.locator(".copy-code").first().waitFor();
   assert.ok((await page.locator(".prose").textContent()).length > 116000);
