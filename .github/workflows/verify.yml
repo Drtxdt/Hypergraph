@@ -40,6 +40,7 @@ jobs:
         run: |
           node -e "if(require('playwright/package.json').version !== '1.64.1') throw Error('Update the pinned browser image alongside Playwright')"
           mkdir -p .local/verification
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           fc-list | sort | sha256sum > .local/verification/fonts.sha256
       - run: npm run verify:browser -- --${{ matrix.run }}-only
         env:
