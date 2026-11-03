@@ -17,6 +17,20 @@ let browser;
 try {
  browser=await chromium.launch({...(process.env.HG_BROWSER_EXECUTABLE ? {executablePath:process.env.HG_BROWSER_EXECUTABLE} : {channel:process.env.HG_BROWSER==='chromium'?undefined:(process.env.HG_BROWSER||(process.platform==='win32'?'msedge':undefined))}),headless:true});
  console.log('Navigation browser: '+browser.version());
+ const touch=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
+ await touch.goto(`http://127.0.0.1:${server.address().port}/without-logo`);
+ await touch.waitForFunction(()=>window.ready);
+ await touch.locator('[data-menu-toggle]').tap();
+ const target=await touch.locator('#site-nav > a').evaluate(link=>{
+  const rect=link.getBoundingClientRect(),x=rect.left+rect.width/2,y=rect.top+rect.height/2;
+  return {x,y,reachable:link.contains(document.elementFromPoint(x,y))};
+ });
+ assert.equal(target.reachable,true,'expanded mobile navigation must be reachable through header overflow');
+ await touch.touchscreen.tap(target.x,target.y);
+ await touch.waitForURL(`http://127.0.0.1:${server.address().port}/`);
+ await touch.waitForFunction(()=>window.ready);
+ assert.equal(await touch.locator('#content').evaluate(e=>e.inert),false,'destination must be unlocked');
+ await touch.close();
  const page=await browser.newPage({viewport:{width:1440,height:900}});
  let releaseModule; const moduleGate=new Promise(resolve=>{releaseModule=resolve;});
  await page.route('**/panels.js',async route=>{await moduleGate;await route.continue();});

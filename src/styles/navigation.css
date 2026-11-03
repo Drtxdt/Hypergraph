@@ -63,4 +63,10 @@
 .site-header .rail-tools button>span{transition:opacity 160ms}
 }
 
-.site-header{overflow-x:hidden;scrollbar-width:none}.site-header::-webkit-scrollbar{display:none}
+@media(min-width:1024px) and (hover:hover){
+  .site-header{overflow-x:hidden;scrollbar-width:none}
+  .site-header::-webkit-scrollbar{display:none}
+}
+@media(max-width:1023px), (hover:none){
+  .site-header{overflow:visible}
+}
