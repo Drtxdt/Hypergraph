@@ -72,12 +72,14 @@ export async function checkBeta3(browser, sites, out, report) {
     await page.goto(sites.main.url + routes["field-study"]);
     await page.waitForFunction(
       () =>
-        document
+        document.querySelector('.audio-controls') && document
           .querySelector("[data-player-toggle]")
-          .getAttribute("aria-expanded") === "true",
+          .getAttribute("aria-expanded") === "false",
     );
     await page.locator("[data-menu-toggle]").click();
     await page.locator("[data-player-toggle]").click();
+    assert.equal(await page.locator(".player").isVisible(), true);
+    await page.locator("[data-player-close]").click();
     assert.equal(await page.locator(".player").isVisible(), false);
     await page.goto(sites.main.url + routes.long);
     await page.waitForFunction(() => window.__hypergraph?.swup);
