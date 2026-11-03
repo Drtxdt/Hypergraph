@@ -21,23 +21,34 @@ jobs:
       - run: npm ci
       - run: npm run verify:fast
   public-verification:
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
         run: [functional, performance]
     runs-on: ubuntu-latest
+    container: mcr.microsoft.com/playwright:v1.64.1-noble
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
           cache: npm
-      - run: sudo apt-get update && sudo apt-get install -y fonts-noto-cjk
+      - run: apt-get update && apt-get install -y fonts-noto-cjk
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      - name: Verify browser image and record fonts
+        run: |
+          node -e "if(require('playwright/package.json').version !== '1.64.1') throw Error('Update the pinned browser image alongside Playwright')"
+          mkdir -p .local/verification
+          fc-list | sort | sha256sum > .local/verification/fonts.sha256
       - run: npm run verify:browser -- --${{ matrix.run }}-only
         env:
           HG_BROWSER: chromium
+      - name: Publish visual evidence index
+        if: always() && matrix.run == 'functional'
+        run: |
+          node tools/visual-report.mjs
+          echo 'Visual evidence is in public-verification-functional/verification/visual-report.html. Review expected changes before accepting a baseline.' >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -46,6 +57,8 @@ jobs:
             .local/verification/**/*.json
             .local/verification/**/*.png
             .local/verification/**/*.webm
+            .local/verification/**/*.html
+            .local/verification/*.sha256
             .local/beta8/*.json
             .local/beta8/*.png
             .local/beta8/videos

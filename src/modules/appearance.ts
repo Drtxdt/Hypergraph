@@ -127,7 +127,7 @@ function mountMotion(
       if (
         options.appearance?.laser_print &&
         cinematic &&
-        selector === ".masthead-media"
+        (selector === ".masthead-media" || (selector === "[data-masthead-title]" && root.querySelector(".merged-brand")))
       )
         continue;
       if (options.effects?.typewriter && selector === "[data-masthead-title]")

@@ -257,12 +257,21 @@ export function mount(
       stop("media-not-ready");
       return;
     }
+    const current = target!.getBoundingClientRect();
+    if (signal.aborted || document.hidden || !target!.isConnected ||
+        current.bottom <= 0 || current.top >= innerHeight ||
+        current.right <= 0 || current.left >= innerWidth) {
+      stop("offscreen");
+      return;
+    }
     started = true;
+    canvas!.setAttribute("aria-hidden", "true");
     canvas!.dataset.laserCanvas = "";
     target!.append(canvas!);
     const begin = performance.now(),
       ink =
         getComputedStyle(target!).getPropertyValue("--ink").trim() || "#222";
+    const accent = getComputedStyle(target!).getPropertyValue("--signal").trim() || ink;
     target!.dataset.laserState = "running";
     target!.dataset.laserStarted = String(begin);
     function draw(now: number) {
@@ -283,6 +292,16 @@ export function mount(
         media.style.clipPath = `inset(${Math.max(0, Math.min(100, ((front - ((mediaBox?.top || rect.top) - rect.top)) / (mediaBox?.height || rect.height)) * 100))}% 0 0)`;
       ctx!.clearRect(0, 0, rect.width, rect.height);
       ctx!.globalAlpha = p > 0.82 ? (1 - p) / 0.18 : Math.min(1, p / 0.08);
+      if (img && !points.length) {
+        const width = Math.max(12, bounds.height * .1);
+        const band = ctx!.createLinearGradient(0, front - width, 0, front + width);
+        band.addColorStop(0, "transparent");
+        band.addColorStop(.45, "rgba(0,0,0,.22)");
+        band.addColorStop(.55, "rgba(255,255,255,.35)");
+        band.addColorStop(1, "transparent");
+        ctx!.fillStyle = band;
+        ctx!.fillRect(bounds.x, Math.max(bounds.y, front - width), bounds.width, Math.min(bounds.y + bounds.height, front + width) - Math.max(bounds.y, front - width));
+      }
       const active = points.filter(([, y]) => Math.abs(y - front) < 14);
       const dots = points.length
         ? active
@@ -293,18 +312,18 @@ export function mount(
           ]);
       ctx!.fillStyle = ink;
       for (const [x, y] of dots) ctx!.fillRect(x - 1, y - 1, 3, 3);
-      ctx!.fillStyle = "#ffed00";
+      ctx!.fillStyle = accent;
       ctx!.strokeStyle = ink;
       ctx!.lineWidth = 2;
       for (let i = 0; i < dots.length; i++) {
         const [x, y] = dots[i];
         ctx!.fillRect(x, y, 1.5, 1.5);
-        if (i % 19 === 0) {
+        if ((i * 13 + 7) % 23 < 2) {
           ctx!.beginPath();
-          ctx!.moveTo(x + 12, y + 30);
+          ctx!.moveTo(x + 3 + (i % 7), y + 8 + (i % 13));
           ctx!.lineTo(x, y);
           ctx!.stroke();
-          ctx!.strokeStyle = "#ffed00";
+          ctx!.strokeStyle = accent;
           ctx!.lineWidth = 0.8;
           ctx!.stroke();
           ctx!.strokeStyle = ink;
@@ -312,7 +331,7 @@ export function mount(
         }
       }
       if (p < 0.12) {
-        ctx!.strokeStyle = "#ffed00";
+        ctx!.strokeStyle = accent;
         ctx!.lineWidth = 1;
         for (let i = 1; i <= 5; i++) {
           const x = bounds.x + (bounds.width * i) / 6;

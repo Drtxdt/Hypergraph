@@ -70,11 +70,17 @@ hexo.extend.helper.register("hg_masthead_action", function () {
     : "";
 });
 const contours = () => require("../source/assets/contours.json");
+hexo.extend.helper.register("hg_merged_brand", function () {
+  const cfg = hexo.theme.config, masthead = cfg.home.masthead;
+  return masthead.artwork.enable &&
+    !(cfg.appearance.show_cover && (masthead.image.src || masthead.artwork.image.src || cfg.site_logo)) &&
+    String(cfg.home.title || hexo.config.title).trim() === String(hexo.config.title).trim();
+});
 hexo.extend.helper.register("hg_artwork", function () {
   const cfg = hexo.theme.config,
     masthead = cfg.home.masthead;
   if (
-    !masthead.artwork.enable ||
+    this.hg_merged_brand() || !masthead.artwork.enable ||
     (cfg.appearance.show_cover && masthead.image.src)
   )
     return "";

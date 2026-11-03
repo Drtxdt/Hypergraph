@@ -221,7 +221,7 @@ export function mount(
     table.before(button, scroller);
     scroller.append(table);
   });
-  const links = [...root.querySelectorAll<HTMLAnchorElement>(".toc a")];
+  const links = [...root.querySelectorAll<HTMLAnchorElement>(".toc a,.archive-index a")];
   tocControllers.get(root)?.abort();
   const tocController = new AbortController();
   tocControllers.set(root, tocController);

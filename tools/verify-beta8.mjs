@@ -158,6 +158,7 @@ try {
   await page.goto(sites.wordmark.url + route(sites.wordmark, "long"));
   for (const screens of [0, 1, 3, 1000]) {
     await page.evaluate((n) => scrollTo(0, n * innerHeight), screens);
+      await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
     await page.screenshot({
       path: path.join(out, `article-screen-${screens}.png`),
     });

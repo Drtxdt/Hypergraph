@@ -204,7 +204,7 @@ post:
     - linkedin
     - facebook
     - email
-  cover_mode: compact
+  cover_mode: none
 sidebar:
   enable: false
   order:

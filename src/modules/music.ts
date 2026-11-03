@@ -77,9 +77,19 @@ export async function mount(
     "[data-player-toggle]",
   );
   let panelAnimation: Animation | undefined;
+  let played = false, expanded = false;
+  const expand = document.createElement("button");
+  expand.textContent = t("展开 / Expand");
+  expand.className = "player-expand";
+  host.append(expand);
+  expand.addEventListener("click", () => { activatePanel(host, () => setOpen(false), expand); setOpen(true); }, {signal});
   const setOpen = (open: boolean) => {
-    const entering = open && host.hidden;
-    host.hidden = !open;
+    expanded = open;
+    const mini = !open && played && matchMedia("(max-width:1023px)").matches;
+    const entering = (open || mini) && host.hidden;
+    host.hidden = !(open || mini);
+    host.classList.toggle("player-mini", mini);
+    expand.hidden = !mini;
     if (!open) panelAnimation?.cancel();
     if (entering && !matchMedia("(prefers-reduced-motion: reduce)").matches && document.documentElement.dataset.motion !== "off") {
       panelAnimation?.cancel();
@@ -88,7 +98,7 @@ export async function mount(
     toggle?.setAttribute("aria-expanded", String(open));
     document.documentElement.style.setProperty(
       "--player-space",
-      open && matchMedia("(max-width:1023px)").matches
+      !host.hidden && matchMedia("(max-width:1023px)").matches
         ? host.offsetHeight + "px"
         : "0px",
     );
@@ -96,7 +106,7 @@ export async function mount(
   toggle?.addEventListener(
     "click",
     () => {
-      if (host.hidden) {
+      if (!expanded) {
         activatePanel(host, () => setOpen(false), toggle || undefined);
         setOpen(true);
       } else { releasePanel(host); setOpen(false); }
@@ -125,11 +135,13 @@ export async function mount(
     },
     { signal },
   );
-  const resize = new ResizeObserver(() => setOpen(!host.hidden));
+  const resize = new ResizeObserver(() => setOpen(expanded));
   resize.observe(host);
-  window.addEventListener("resize", () => setOpen(!host.hidden), { signal });
+  window.addEventListener("resize", () => setOpen(expanded), { signal });
   signal.addEventListener("abort", () => { resize.disconnect(); panelAnimation?.cancel(); }, { once: true });
-  setOpen(matchMedia("(max-width:1023px)").matches);
+  setOpen(false);
+  player.addEventListener("play", () => { played = true; if (matchMedia("(max-width:1023px)").matches) { releasePanel(host); setOpen(false); } }, {signal});
+  signal.addEventListener("abort", () => expand.remove(), {once:true});
   let tracks = config.playlist.length
     ? config.playlist
     : [{ src: config.src, title: config.title }];

@@ -57,7 +57,7 @@ body:has(#content[data-background-active="false"]) .environment {
 .site-wordmark {
   display: block;
   font:
-    800 clamp(36px, 5vw, 80px)/1.15 system-ui,
+    800 clamp(36px, 5vw, 80px)/1.15 var(--display-font, system-ui),
     sans-serif;
   overflow-wrap: anywhere;
   color: var(--ink);

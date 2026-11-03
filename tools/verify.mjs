@@ -1,5 +1,6 @@
 import {checkRecipes} from "./verify-recipes.mjs";
 import {checkBeta7} from "./verify-beta7.mjs";
+import {checkBeta9} from "./verify-beta9.mjs";
 import {checkBeta6} from "./verify-beta6.mjs";
 import { checkReaderFixes } from "./verify-reader-fixes.mjs";
 import { checkUiPolish, checkIntroCoverage } from "./verify-ui-polish.mjs";
@@ -196,6 +197,7 @@ try {
   await startBrowser();
   await checkBeta6(browser, sites, out, report);
   await checkBeta7(browser, sites, out, report);
+  await checkBeta9(browser, sites, out, report);
   await run(["tools/verify-beta8.mjs"]);
   await checkRecipes(browser, sites, out, report);
   await checkBrowser(browser, sites, report, out);

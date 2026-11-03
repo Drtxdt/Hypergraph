@@ -902,7 +902,7 @@
     "isDynamicEntry": true
   },
   "src/modules/appearance.ts": {
-    "file": "chunk-appearance-BfByt09y.js",
+    "file": "chunk-appearance-MjTMEA9V.js",
     "name": "appearance",
     "src": "src/modules/appearance.ts",
     "isDynamicEntry": true
@@ -1021,7 +1021,7 @@
     "isDynamicEntry": true
   },
   "src/modules/laser-print.ts": {
-    "file": "chunk-laser-print-D6UweDrY.js",
+    "file": "chunk-laser-print-uwnyWgpY.js",
     "name": "laser-print",
     "src": "src/modules/laser-print.ts",
     "isDynamicEntry": true
@@ -1038,7 +1038,7 @@
     ]
   },
   "src/modules/music.ts": {
-    "file": "chunk-music-o0Fkn9d-.js",
+    "file": "chunk-music-_J2dTwN3.js",
     "name": "music",
     "src": "src/modules/music.ts",
     "isDynamicEntry": true,
@@ -1058,7 +1058,7 @@
     ]
   },
   "src/modules/reading.ts": {
-    "file": "chunk-reading-BQMCzVkX.js",
+    "file": "chunk-reading-CXs29eX1.js",
     "name": "reading",
     "src": "src/modules/reading.ts",
     "isDynamicEntry": true,
@@ -1078,7 +1078,7 @@
     ]
   },
   "src/modules/search.ts": {
-    "file": "chunk-search-d2vXcK4_.js",
+    "file": "chunk-search-nEp5ACVa.js",
     "name": "search",
     "src": "src/modules/search.ts",
     "isDynamicEntry": true,

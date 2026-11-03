@@ -154,6 +154,8 @@ hexo.extend.generator.register("hypergraph-search", (locals) => {
           path: p.path,
           text: plain(p.content),
           tags: p.tags.map((t) => t.name),
+          date: p.date.format("YYYY-MM-DD"),
+          categories: p.categories.map((category) => category.name),
         })),
     ),
   };

@@ -1,0 +1,51 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+export async function checkBeta9(browser, sites, out, report) {
+  const dir = path.join(out, 'beta9');
+  await fs.mkdir(dir, {recursive:true});
+  const context = await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
+  try {
+    const page = await context.newPage();
+    await page.goto(sites.main.url);
+    await page.waitForFunction(() => !document.documentElement.classList.contains('intro-active'));
+    await page.waitForFunction(() => document.querySelector('.player')?.hidden === true);
+    assert.equal(await page.locator('h1').count(),1,'home has one accessible heading');
+    await page.locator('[data-menu-toggle]').tap();
+    const link = page.locator('#site-nav a[href*="archives"]').first();
+    await link.waitFor({state:'visible'});
+    const point = await link.evaluate(el => {const r=el.getBoundingClientRect();const x=r.x+r.width/2,y=r.y+r.height/2;return {x,y,hit:el.contains(document.elementFromPoint(x,y))};});
+    assert.ok(point.hit, 'archive link must be hit-testable');
+    await page.touchscreen.tap(point.x,point.y);
+    await page.waitForURL('**/archives/');
+    await page.waitForFunction(() => !document.querySelector('#content').inert);
+    await page.goto(sites.main.url);
+    await page.waitForFunction(() => !document.documentElement.classList.contains('intro-active'));
+    await page.locator('[data-menu-toggle]').tap();
+    await page.locator('[data-search]').tap();
+    const input=page.locator('#search-dialog input');
+    await input.fill('写');
+    await page.locator('#search-dialog li>a').first().waitFor();
+    assert.ok(await page.locator('.search-metadata').count());
+    assert.ok(await page.locator('#search-dialog mark').count());
+    await input.press('ArrowDown');
+    const target=await page.locator('[data-search-current] a').getAttribute('href');
+    await page.screenshot({path:path.join(dir,'mobile-search.png')});
+    await input.press('Enter');
+    await page.waitForURL(target);
+    assert.equal(await page.locator('#search-dialog').evaluate(el=>el.open),false);
+    await page.goto(sites.main.url);
+    await page.waitForFunction(() => !document.documentElement.classList.contains('intro-active'));
+    await page.locator('[data-menu-toggle]').tap();
+    await page.locator('[data-player-toggle]').tap();
+    await page.locator('.audio-controls button').first().tap();
+    await page.waitForFunction(() => document.querySelector('.player')?.classList.contains('player-mini'));
+    await page.locator('.audio-controls button').first().tap();
+    assert.ok(await page.locator('.player-mini').count(),'paused player remains resumable');
+    await page.locator('.player-expand').tap();
+    assert.equal(await page.locator('.player-mini').count(),0);
+    await page.locator('[data-player-close]').tap();
+    assert.ok(await page.locator('.player-mini').count());
+    report.checks.push('beta9-real-touch-search-keyboard-metadata');
+  } finally {await context.close();}
+}

@@ -3,10 +3,10 @@ import { createHash } from "node:crypto";
 import { gzipSync } from "node:zlib";
 // Original deterministic height field; marching squares with an asymptotic decider.
 const field = (x, y) =>
-  1.8 * Math.exp(-((x - 0.67) ** 2 / 0.045 + (y - 0.48) ** 2 / 0.14)) +
-  0.95 * Math.exp(-((x - 0.21) ** 2 / 0.025 + (y - 0.76) ** 2 / 0.04)) -
-  0.7 * Math.exp(-((x - 0.49) ** 2 / 0.018 + (y - 0.23) ** 2 / 0.025)) +
-  0.16 * Math.sin(17 * x + 3 * y) * Math.cos(13 * y - 2 * x);
+  1.65 * Math.exp(-((x - .66) ** 2 / .13 + (y - .22 - .42*x) ** 2 / .018)) +
+  1.1 * Math.exp(-((x - .18) ** 2 / .045 + (y - .72 + .3*x) ** 2 / .026)) -
+  .85 * Math.exp(-((x - .48) ** 2 / .024 + (y - .51) ** 2 / .06)) +
+  .12 * Math.sin(13*x + 5*y) * Math.cos(9*y - 3*x);
 // Join shared grid-edge endpoints before smoothing: closed peaks remain closed.
 function stitch(segments) {
   const key = (p) => p.map((v) => v.toFixed(5)).join(",");

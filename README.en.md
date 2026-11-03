@@ -1,13 +1,13 @@
 # Hypergraph
 
-[Live demo / 在线演示](https://drtxdt.github.io/Hypergraph/) · [beta.8](docs/BETA8.en.md)
+[Live demo / 在线演示](https://drtxdt.github.io/Hypergraph/) · [beta.9](docs/BETA9.en.md)
 
 An original editorial Hexo theme with light/dark modes, one Endfield-inspired design, structured configuration, locally bundled optional modules, and a versioned extension API.
 
 Requires Node.js 22.12+ or 24 and Hexo 7.3 or 8. Install the delivered tarball in your Hexo site, set `theme: hypergraph`, remove other Markdown renderers, and run `hexo clean && hexo generate`. Assets are precompiled; Vite is only needed when developing the theme.
 
 ```sh
-npm install ./hexo-theme-hypergraph-2.1.0-beta.8.tgz
+npm install ./hexo-theme-hypergraph-2.1.0-beta.9.tgz
 npm uninstall hexo-renderer-marked hexo-renderer-markdown-it
 ```
 
@@ -38,7 +38,7 @@ npm run build
 npm run pack:theme
 ```
 
-Install the resulting `dist/hexo-theme-hypergraph-2.1.0-beta.8.tgz` in a fresh Hexo site. The consumer needs no Vite dependency. See [beta.6 configuration](docs/BETA6.en.md) and [three recipes](examples/recipes/README.md).
+Install the resulting `dist/hexo-theme-hypergraph-2.1.0-beta.9.tgz` in a fresh Hexo site. The consumer needs no Vite dependency. See [beta.6 configuration](docs/BETA6.en.md) and [three recipes](examples/recipes/README.md).
 
 ## 2.1 entrance motion
 

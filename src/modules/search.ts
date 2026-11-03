@@ -1,6 +1,6 @@
 import { t } from "./i18n";
 import { openModal, releasePanel } from "./panels";
-type Entry = { title: string; path: string; text: string; tags: string[] };
+type Entry = { title: string; path: string; text: string; tags: string[]; date?: string; categories?: string[] };
 export function mount(
   root: string,
   signal: AbortSignal,
@@ -19,6 +19,31 @@ export function mount(
   const status = dialog.querySelector<HTMLElement>("[role=status]")!;
   let currentPage = 0,
     requestId = 0;
+  let active = -1;
+  const highlight = (node: HTMLElement, value: string, term: string) => {
+    node.replaceChildren();
+    let offset = 0, at = value.toLocaleLowerCase().indexOf(term);
+    while (at >= 0) {
+      node.append(document.createTextNode(value.slice(offset, at)));
+      const mark = document.createElement("mark");
+      mark.textContent = value.slice(at, at + term.length);
+      node.append(mark);
+      offset = at + term.length;
+      at = value.toLocaleLowerCase().indexOf(term, offset);
+    }
+    node.append(document.createTextNode(value.slice(offset)));
+  };
+  input.addEventListener("keydown", (event) => {
+    const links = [...results.querySelectorAll<HTMLAnchorElement>("li > a")];
+    if (!links.length || event.isComposing) return;
+    if (event.key === "Enter" && active >= 0) { event.preventDefault(); links[active]?.click(); return; }
+    if (!["ArrowDown", "ArrowUp"].includes(event.key)) return;
+    event.preventDefault();
+    active = (active + (event.key === "ArrowDown" ? 1 : active < 0 ? 0 : -1) + links.length) % links.length;
+    links.forEach((link, i) => link.parentElement!.toggleAttribute("data-search-current", i === active));
+    links[active].scrollIntoView({block:"nearest"});
+    status.textContent = `${active + 1} / ${links.length} · ${links[active].textContent}`;
+  }, {signal});
   const previous = document.createElement("button"),
     next = document.createElement("button");
   previous.textContent = "←";
@@ -53,6 +78,7 @@ export function mount(
     const id = ++requestId;
     const term = input.value.trim().toLocaleLowerCase();
     results.replaceChildren();
+    active = -1;
     previous.hidden = next.hidden = true;
     if (!term) {
       status.textContent = t("输入关键词 / Type to search");
@@ -132,6 +158,7 @@ export function mount(
         if (!["http:", "https:"].includes(url.protocol)) continue;
         a.href = url.href;
         a.textContent = entry.title;
+        highlight(a, entry.title, term);
         const pos = entry.text.toLocaleLowerCase().indexOf(term);
         p.textContent = entry.text
           .replace(
@@ -147,6 +174,11 @@ export function mount(
               })[entity] || "",
           )
           .slice(Math.max(0, pos - 35), Math.max(0, pos - 35) + 130);
+        highlight(p, p.textContent || "", term);
+        const metadata = document.createElement("small");
+        metadata.className = "search-metadata";
+        metadata.textContent = [entry.date, ...(entry.categories || [])].filter(Boolean).join(" · ");
+        if (metadata.textContent) li.append(metadata);
         li.append(a, p);
         results.append(li);
       }

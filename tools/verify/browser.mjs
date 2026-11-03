@@ -473,7 +473,10 @@ export async function performance(
           };
           requestAnimationFrame(pollReadable);
           new PerformanceObserver((l) =>
-            l.getEntries().forEach((e) => (window.metrics.lcp = e.startTime)),
+            l.getEntries().forEach((e) => {
+              window.metrics.lcp = e.startTime;
+              window.metrics.lcpCandidate = {tag: e.element?.tagName, id:e.element?.id, className:e.element?.className, url:e.url, size:e.size};
+            }),
           ).observe({ type: "largest-contentful-paint", buffered: true });
           new PerformanceObserver((l) =>
             l.getEntries().forEach((e) => {
@@ -528,6 +531,8 @@ export async function performance(
           Math.max(0, 5000 - (await page.evaluate(() => performance.now()))),
         );
         const stability = await page.evaluate(() => ({
+            lcpCandidate: window.metrics.lcpCandidate,
+            measurementVisit: "initial-stability",
           lcp: window.metrics.lcp,
           cls: window.metrics.cls,
           shifts: window.metrics.shifts,
