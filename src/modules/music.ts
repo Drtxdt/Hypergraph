@@ -82,7 +82,7 @@ export async function mount(
   expand.textContent = t("展开 / Expand");
   expand.className = "player-expand";
   host.append(expand);
-  expand.addEventListener("click", () => { activatePanel(host, () => setOpen(false), expand); setOpen(true); }, {signal});
+  expand.addEventListener("click", () => { activatePanel(host, () => setOpen(false), expand); setOpen(true); host.querySelector<HTMLButtonElement>("[data-player-close]")?.focus(); }, {signal});
   const setOpen = (open: boolean) => {
     expanded = open;
     const mini = !open && played && matchMedia("(max-width:1023px)").matches;

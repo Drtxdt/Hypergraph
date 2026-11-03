@@ -101,7 +101,7 @@ hexo.extend.helper.register("hg_artwork", function () {
 hexo.extend.helper.register("hg_contour", function (page) {
   const cfg = hexo.theme.config.appearance.contour;
   if (!cfg.enable) return "";
-  return `<div class="contour-layer ${this.is_home() ? "contour-home" : "contour-band"}" aria-hidden="true" style="--contour-opacity:${cfg.opacity};--contour-image:url('${this.url_for("/assets/" + contours()[cfg.style])}');--contour-lower-image:url('${this.url_for("/assets/" + contours()[cfg.style + "Lower"])}');--contour-band-image:url('${this.url_for("/assets/" + contours()[cfg.style + "Band"])}');--contour-mobile-image:url('${this.url_for("/assets/" + contours()[cfg.style + "Mobile"])}')"></div>`;
+  return `<style>:root{--contour-selection-image:url('${this.url_for("/assets/" + contours()[cfg.style + "Band"])}')}</style><div class="contour-layer ${this.is_home() ? "contour-home" : "contour-band"}" aria-hidden="true" style="--contour-opacity:${cfg.opacity};--contour-image:url('${this.url_for("/assets/" + contours()[cfg.style])}');--contour-lower-image:url('${this.url_for("/assets/" + contours()[cfg.style + "Lower"])}');--contour-band-image:url('${this.url_for("/assets/" + contours()[cfg.style + "Band"])}');--contour-mobile-image:url('${this.url_for("/assets/" + contours()[cfg.style + "Mobile"])}')"></div>`;
 });
 
 hexo.extend.helper.register("hg_contour_active", function (page) {

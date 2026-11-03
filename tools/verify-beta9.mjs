@@ -12,6 +12,8 @@ export async function checkBeta9(browser, sites, out, report) {
     await page.waitForFunction(() => document.querySelector('.player')?.hidden === true);
     assert.equal(await page.locator('h1').count(),1,'home has one accessible heading');
     await page.locator('[data-menu-toggle]').tap();
+    const fill=await page.locator('[data-menu-toggle]').evaluate(el=>({button:el.getBoundingClientRect().width,fill:parseFloat(getComputedStyle(el,'::before').width)}));
+    assert.ok(fill.fill<=fill.button && fill.fill>=fill.button-4,'menu fill belongs to its button');
     const link = page.locator('#site-nav a[href*="archives"]').first();
     await link.waitFor({state:'visible'});
     const point = await link.evaluate(el => {const r=el.getBoundingClientRect();const x=r.x+r.width/2,y=r.y+r.height/2;return {x,y,hit:el.contains(document.elementFromPoint(x,y))};});

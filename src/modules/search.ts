@@ -114,6 +114,8 @@ export function mount(
           path: hit.url || hit.path || "",
           text: hit.text || hit.content || "",
           tags: [],
+          date: typeof hit.date === "string" ? hit.date : undefined,
+          categories: Array.isArray(hit.categories) ? hit.categories.filter((value: unknown) => typeof value === "string") : undefined,
         }));
         total = data.nbHits ?? matches.length;
       } else {

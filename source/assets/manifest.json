@@ -970,7 +970,7 @@
     "isDynamicEntry": true
   },
   "src/modules/effects.ts": {
-    "file": "chunk-effects-BQvsymcy.js",
+    "file": "chunk-effects-Crgid9Ki.js",
     "name": "effects",
     "src": "src/modules/effects.ts",
     "isDynamicEntry": true
@@ -1038,7 +1038,7 @@
     ]
   },
   "src/modules/music.ts": {
-    "file": "chunk-music-_J2dTwN3.js",
+    "file": "chunk-music-CqnTmHZy.js",
     "name": "music",
     "src": "src/modules/music.ts",
     "isDynamicEntry": true,
@@ -1078,7 +1078,7 @@
     ]
   },
   "src/modules/search.ts": {
-    "file": "chunk-search-nEp5ACVa.js",
+    "file": "chunk-search-BwOT6lj2.js",
     "name": "search",
     "src": "src/modules/search.ts",
     "isDynamicEntry": true,

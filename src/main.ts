@@ -207,7 +207,7 @@ async function mountPage(focus = false) {
     const module = await import("./modules/games");
     if (!signal.aborted) module.mount(root, signal);
   }
-  if (root.querySelector(".prose")) {
+  if (root.querySelector(".prose,.archive-index")) {
     const mod = await import("./modules/reading");
     if (version === epoch) mod.mount(root, signal, config.code);
   }
